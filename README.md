@@ -1,4 +1,7 @@
- Presentation layer    
+
+```
+```
+Presentation layer    
 ┌─────────────────────┐
 │                     │
 │   Widgets           │
@@ -28,3 +31,5 @@
 │  Database           │
 │                     │
 └─────────────────────┘
+```
+```
