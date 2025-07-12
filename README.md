@@ -1,6 +1,6 @@
 
 # Tune Catcher
-> record, learn, and master traditional folk tunes
+> record, learn, and master traditional folk tunes ❤️ 🪕
 
 ## Goals
 - [ ] Recorder
