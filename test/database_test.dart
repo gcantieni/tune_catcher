@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter_test/flutter_test.dart';
 import 'package:drift/native.dart';
 
@@ -23,7 +21,7 @@ void main() {
   });
 
   // Unit Tests
-  test('tunes can be added', () async {
+  test('tuneDao.insertTune', () async {
     final tuneDao = TuneDao(db);
 
     final name = 'test tune';
@@ -43,7 +41,7 @@ void main() {
     expect(tune?.createdAt.isBefore(DateTime.now()), true);
   });
 
-  test('tunes can be watched', () async {
+  test('tuneDao.watchTune', () async {
     final tuneDao = TuneDao(db);
 
     final name = 'test tune';
