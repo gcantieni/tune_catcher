@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../database.dart';
 import '../database_provider.dart';
 
-final allTunesStreamProvider = StreamProvider<List<Tune>>((ref) {
+final allTunesProvider = StreamProvider<List<Tune>>((ref) {
   final db = ref.watch(databaseProvider);
   return db.tuneDao.watchAllTunes();
 });
