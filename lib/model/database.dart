@@ -7,12 +7,12 @@ import 'package:path_provider/path_provider.dart';
 import 'package:tune_catcher/model/tables/tunes.dart';
 import 'package:tune_catcher/model/accessors/tune_dao.dart';
 import 'package:tune_catcher/model/tables/recordings.dart';
-import 'package:tune_catcher/model/tables/tunes2recordings.dart';
+import 'package:tune_catcher/model/tables/tune_recording.dart';
 
 // generated code
 part 'database.g.dart';
 
-@DriftDatabase(tables: [Recordings, Tunes, Tunes2Recordings], daos: [TuneDao])
+@DriftDatabase(tables: [Recordings, Tunes, TuneRecording], daos: [TuneDao])
 class AppDatabase extends _$AppDatabase {
   // After generating code, this class needs to define a `schemaVersion` getter
   // and a constructor telling drift where the database should be stored.

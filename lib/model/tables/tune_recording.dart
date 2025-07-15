@@ -1,6 +1,6 @@
 import 'package:drift/drift.dart';
 
-class Tunes2Recordings extends Table {
+class TuneRecording extends Table {
   IntColumn get tuneId => integer()();
   IntColumn get recordingId => integer()();
 
