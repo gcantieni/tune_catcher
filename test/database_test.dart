@@ -65,7 +65,6 @@ void main() {
         isA<Tune>().having((t) => t.genre, 'genre', 'contra'),
       ]),
     );
-    // await Future.delayed(Duration(milliseconds: 10));
 
     // make an update
     await tuneDao.updateTune(

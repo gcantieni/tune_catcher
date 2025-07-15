@@ -759,12 +759,12 @@ class TunesCompanion extends UpdateCompanion<Tune> {
   }
 }
 
-class $Tunes2RecordingsTable extends Tunes2Recordings
-    with TableInfo<$Tunes2RecordingsTable, Tunes2Recording> {
+class $TuneRecordingTable extends TuneRecording
+    with TableInfo<$TuneRecordingTable, TuneRecordingData> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
-  $Tunes2RecordingsTable(this.attachedDatabase, [this._alias]);
+  $TuneRecordingTable(this.attachedDatabase, [this._alias]);
   static const VerificationMeta _tuneIdMeta = const VerificationMeta('tuneId');
   @override
   late final GeneratedColumn<int> tuneId = GeneratedColumn<int>(
@@ -842,10 +842,10 @@ class $Tunes2RecordingsTable extends Tunes2Recordings
   String get aliasedName => _alias ?? actualTableName;
   @override
   String get actualTableName => $name;
-  static const String $name = 'tunes2_recordings';
+  static const String $name = 'tune_recording';
   @override
   VerificationContext validateIntegrity(
-    Insertable<Tunes2Recording> instance, {
+    Insertable<TuneRecordingData> instance, {
     bool isInserting = false,
   }) {
     final context = VerificationContext();
@@ -910,9 +910,9 @@ class $Tunes2RecordingsTable extends Tunes2Recordings
   @override
   Set<GeneratedColumn> get $primaryKey => const {};
   @override
-  Tunes2Recording map(Map<String, dynamic> data, {String? tablePrefix}) {
+  TuneRecordingData map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return Tunes2Recording(
+    return TuneRecordingData(
       tuneId: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}tune_id'],
@@ -941,12 +941,13 @@ class $Tunes2RecordingsTable extends Tunes2Recordings
   }
 
   @override
-  $Tunes2RecordingsTable createAlias(String alias) {
-    return $Tunes2RecordingsTable(attachedDatabase, alias);
+  $TuneRecordingTable createAlias(String alias) {
+    return $TuneRecordingTable(attachedDatabase, alias);
   }
 }
 
-class Tunes2Recording extends DataClass implements Insertable<Tunes2Recording> {
+class TuneRecordingData extends DataClass
+    implements Insertable<TuneRecordingData> {
   final int tuneId;
   final int recordingId;
 
@@ -961,7 +962,7 @@ class Tunes2Recording extends DataClass implements Insertable<Tunes2Recording> {
 
   /// Free text for names of performers if known
   final String performers;
-  const Tunes2Recording({
+  const TuneRecordingData({
     required this.tuneId,
     required this.recordingId,
     required this.startTime,
@@ -981,8 +982,8 @@ class Tunes2Recording extends DataClass implements Insertable<Tunes2Recording> {
     return map;
   }
 
-  Tunes2RecordingsCompanion toCompanion(bool nullToAbsent) {
-    return Tunes2RecordingsCompanion(
+  TuneRecordingCompanion toCompanion(bool nullToAbsent) {
+    return TuneRecordingCompanion(
       tuneId: Value(tuneId),
       recordingId: Value(recordingId),
       startTime: Value(startTime),
@@ -992,12 +993,12 @@ class Tunes2Recording extends DataClass implements Insertable<Tunes2Recording> {
     );
   }
 
-  factory Tunes2Recording.fromJson(
+  factory TuneRecordingData.fromJson(
     Map<String, dynamic> json, {
     ValueSerializer? serializer,
   }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
-    return Tunes2Recording(
+    return TuneRecordingData(
       tuneId: serializer.fromJson<int>(json['tuneId']),
       recordingId: serializer.fromJson<int>(json['recordingId']),
       startTime: serializer.fromJson<int>(json['startTime']),
@@ -1019,14 +1020,14 @@ class Tunes2Recording extends DataClass implements Insertable<Tunes2Recording> {
     };
   }
 
-  Tunes2Recording copyWith({
+  TuneRecordingData copyWith({
     int? tuneId,
     int? recordingId,
     int? startTime,
     int? endTime,
     String? keySignature,
     String? performers,
-  }) => Tunes2Recording(
+  }) => TuneRecordingData(
     tuneId: tuneId ?? this.tuneId,
     recordingId: recordingId ?? this.recordingId,
     startTime: startTime ?? this.startTime,
@@ -1034,8 +1035,8 @@ class Tunes2Recording extends DataClass implements Insertable<Tunes2Recording> {
     keySignature: keySignature ?? this.keySignature,
     performers: performers ?? this.performers,
   );
-  Tunes2Recording copyWithCompanion(Tunes2RecordingsCompanion data) {
-    return Tunes2Recording(
+  TuneRecordingData copyWithCompanion(TuneRecordingCompanion data) {
+    return TuneRecordingData(
       tuneId: data.tuneId.present ? data.tuneId.value : this.tuneId,
       recordingId: data.recordingId.present
           ? data.recordingId.value
@@ -1053,7 +1054,7 @@ class Tunes2Recording extends DataClass implements Insertable<Tunes2Recording> {
 
   @override
   String toString() {
-    return (StringBuffer('Tunes2Recording(')
+    return (StringBuffer('TuneRecordingData(')
           ..write('tuneId: $tuneId, ')
           ..write('recordingId: $recordingId, ')
           ..write('startTime: $startTime, ')
@@ -1076,7 +1077,7 @@ class Tunes2Recording extends DataClass implements Insertable<Tunes2Recording> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is Tunes2Recording &&
+      (other is TuneRecordingData &&
           other.tuneId == this.tuneId &&
           other.recordingId == this.recordingId &&
           other.startTime == this.startTime &&
@@ -1085,7 +1086,7 @@ class Tunes2Recording extends DataClass implements Insertable<Tunes2Recording> {
           other.performers == this.performers);
 }
 
-class Tunes2RecordingsCompanion extends UpdateCompanion<Tunes2Recording> {
+class TuneRecordingCompanion extends UpdateCompanion<TuneRecordingData> {
   final Value<int> tuneId;
   final Value<int> recordingId;
   final Value<int> startTime;
@@ -1093,7 +1094,7 @@ class Tunes2RecordingsCompanion extends UpdateCompanion<Tunes2Recording> {
   final Value<String> keySignature;
   final Value<String> performers;
   final Value<int> rowid;
-  const Tunes2RecordingsCompanion({
+  const TuneRecordingCompanion({
     this.tuneId = const Value.absent(),
     this.recordingId = const Value.absent(),
     this.startTime = const Value.absent(),
@@ -1102,7 +1103,7 @@ class Tunes2RecordingsCompanion extends UpdateCompanion<Tunes2Recording> {
     this.performers = const Value.absent(),
     this.rowid = const Value.absent(),
   });
-  Tunes2RecordingsCompanion.insert({
+  TuneRecordingCompanion.insert({
     required int tuneId,
     required int recordingId,
     required int startTime,
@@ -1116,7 +1117,7 @@ class Tunes2RecordingsCompanion extends UpdateCompanion<Tunes2Recording> {
        endTime = Value(endTime),
        keySignature = Value(keySignature),
        performers = Value(performers);
-  static Insertable<Tunes2Recording> custom({
+  static Insertable<TuneRecordingData> custom({
     Expression<int>? tuneId,
     Expression<int>? recordingId,
     Expression<int>? startTime,
@@ -1136,7 +1137,7 @@ class Tunes2RecordingsCompanion extends UpdateCompanion<Tunes2Recording> {
     });
   }
 
-  Tunes2RecordingsCompanion copyWith({
+  TuneRecordingCompanion copyWith({
     Value<int>? tuneId,
     Value<int>? recordingId,
     Value<int>? startTime,
@@ -1145,7 +1146,7 @@ class Tunes2RecordingsCompanion extends UpdateCompanion<Tunes2Recording> {
     Value<String>? performers,
     Value<int>? rowid,
   }) {
-    return Tunes2RecordingsCompanion(
+    return TuneRecordingCompanion(
       tuneId: tuneId ?? this.tuneId,
       recordingId: recordingId ?? this.recordingId,
       startTime: startTime ?? this.startTime,
@@ -1185,7 +1186,7 @@ class Tunes2RecordingsCompanion extends UpdateCompanion<Tunes2Recording> {
 
   @override
   String toString() {
-    return (StringBuffer('Tunes2RecordingsCompanion(')
+    return (StringBuffer('TuneRecordingCompanion(')
           ..write('tuneId: $tuneId, ')
           ..write('recordingId: $recordingId, ')
           ..write('startTime: $startTime, ')
@@ -1203,9 +1204,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
   late final $RecordingsTable recordings = $RecordingsTable(this);
   late final $TunesTable tunes = $TunesTable(this);
-  late final $Tunes2RecordingsTable tunes2Recordings = $Tunes2RecordingsTable(
-    this,
-  );
+  late final $TuneRecordingTable tuneRecording = $TuneRecordingTable(this);
   late final TuneDao tuneDao = TuneDao(this as AppDatabase);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
@@ -1214,7 +1213,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   List<DatabaseSchemaEntity> get allSchemaEntities => [
     recordings,
     tunes,
-    tunes2Recordings,
+    tuneRecording,
   ];
 }
 
@@ -1621,8 +1620,8 @@ typedef $$TunesTableProcessedTableManager =
       Tune,
       PrefetchHooks Function()
     >;
-typedef $$Tunes2RecordingsTableCreateCompanionBuilder =
-    Tunes2RecordingsCompanion Function({
+typedef $$TuneRecordingTableCreateCompanionBuilder =
+    TuneRecordingCompanion Function({
       required int tuneId,
       required int recordingId,
       required int startTime,
@@ -1631,8 +1630,8 @@ typedef $$Tunes2RecordingsTableCreateCompanionBuilder =
       required String performers,
       Value<int> rowid,
     });
-typedef $$Tunes2RecordingsTableUpdateCompanionBuilder =
-    Tunes2RecordingsCompanion Function({
+typedef $$TuneRecordingTableUpdateCompanionBuilder =
+    TuneRecordingCompanion Function({
       Value<int> tuneId,
       Value<int> recordingId,
       Value<int> startTime,
@@ -1642,9 +1641,9 @@ typedef $$Tunes2RecordingsTableUpdateCompanionBuilder =
       Value<int> rowid,
     });
 
-class $$Tunes2RecordingsTableFilterComposer
-    extends Composer<_$AppDatabase, $Tunes2RecordingsTable> {
-  $$Tunes2RecordingsTableFilterComposer({
+class $$TuneRecordingTableFilterComposer
+    extends Composer<_$AppDatabase, $TuneRecordingTable> {
+  $$TuneRecordingTableFilterComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
@@ -1682,9 +1681,9 @@ class $$Tunes2RecordingsTableFilterComposer
   );
 }
 
-class $$Tunes2RecordingsTableOrderingComposer
-    extends Composer<_$AppDatabase, $Tunes2RecordingsTable> {
-  $$Tunes2RecordingsTableOrderingComposer({
+class $$TuneRecordingTableOrderingComposer
+    extends Composer<_$AppDatabase, $TuneRecordingTable> {
+  $$TuneRecordingTableOrderingComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
@@ -1722,9 +1721,9 @@ class $$Tunes2RecordingsTableOrderingComposer
   );
 }
 
-class $$Tunes2RecordingsTableAnnotationComposer
-    extends Composer<_$AppDatabase, $Tunes2RecordingsTable> {
-  $$Tunes2RecordingsTableAnnotationComposer({
+class $$TuneRecordingTableAnnotationComposer
+    extends Composer<_$AppDatabase, $TuneRecordingTable> {
+  $$TuneRecordingTableAnnotationComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
@@ -1756,41 +1755,39 @@ class $$Tunes2RecordingsTableAnnotationComposer
   );
 }
 
-class $$Tunes2RecordingsTableTableManager
+class $$TuneRecordingTableTableManager
     extends
         RootTableManager<
           _$AppDatabase,
-          $Tunes2RecordingsTable,
-          Tunes2Recording,
-          $$Tunes2RecordingsTableFilterComposer,
-          $$Tunes2RecordingsTableOrderingComposer,
-          $$Tunes2RecordingsTableAnnotationComposer,
-          $$Tunes2RecordingsTableCreateCompanionBuilder,
-          $$Tunes2RecordingsTableUpdateCompanionBuilder,
+          $TuneRecordingTable,
+          TuneRecordingData,
+          $$TuneRecordingTableFilterComposer,
+          $$TuneRecordingTableOrderingComposer,
+          $$TuneRecordingTableAnnotationComposer,
+          $$TuneRecordingTableCreateCompanionBuilder,
+          $$TuneRecordingTableUpdateCompanionBuilder,
           (
-            Tunes2Recording,
+            TuneRecordingData,
             BaseReferences<
               _$AppDatabase,
-              $Tunes2RecordingsTable,
-              Tunes2Recording
+              $TuneRecordingTable,
+              TuneRecordingData
             >,
           ),
-          Tunes2Recording,
+          TuneRecordingData,
           PrefetchHooks Function()
         > {
-  $$Tunes2RecordingsTableTableManager(
-    _$AppDatabase db,
-    $Tunes2RecordingsTable table,
-  ) : super(
+  $$TuneRecordingTableTableManager(_$AppDatabase db, $TuneRecordingTable table)
+    : super(
         TableManagerState(
           db: db,
           table: table,
           createFilteringComposer: () =>
-              $$Tunes2RecordingsTableFilterComposer($db: db, $table: table),
+              $$TuneRecordingTableFilterComposer($db: db, $table: table),
           createOrderingComposer: () =>
-              $$Tunes2RecordingsTableOrderingComposer($db: db, $table: table),
+              $$TuneRecordingTableOrderingComposer($db: db, $table: table),
           createComputedFieldComposer: () =>
-              $$Tunes2RecordingsTableAnnotationComposer($db: db, $table: table),
+              $$TuneRecordingTableAnnotationComposer($db: db, $table: table),
           updateCompanionCallback:
               ({
                 Value<int> tuneId = const Value.absent(),
@@ -1800,7 +1797,7 @@ class $$Tunes2RecordingsTableTableManager
                 Value<String> keySignature = const Value.absent(),
                 Value<String> performers = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
-              }) => Tunes2RecordingsCompanion(
+              }) => TuneRecordingCompanion(
                 tuneId: tuneId,
                 recordingId: recordingId,
                 startTime: startTime,
@@ -1818,7 +1815,7 @@ class $$Tunes2RecordingsTableTableManager
                 required String keySignature,
                 required String performers,
                 Value<int> rowid = const Value.absent(),
-              }) => Tunes2RecordingsCompanion.insert(
+              }) => TuneRecordingCompanion.insert(
                 tuneId: tuneId,
                 recordingId: recordingId,
                 startTime: startTime,
@@ -1835,21 +1832,21 @@ class $$Tunes2RecordingsTableTableManager
       );
 }
 
-typedef $$Tunes2RecordingsTableProcessedTableManager =
+typedef $$TuneRecordingTableProcessedTableManager =
     ProcessedTableManager<
       _$AppDatabase,
-      $Tunes2RecordingsTable,
-      Tunes2Recording,
-      $$Tunes2RecordingsTableFilterComposer,
-      $$Tunes2RecordingsTableOrderingComposer,
-      $$Tunes2RecordingsTableAnnotationComposer,
-      $$Tunes2RecordingsTableCreateCompanionBuilder,
-      $$Tunes2RecordingsTableUpdateCompanionBuilder,
+      $TuneRecordingTable,
+      TuneRecordingData,
+      $$TuneRecordingTableFilterComposer,
+      $$TuneRecordingTableOrderingComposer,
+      $$TuneRecordingTableAnnotationComposer,
+      $$TuneRecordingTableCreateCompanionBuilder,
+      $$TuneRecordingTableUpdateCompanionBuilder,
       (
-        Tunes2Recording,
-        BaseReferences<_$AppDatabase, $Tunes2RecordingsTable, Tunes2Recording>,
+        TuneRecordingData,
+        BaseReferences<_$AppDatabase, $TuneRecordingTable, TuneRecordingData>,
       ),
-      Tunes2Recording,
+      TuneRecordingData,
       PrefetchHooks Function()
     >;
 
@@ -1860,6 +1857,6 @@ class $AppDatabaseManager {
       $$RecordingsTableTableManager(_db, _db.recordings);
   $$TunesTableTableManager get tunes =>
       $$TunesTableTableManager(_db, _db.tunes);
-  $$Tunes2RecordingsTableTableManager get tunes2Recordings =>
-      $$Tunes2RecordingsTableTableManager(_db, _db.tunes2Recordings);
+  $$TuneRecordingTableTableManager get tuneRecording =>
+      $$TuneRecordingTableTableManager(_db, _db.tuneRecording);
 }
