@@ -6,22 +6,23 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Home')),
-      body: ListView(
-        children: [
-          ListTile(
-            title: const Text('Go to Tune List'),
-            onTap: () => context.go('/tune_list'),
-          ),
-          ListTile(
-            title: const Text('Go to Recorder'),
-            onTap: () => context.go('/recorder'),
-          ),
-          ListTile(
-            title: const Text('Go to Recording List'),
-            onTap: () => context.go('/recording_list'),
-          ),
-        ],
-      ),
-    );
+      body: 
+        ListView(
+          children: [
+            ListTile(
+              title: const Text('Go to Tune List'),
+              onTap: () => context.push('/tune_list'),
+            ),
+            ListTile(
+              title: const Text('Go to Recorder'),
+              onTap: () => context.push('/recorder'),
+            ),
+            ListTile(
+              title: const Text('Go to Recording List'),
+              onTap: () => context.push('/recording_list'),
+            ),
+          ],
+        ),
+      );
   }
 }

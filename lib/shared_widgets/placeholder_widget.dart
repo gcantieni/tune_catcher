@@ -11,11 +11,16 @@ class PlaceholderPage extends StatelessWidget {
       appBar: AppBar(
         title: Text(name),
         leading: IconButton(
-          icon: const Icon(Icons.home),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () => context.go('/'),
         ),
       ),
-      body: const Center(child: Text('List of Tunes')),
+      body: Center(child: Text(
+        name,
+        style: const TextStyle(
+          fontSize: 20,
+        )
+      )),
     );
   }
 }
