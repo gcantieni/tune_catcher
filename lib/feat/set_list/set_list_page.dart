@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-class RecorderPage extends StatelessWidget {
+class SetListPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Center(child: Text("Recorder Page"));
+    return Center(child: Text("Sets List Page"));
   }
 }
