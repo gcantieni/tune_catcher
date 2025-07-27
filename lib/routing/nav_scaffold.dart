@@ -9,8 +9,8 @@ class NavScaffold extends StatelessWidget {
   static const List<String> _bottomNavigationRoutes = [
     '/set_list',
     '/tune_list',
-    '/recorder',
     '/recording_list',
+    '/recorder',
   ];
 
   @override
@@ -24,7 +24,7 @@ class NavScaffold extends StatelessWidget {
       body: child, // Will contain composed page content
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: currentIndex < 0
-            ? 1 // default to tunes, could be some "favorite" in the future
+            ? 3 // recorder should be the "quick draw" for the app
             : currentIndex,
         onTap: (index) {
           if (_bottomNavigationRoutes[index] != location) {

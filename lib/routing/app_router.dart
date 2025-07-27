@@ -6,7 +6,7 @@ import 'package:tune_catcher/feat/tune_list/tune_list_page.dart';
 import 'package:tune_catcher/routing/nav_scaffold.dart';
 
 final GoRouter router = GoRouter(
-  initialLocation: '/recorder', // could make this customizable in the future
+  initialLocation: '/recorder', // recording should be the app's "quick draw"
   routes: [
     ShellRoute(
       builder: (context, state, child) {
