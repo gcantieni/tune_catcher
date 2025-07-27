@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-class MainScaffold extends StatelessWidget {
+class NavScaffold extends StatelessWidget {
   final Widget child;
 
-  const MainScaffold({required this.child, super.key});
+  const NavScaffold({required this.child, super.key});
 
   static const List<String> _bottomNavigationRoutes = [
     '/set_list',
@@ -16,7 +16,6 @@ class MainScaffold extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final location = GoRouterState.of(context).uri.toString();
-
     final currentIndex = _bottomNavigationRoutes.indexWhere(
       (r) => location.startsWith(r),
     );
@@ -36,7 +35,7 @@ class MainScaffold extends StatelessWidget {
           BottomNavigationBarItem(icon: Icon(Icons.queue_music), label: "Sets"),
           BottomNavigationBarItem(icon: Icon(Icons.music_note), label: 'Tunes'),
           BottomNavigationBarItem(
-            icon: Icon(Icons.audio_file),
+            icon: Icon(Icons.audio_file_outlined),
             label: 'Recordings',
           ),
           BottomNavigationBarItem(icon: Icon(Icons.mic), label: 'Record'),
