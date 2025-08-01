@@ -11,7 +11,7 @@ class RecordingDao extends DatabaseAccessor<AppDatabase>
   RecordingDao(AppDatabase db) : super(db);
 
   // create
-  Future insertRecording(RecordingsCompanion recording) =>
+  Future<int> insertRecording(RecordingsCompanion recording) =>
       into(recordings).insert(recording);
 
   // read static
@@ -25,14 +25,10 @@ class RecordingDao extends DatabaseAccessor<AppDatabase>
       (select(recordings)..where((r) => r.id.equals(id))).watchSingleOrNull();
 
   // update
-  Future<int> updateRecording(Recording updatedRecording) {
-    return (update(
-      recordings,
-    )..where((t) => t.id.equals(updatedRecording.id))).write(
-      updatedRecording.toCompanion(
-        true,
-      ), // coalesces Recording into RecordingCompanion
-    );
+  Future<int> updateRecording(RecordingsCompanion updatedRecording) {
+    return (update(recordings)
+          ..where((t) => t.id.equals(updatedRecording.id.value)))
+        .write(updatedRecording);
   }
 
   // delete

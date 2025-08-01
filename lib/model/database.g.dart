@@ -40,9 +40,9 @@ class $RecordingsTable extends Recordings
   late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
     'created_at',
     aliasedName,
-    true,
+    false,
     type: DriftSqlType.dateTime,
-    requiredDuringInsert: false,
+    requiredDuringInsert: true,
   );
   static const VerificationMeta _modifiedAtMeta = const VerificationMeta(
     'modifiedAt',
@@ -62,9 +62,9 @@ class $RecordingsTable extends Recordings
   late final GeneratedColumn<String> performers = GeneratedColumn<String>(
     'performers',
     aliasedName,
-    false,
+    true,
     type: DriftSqlType.string,
-    requiredDuringInsert: true,
+    requiredDuringInsert: false,
   );
   static const VerificationMeta _locationMeta = const VerificationMeta(
     'location',
@@ -73,9 +73,9 @@ class $RecordingsTable extends Recordings
   late final GeneratedColumn<String> location = GeneratedColumn<String>(
     'location',
     aliasedName,
-    false,
+    true,
     type: DriftSqlType.string,
-    requiredDuringInsert: true,
+    requiredDuringInsert: false,
   );
   @override
   List<GeneratedColumn> get $columns => [
@@ -114,6 +114,8 @@ class $RecordingsTable extends Recordings
         _createdAtMeta,
         createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
       );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
     }
     if (data.containsKey('modified_at')) {
       context.handle(
@@ -126,16 +128,12 @@ class $RecordingsTable extends Recordings
         _performersMeta,
         performers.isAcceptableOrUnknown(data['performers']!, _performersMeta),
       );
-    } else if (isInserting) {
-      context.missing(_performersMeta);
     }
     if (data.containsKey('location')) {
       context.handle(
         _locationMeta,
         location.isAcceptableOrUnknown(data['location']!, _locationMeta),
       );
-    } else if (isInserting) {
-      context.missing(_locationMeta);
     }
     return context;
   }
@@ -157,7 +155,7 @@ class $RecordingsTable extends Recordings
       createdAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}created_at'],
-      ),
+      )!,
       modifiedAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}modified_at'],
@@ -165,11 +163,11 @@ class $RecordingsTable extends Recordings
       performers: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}performers'],
-      )!,
+      ),
       location: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}location'],
-      )!,
+      ),
     );
   }
 
@@ -182,31 +180,33 @@ class $RecordingsTable extends Recordings
 class Recording extends DataClass implements Insertable<Recording> {
   final int id;
   final String filePath;
-  final DateTime? createdAt;
+  final DateTime createdAt;
   final DateTime? modifiedAt;
-  final String performers;
-  final String location;
+  final String? performers;
+  final String? location;
   const Recording({
     required this.id,
     required this.filePath,
-    this.createdAt,
+    required this.createdAt,
     this.modifiedAt,
-    required this.performers,
-    required this.location,
+    this.performers,
+    this.location,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
     map['file_path'] = Variable<String>(filePath);
-    if (!nullToAbsent || createdAt != null) {
-      map['created_at'] = Variable<DateTime>(createdAt);
-    }
+    map['created_at'] = Variable<DateTime>(createdAt);
     if (!nullToAbsent || modifiedAt != null) {
       map['modified_at'] = Variable<DateTime>(modifiedAt);
     }
-    map['performers'] = Variable<String>(performers);
-    map['location'] = Variable<String>(location);
+    if (!nullToAbsent || performers != null) {
+      map['performers'] = Variable<String>(performers);
+    }
+    if (!nullToAbsent || location != null) {
+      map['location'] = Variable<String>(location);
+    }
     return map;
   }
 
@@ -214,14 +214,16 @@ class Recording extends DataClass implements Insertable<Recording> {
     return RecordingsCompanion(
       id: Value(id),
       filePath: Value(filePath),
-      createdAt: createdAt == null && nullToAbsent
-          ? const Value.absent()
-          : Value(createdAt),
+      createdAt: Value(createdAt),
       modifiedAt: modifiedAt == null && nullToAbsent
           ? const Value.absent()
           : Value(modifiedAt),
-      performers: Value(performers),
-      location: Value(location),
+      performers: performers == null && nullToAbsent
+          ? const Value.absent()
+          : Value(performers),
+      location: location == null && nullToAbsent
+          ? const Value.absent()
+          : Value(location),
     );
   }
 
@@ -233,10 +235,10 @@ class Recording extends DataClass implements Insertable<Recording> {
     return Recording(
       id: serializer.fromJson<int>(json['id']),
       filePath: serializer.fromJson<String>(json['filePath']),
-      createdAt: serializer.fromJson<DateTime?>(json['createdAt']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       modifiedAt: serializer.fromJson<DateTime?>(json['modifiedAt']),
-      performers: serializer.fromJson<String>(json['performers']),
-      location: serializer.fromJson<String>(json['location']),
+      performers: serializer.fromJson<String?>(json['performers']),
+      location: serializer.fromJson<String?>(json['location']),
     );
   }
   @override
@@ -245,27 +247,27 @@ class Recording extends DataClass implements Insertable<Recording> {
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
       'filePath': serializer.toJson<String>(filePath),
-      'createdAt': serializer.toJson<DateTime?>(createdAt),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
       'modifiedAt': serializer.toJson<DateTime?>(modifiedAt),
-      'performers': serializer.toJson<String>(performers),
-      'location': serializer.toJson<String>(location),
+      'performers': serializer.toJson<String?>(performers),
+      'location': serializer.toJson<String?>(location),
     };
   }
 
   Recording copyWith({
     int? id,
     String? filePath,
-    Value<DateTime?> createdAt = const Value.absent(),
+    DateTime? createdAt,
     Value<DateTime?> modifiedAt = const Value.absent(),
-    String? performers,
-    String? location,
+    Value<String?> performers = const Value.absent(),
+    Value<String?> location = const Value.absent(),
   }) => Recording(
     id: id ?? this.id,
     filePath: filePath ?? this.filePath,
-    createdAt: createdAt.present ? createdAt.value : this.createdAt,
+    createdAt: createdAt ?? this.createdAt,
     modifiedAt: modifiedAt.present ? modifiedAt.value : this.modifiedAt,
-    performers: performers ?? this.performers,
-    location: location ?? this.location,
+    performers: performers.present ? performers.value : this.performers,
+    location: location.present ? location.value : this.location,
   );
   Recording copyWithCompanion(RecordingsCompanion data) {
     return Recording(
@@ -313,10 +315,10 @@ class Recording extends DataClass implements Insertable<Recording> {
 class RecordingsCompanion extends UpdateCompanion<Recording> {
   final Value<int> id;
   final Value<String> filePath;
-  final Value<DateTime?> createdAt;
+  final Value<DateTime> createdAt;
   final Value<DateTime?> modifiedAt;
-  final Value<String> performers;
-  final Value<String> location;
+  final Value<String?> performers;
+  final Value<String?> location;
   const RecordingsCompanion({
     this.id = const Value.absent(),
     this.filePath = const Value.absent(),
@@ -328,13 +330,12 @@ class RecordingsCompanion extends UpdateCompanion<Recording> {
   RecordingsCompanion.insert({
     this.id = const Value.absent(),
     required String filePath,
-    this.createdAt = const Value.absent(),
+    required DateTime createdAt,
     this.modifiedAt = const Value.absent(),
-    required String performers,
-    required String location,
+    this.performers = const Value.absent(),
+    this.location = const Value.absent(),
   }) : filePath = Value(filePath),
-       performers = Value(performers),
-       location = Value(location);
+       createdAt = Value(createdAt);
   static Insertable<Recording> custom({
     Expression<int>? id,
     Expression<String>? filePath,
@@ -356,10 +357,10 @@ class RecordingsCompanion extends UpdateCompanion<Recording> {
   RecordingsCompanion copyWith({
     Value<int>? id,
     Value<String>? filePath,
-    Value<DateTime?>? createdAt,
+    Value<DateTime>? createdAt,
     Value<DateTime?>? modifiedAt,
-    Value<String>? performers,
-    Value<String>? location,
+    Value<String?>? performers,
+    Value<String?>? location,
   }) {
     return RecordingsCompanion(
       id: id ?? this.id,
@@ -1206,6 +1207,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $TunesTable tunes = $TunesTable(this);
   late final $TuneRecordingTable tuneRecording = $TuneRecordingTable(this);
   late final TuneDao tuneDao = TuneDao(this as AppDatabase);
+  late final RecordingDao recordingDao = RecordingDao(this as AppDatabase);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -1221,19 +1223,19 @@ typedef $$RecordingsTableCreateCompanionBuilder =
     RecordingsCompanion Function({
       Value<int> id,
       required String filePath,
-      Value<DateTime?> createdAt,
+      required DateTime createdAt,
       Value<DateTime?> modifiedAt,
-      required String performers,
-      required String location,
+      Value<String?> performers,
+      Value<String?> location,
     });
 typedef $$RecordingsTableUpdateCompanionBuilder =
     RecordingsCompanion Function({
       Value<int> id,
       Value<String> filePath,
-      Value<DateTime?> createdAt,
+      Value<DateTime> createdAt,
       Value<DateTime?> modifiedAt,
-      Value<String> performers,
-      Value<String> location,
+      Value<String?> performers,
+      Value<String?> location,
     });
 
 class $$RecordingsTableFilterComposer
@@ -1381,10 +1383,10 @@ class $$RecordingsTableTableManager
               ({
                 Value<int> id = const Value.absent(),
                 Value<String> filePath = const Value.absent(),
-                Value<DateTime?> createdAt = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime?> modifiedAt = const Value.absent(),
-                Value<String> performers = const Value.absent(),
-                Value<String> location = const Value.absent(),
+                Value<String?> performers = const Value.absent(),
+                Value<String?> location = const Value.absent(),
               }) => RecordingsCompanion(
                 id: id,
                 filePath: filePath,
@@ -1397,10 +1399,10 @@ class $$RecordingsTableTableManager
               ({
                 Value<int> id = const Value.absent(),
                 required String filePath,
-                Value<DateTime?> createdAt = const Value.absent(),
+                required DateTime createdAt,
                 Value<DateTime?> modifiedAt = const Value.absent(),
-                required String performers,
-                required String location,
+                Value<String?> performers = const Value.absent(),
+                Value<String?> location = const Value.absent(),
               }) => RecordingsCompanion.insert(
                 id: id,
                 filePath: filePath,
