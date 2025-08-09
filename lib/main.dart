@@ -11,12 +11,24 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    final Brightness brightness = MediaQuery.of(context).platformBrightness;
+    final colorScheme = ColorScheme.fromSeed(
+      contrastLevel: 0.75,
+      seedColor: Colors.deepPurple,
+      brightness: brightness,
+    );
+
     return MaterialApp.router(
-      title: 'Flutter Demo',
+      title: 'Tune Catcher',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: colorScheme,
+        bottomNavigationBarTheme: BottomNavigationBarThemeData(
+          selectedItemColor: colorScheme.secondary,
+          unselectedItemColor: colorScheme.secondaryContainer,
+        ),
       ),
-      routerConfig: router, 
+      themeMode: ThemeMode.system,
+      routerConfig: router,
     );
   }
 }
