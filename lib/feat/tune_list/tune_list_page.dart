@@ -16,29 +16,23 @@ class TuneListPage extends StatelessWidget {
 
 enum TuneStatus { todo, canPlay, canStart, inSet, mastered }
 
-enum TuneType { noType, reel, jig, polka, slide }
+enum TuneType { reel, jig, polka, slide }
 
+@immutable
 class Tune {
-  Tune({required this.name, this.status, this.type});
+  const Tune({required this.name, this.status, this.type});
 
   final String name;
   final TuneStatus? status;
   final TuneType? type;
-}
 
-class TuneFormState {
-  final String name;
-  final TuneType? type;
-
-  TuneFormState({this.name = '', this.type});
-
-  TuneFormState copyWith({String? name, TuneType? type}) {
-    return TuneFormState(name: name ?? this.name, type: type ?? this.type);
+  Tune copyWith({String? name, TuneType? type}) {
+    return Tune(name: name ?? this.name, type: type ?? this.type);
   }
 }
 
-class TuneFormNotifier extends StateNotifier<TuneFormState> {
-  TuneFormNotifier() : super(TuneFormState());
+class TuneFormNotifier extends StateNotifier<Tune> {
+  TuneFormNotifier() : super(const Tune(name: ""));
 
   void setTitle(String title) {
     state = state.copyWith(name: title);
@@ -48,16 +42,10 @@ class TuneFormNotifier extends StateNotifier<TuneFormState> {
     state = state.copyWith(type: type);
   }
 
-  Tune toTune() {
-    return Tune(name: state.name, type: state.type);
-  }
-
-  bool isValid() {
-    return state.name.isNotEmpty;
-  }
+  Tune getTune() => state;
 }
 
-final tuneFormProvider = StateNotifierProvider<TuneFormNotifier, TuneFormState>(
+final tuneFormProvider = StateNotifierProvider<TuneFormNotifier, Tune>(
   (ref) => TuneFormNotifier(),
 );
 
@@ -114,12 +102,13 @@ class _TuneFormState extends ConsumerState<TuneFormWidget> {
             validator: (value) => null,
           ),
 
-          const SizedBox(height: 24),
+          const SizedBox(height: 10),
           ElevatedButton(
             onPressed: () {
               if (_formKey.currentState!.validate()) {
                 _formKey.currentState!.save();
-                final Tune tuneToSave = tuneFormNotifier.toTune();
+                final Tune tuneToSave = tuneFormNotifier.getTune();
+
                 tuneListNotifier.append(tuneToSave);
 
                 _formKey.currentState!.reset();
