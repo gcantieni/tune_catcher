@@ -92,7 +92,7 @@ class _TuneFormState extends ConsumerState<TuneFormWidget> {
               if (newValue != null) tuneFormNotifier.setTitle(newValue);
             },
             validator: (String? value) {
-              if (value == null) {
+              if (value == null || value == "") {
                 return 'Please provide a tune name';
               }
               return null;
@@ -121,6 +121,8 @@ class _TuneFormState extends ConsumerState<TuneFormWidget> {
                 _formKey.currentState!.save();
                 final Tune tuneToSave = tuneFormNotifier.toTune();
                 tuneListNotifier.append(tuneToSave);
+
+                _formKey.currentState!.reset();
 
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(content: Text('"${tuneToSave.name}" saved!')),
