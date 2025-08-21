@@ -10,10 +10,16 @@ class TuneListPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Add a Tune')),
+      appBar: AppBar(title: const Text('Enter tune name')),
       body: Padding(
         padding: const EdgeInsets.all(16),
-        child: ListView(children: [const TuneFormWidget(), TuneListWidget()]),
+        child: ListView(
+          children: [
+            const TuneFormWidget(),
+            const SizedBox(height: 10),
+            TuneListWidget(),
+          ],
+        ),
       ),
     );
   }
@@ -111,7 +117,17 @@ class TuneWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text('$tune');
+    return Card(
+      child: Column(
+        mainAxisSize: MainAxisSize.min, // TODO: make cards smaller
+        children: [
+          ListTile(
+            title: Text(tune.name),
+            subtitle: Text(tune.type?.name ?? ''),
+          ),
+        ],
+      ),
+    );
   }
 }
 
@@ -122,9 +138,10 @@ class TuneListWidget extends ConsumerWidget {
     final AsyncValue<List<Tune>> allTunesAsync = ref.watch(allTunesProvider);
 
     return allTunesAsync.when(
-      loading: () => CircularProgressIndicator(),
+      loading: () => const CircularProgressIndicator(),
       error: (err, stack) => Text('Error: $err'),
       data: (allTunes) => Column(
+        mainAxisSize: MainAxisSize.min,
         children: allTunes.isEmpty
             ? [
                 const Padding(
@@ -137,15 +154,7 @@ class TuneListWidget extends ConsumerWidget {
                   ),
                 ),
               ]
-            : [
-                for (final Tune t in allTunes)
-                  ListTile(
-                    title: Text(
-                      t.name,
-                      style: const TextStyle(fontSize: fontSize),
-                    ),
-                  ),
-              ],
+            : [for (final Tune t in allTunes) TuneWidget(tune: t)],
       ),
     );
   }
