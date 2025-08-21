@@ -436,6 +436,42 @@ class $TunesTable extends Tunes with TableInfo<$TunesTable, Tune> {
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _fromMeta = const VerificationMeta('from');
+  @override
+  late final GeneratedColumn<String> from = GeneratedColumn<String>(
+    'from',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  @override
+  late final GeneratedColumnWithTypeConverter<TuneStatus?, String> status =
+      GeneratedColumn<String>(
+        'status',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      ).withConverter<TuneStatus?>($TunesTable.$converterstatusn);
+  @override
+  late final GeneratedColumnWithTypeConverter<TuneType?, String> type =
+      GeneratedColumn<String>(
+        'type',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      ).withConverter<TuneType?>($TunesTable.$convertertypen);
+  static const VerificationMeta _genreMeta = const VerificationMeta('genre');
+  @override
+  late final GeneratedColumn<String> genre = GeneratedColumn<String>(
+    'genre',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _createdAtMeta = const VerificationMeta(
     'createdAt',
   );
@@ -458,22 +494,16 @@ class $TunesTable extends Tunes with TableInfo<$TunesTable, Tune> {
     type: DriftSqlType.dateTime,
     requiredDuringInsert: false,
   );
-  static const VerificationMeta _genreMeta = const VerificationMeta('genre');
-  @override
-  late final GeneratedColumn<String> genre = GeneratedColumn<String>(
-    'genre',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
     name,
+    from,
+    status,
+    type,
+    genre,
     createdAt,
     modifiedAt,
-    genre,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -498,6 +528,18 @@ class $TunesTable extends Tunes with TableInfo<$TunesTable, Tune> {
     } else if (isInserting) {
       context.missing(_nameMeta);
     }
+    if (data.containsKey('from')) {
+      context.handle(
+        _fromMeta,
+        from.isAcceptableOrUnknown(data['from']!, _fromMeta),
+      );
+    }
+    if (data.containsKey('genre')) {
+      context.handle(
+        _genreMeta,
+        genre.isAcceptableOrUnknown(data['genre']!, _genreMeta),
+      );
+    }
     if (data.containsKey('created_at')) {
       context.handle(
         _createdAtMeta,
@@ -511,14 +553,6 @@ class $TunesTable extends Tunes with TableInfo<$TunesTable, Tune> {
         _modifiedAtMeta,
         modifiedAt.isAcceptableOrUnknown(data['modified_at']!, _modifiedAtMeta),
       );
-    }
-    if (data.containsKey('genre')) {
-      context.handle(
-        _genreMeta,
-        genre.isAcceptableOrUnknown(data['genre']!, _genreMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_genreMeta);
     }
     return context;
   }
@@ -537,6 +571,26 @@ class $TunesTable extends Tunes with TableInfo<$TunesTable, Tune> {
         DriftSqlType.string,
         data['${effectivePrefix}name'],
       )!,
+      from: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}from'],
+      ),
+      status: $TunesTable.$converterstatusn.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.string,
+          data['${effectivePrefix}status'],
+        ),
+      ),
+      type: $TunesTable.$convertertypen.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.string,
+          data['${effectivePrefix}type'],
+        ),
+      ),
+      genre: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}genre'],
+      ),
       createdAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}created_at'],
@@ -545,10 +599,6 @@ class $TunesTable extends Tunes with TableInfo<$TunesTable, Tune> {
         DriftSqlType.dateTime,
         data['${effectivePrefix}modified_at'],
       ),
-      genre: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}genre'],
-      )!,
     );
   }
 
@@ -556,31 +606,59 @@ class $TunesTable extends Tunes with TableInfo<$TunesTable, Tune> {
   $TunesTable createAlias(String alias) {
     return $TunesTable(attachedDatabase, alias);
   }
+
+  static JsonTypeConverter2<TuneStatus, String, String> $converterstatus =
+      const EnumNameConverter<TuneStatus>(TuneStatus.values);
+  static JsonTypeConverter2<TuneStatus?, String?, String?> $converterstatusn =
+      JsonTypeConverter2.asNullable($converterstatus);
+  static JsonTypeConverter2<TuneType, String, String> $convertertype =
+      const EnumNameConverter<TuneType>(TuneType.values);
+  static JsonTypeConverter2<TuneType?, String?, String?> $convertertypen =
+      JsonTypeConverter2.asNullable($convertertype);
 }
 
 class Tune extends DataClass implements Insertable<Tune> {
   final int id;
   final String name;
+  final String? from;
+  final TuneStatus? status;
+  final TuneType? type;
+  final String? genre;
   final DateTime createdAt;
   final DateTime? modifiedAt;
-  final String genre;
   const Tune({
     required this.id,
     required this.name,
+    this.from,
+    this.status,
+    this.type,
+    this.genre,
     required this.createdAt,
     this.modifiedAt,
-    required this.genre,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
     map['name'] = Variable<String>(name);
+    if (!nullToAbsent || from != null) {
+      map['from'] = Variable<String>(from);
+    }
+    if (!nullToAbsent || status != null) {
+      map['status'] = Variable<String>(
+        $TunesTable.$converterstatusn.toSql(status),
+      );
+    }
+    if (!nullToAbsent || type != null) {
+      map['type'] = Variable<String>($TunesTable.$convertertypen.toSql(type));
+    }
+    if (!nullToAbsent || genre != null) {
+      map['genre'] = Variable<String>(genre);
+    }
     map['created_at'] = Variable<DateTime>(createdAt);
     if (!nullToAbsent || modifiedAt != null) {
       map['modified_at'] = Variable<DateTime>(modifiedAt);
     }
-    map['genre'] = Variable<String>(genre);
     return map;
   }
 
@@ -588,11 +666,18 @@ class Tune extends DataClass implements Insertable<Tune> {
     return TunesCompanion(
       id: Value(id),
       name: Value(name),
+      from: from == null && nullToAbsent ? const Value.absent() : Value(from),
+      status: status == null && nullToAbsent
+          ? const Value.absent()
+          : Value(status),
+      type: type == null && nullToAbsent ? const Value.absent() : Value(type),
+      genre: genre == null && nullToAbsent
+          ? const Value.absent()
+          : Value(genre),
       createdAt: Value(createdAt),
       modifiedAt: modifiedAt == null && nullToAbsent
           ? const Value.absent()
           : Value(modifiedAt),
-      genre: Value(genre),
     );
   }
 
@@ -604,9 +689,16 @@ class Tune extends DataClass implements Insertable<Tune> {
     return Tune(
       id: serializer.fromJson<int>(json['id']),
       name: serializer.fromJson<String>(json['name']),
+      from: serializer.fromJson<String?>(json['from']),
+      status: $TunesTable.$converterstatusn.fromJson(
+        serializer.fromJson<String?>(json['status']),
+      ),
+      type: $TunesTable.$convertertypen.fromJson(
+        serializer.fromJson<String?>(json['type']),
+      ),
+      genre: serializer.fromJson<String?>(json['genre']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       modifiedAt: serializer.fromJson<DateTime?>(json['modifiedAt']),
-      genre: serializer.fromJson<String>(json['genre']),
     );
   }
   @override
@@ -615,34 +707,50 @@ class Tune extends DataClass implements Insertable<Tune> {
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
       'name': serializer.toJson<String>(name),
+      'from': serializer.toJson<String?>(from),
+      'status': serializer.toJson<String?>(
+        $TunesTable.$converterstatusn.toJson(status),
+      ),
+      'type': serializer.toJson<String?>(
+        $TunesTable.$convertertypen.toJson(type),
+      ),
+      'genre': serializer.toJson<String?>(genre),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'modifiedAt': serializer.toJson<DateTime?>(modifiedAt),
-      'genre': serializer.toJson<String>(genre),
     };
   }
 
   Tune copyWith({
     int? id,
     String? name,
+    Value<String?> from = const Value.absent(),
+    Value<TuneStatus?> status = const Value.absent(),
+    Value<TuneType?> type = const Value.absent(),
+    Value<String?> genre = const Value.absent(),
     DateTime? createdAt,
     Value<DateTime?> modifiedAt = const Value.absent(),
-    String? genre,
   }) => Tune(
     id: id ?? this.id,
     name: name ?? this.name,
+    from: from.present ? from.value : this.from,
+    status: status.present ? status.value : this.status,
+    type: type.present ? type.value : this.type,
+    genre: genre.present ? genre.value : this.genre,
     createdAt: createdAt ?? this.createdAt,
     modifiedAt: modifiedAt.present ? modifiedAt.value : this.modifiedAt,
-    genre: genre ?? this.genre,
   );
   Tune copyWithCompanion(TunesCompanion data) {
     return Tune(
       id: data.id.present ? data.id.value : this.id,
       name: data.name.present ? data.name.value : this.name,
+      from: data.from.present ? data.from.value : this.from,
+      status: data.status.present ? data.status.value : this.status,
+      type: data.type.present ? data.type.value : this.type,
+      genre: data.genre.present ? data.genre.value : this.genre,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       modifiedAt: data.modifiedAt.present
           ? data.modifiedAt.value
           : this.modifiedAt,
-      genre: data.genre.present ? data.genre.value : this.genre,
     );
   }
 
@@ -651,77 +759,104 @@ class Tune extends DataClass implements Insertable<Tune> {
     return (StringBuffer('Tune(')
           ..write('id: $id, ')
           ..write('name: $name, ')
+          ..write('from: $from, ')
+          ..write('status: $status, ')
+          ..write('type: $type, ')
+          ..write('genre: $genre, ')
           ..write('createdAt: $createdAt, ')
-          ..write('modifiedAt: $modifiedAt, ')
-          ..write('genre: $genre')
+          ..write('modifiedAt: $modifiedAt')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, name, createdAt, modifiedAt, genre);
+  int get hashCode =>
+      Object.hash(id, name, from, status, type, genre, createdAt, modifiedAt);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is Tune &&
           other.id == this.id &&
           other.name == this.name &&
+          other.from == this.from &&
+          other.status == this.status &&
+          other.type == this.type &&
+          other.genre == this.genre &&
           other.createdAt == this.createdAt &&
-          other.modifiedAt == this.modifiedAt &&
-          other.genre == this.genre);
+          other.modifiedAt == this.modifiedAt);
 }
 
 class TunesCompanion extends UpdateCompanion<Tune> {
   final Value<int> id;
   final Value<String> name;
+  final Value<String?> from;
+  final Value<TuneStatus?> status;
+  final Value<TuneType?> type;
+  final Value<String?> genre;
   final Value<DateTime> createdAt;
   final Value<DateTime?> modifiedAt;
-  final Value<String> genre;
   const TunesCompanion({
     this.id = const Value.absent(),
     this.name = const Value.absent(),
+    this.from = const Value.absent(),
+    this.status = const Value.absent(),
+    this.type = const Value.absent(),
+    this.genre = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.modifiedAt = const Value.absent(),
-    this.genre = const Value.absent(),
   });
   TunesCompanion.insert({
     this.id = const Value.absent(),
     required String name,
+    this.from = const Value.absent(),
+    this.status = const Value.absent(),
+    this.type = const Value.absent(),
+    this.genre = const Value.absent(),
     required DateTime createdAt,
     this.modifiedAt = const Value.absent(),
-    required String genre,
   }) : name = Value(name),
-       createdAt = Value(createdAt),
-       genre = Value(genre);
+       createdAt = Value(createdAt);
   static Insertable<Tune> custom({
     Expression<int>? id,
     Expression<String>? name,
+    Expression<String>? from,
+    Expression<String>? status,
+    Expression<String>? type,
+    Expression<String>? genre,
     Expression<DateTime>? createdAt,
     Expression<DateTime>? modifiedAt,
-    Expression<String>? genre,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (name != null) 'name': name,
+      if (from != null) 'from': from,
+      if (status != null) 'status': status,
+      if (type != null) 'type': type,
+      if (genre != null) 'genre': genre,
       if (createdAt != null) 'created_at': createdAt,
       if (modifiedAt != null) 'modified_at': modifiedAt,
-      if (genre != null) 'genre': genre,
     });
   }
 
   TunesCompanion copyWith({
     Value<int>? id,
     Value<String>? name,
+    Value<String?>? from,
+    Value<TuneStatus?>? status,
+    Value<TuneType?>? type,
+    Value<String?>? genre,
     Value<DateTime>? createdAt,
     Value<DateTime?>? modifiedAt,
-    Value<String>? genre,
   }) {
     return TunesCompanion(
       id: id ?? this.id,
       name: name ?? this.name,
+      from: from ?? this.from,
+      status: status ?? this.status,
+      type: type ?? this.type,
+      genre: genre ?? this.genre,
       createdAt: createdAt ?? this.createdAt,
       modifiedAt: modifiedAt ?? this.modifiedAt,
-      genre: genre ?? this.genre,
     );
   }
 
@@ -734,14 +869,27 @@ class TunesCompanion extends UpdateCompanion<Tune> {
     if (name.present) {
       map['name'] = Variable<String>(name.value);
     }
+    if (from.present) {
+      map['from'] = Variable<String>(from.value);
+    }
+    if (status.present) {
+      map['status'] = Variable<String>(
+        $TunesTable.$converterstatusn.toSql(status.value),
+      );
+    }
+    if (type.present) {
+      map['type'] = Variable<String>(
+        $TunesTable.$convertertypen.toSql(type.value),
+      );
+    }
+    if (genre.present) {
+      map['genre'] = Variable<String>(genre.value);
+    }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
     if (modifiedAt.present) {
       map['modified_at'] = Variable<DateTime>(modifiedAt.value);
-    }
-    if (genre.present) {
-      map['genre'] = Variable<String>(genre.value);
     }
     return map;
   }
@@ -751,9 +899,12 @@ class TunesCompanion extends UpdateCompanion<Tune> {
     return (StringBuffer('TunesCompanion(')
           ..write('id: $id, ')
           ..write('name: $name, ')
+          ..write('from: $from, ')
+          ..write('status: $status, ')
+          ..write('type: $type, ')
+          ..write('genre: $genre, ')
           ..write('createdAt: $createdAt, ')
-          ..write('modifiedAt: $modifiedAt, ')
-          ..write('genre: $genre')
+          ..write('modifiedAt: $modifiedAt')
           ..write(')'))
         .toString();
   }
@@ -1435,17 +1586,23 @@ typedef $$TunesTableCreateCompanionBuilder =
     TunesCompanion Function({
       Value<int> id,
       required String name,
+      Value<String?> from,
+      Value<TuneStatus?> status,
+      Value<TuneType?> type,
+      Value<String?> genre,
       required DateTime createdAt,
       Value<DateTime?> modifiedAt,
-      required String genre,
     });
 typedef $$TunesTableUpdateCompanionBuilder =
     TunesCompanion Function({
       Value<int> id,
       Value<String> name,
+      Value<String?> from,
+      Value<TuneStatus?> status,
+      Value<TuneType?> type,
+      Value<String?> genre,
       Value<DateTime> createdAt,
       Value<DateTime?> modifiedAt,
-      Value<String> genre,
     });
 
 class $$TunesTableFilterComposer extends Composer<_$AppDatabase, $TunesTable> {
@@ -1466,6 +1623,28 @@ class $$TunesTableFilterComposer extends Composer<_$AppDatabase, $TunesTable> {
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<String> get from => $composableBuilder(
+    column: $table.from,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnWithTypeConverterFilters<TuneStatus?, TuneStatus, String> get status =>
+      $composableBuilder(
+        column: $table.status,
+        builder: (column) => ColumnWithTypeConverterFilters(column),
+      );
+
+  ColumnWithTypeConverterFilters<TuneType?, TuneType, String> get type =>
+      $composableBuilder(
+        column: $table.type,
+        builder: (column) => ColumnWithTypeConverterFilters(column),
+      );
+
+  ColumnFilters<String> get genre => $composableBuilder(
+    column: $table.genre,
+    builder: (column) => ColumnFilters(column),
+  );
+
   ColumnFilters<DateTime> get createdAt => $composableBuilder(
     column: $table.createdAt,
     builder: (column) => ColumnFilters(column),
@@ -1473,11 +1652,6 @@ class $$TunesTableFilterComposer extends Composer<_$AppDatabase, $TunesTable> {
 
   ColumnFilters<DateTime> get modifiedAt => $composableBuilder(
     column: $table.modifiedAt,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get genre => $composableBuilder(
-    column: $table.genre,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -1501,6 +1675,26 @@ class $$TunesTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get from => $composableBuilder(
+    column: $table.from,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get type => $composableBuilder(
+    column: $table.type,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get genre => $composableBuilder(
+    column: $table.genre,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<DateTime> get createdAt => $composableBuilder(
     column: $table.createdAt,
     builder: (column) => ColumnOrderings(column),
@@ -1508,11 +1702,6 @@ class $$TunesTableOrderingComposer
 
   ColumnOrderings<DateTime> get modifiedAt => $composableBuilder(
     column: $table.modifiedAt,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get genre => $composableBuilder(
-    column: $table.genre,
     builder: (column) => ColumnOrderings(column),
   );
 }
@@ -1532,6 +1721,18 @@ class $$TunesTableAnnotationComposer
   GeneratedColumn<String> get name =>
       $composableBuilder(column: $table.name, builder: (column) => column);
 
+  GeneratedColumn<String> get from =>
+      $composableBuilder(column: $table.from, builder: (column) => column);
+
+  GeneratedColumnWithTypeConverter<TuneStatus?, String> get status =>
+      $composableBuilder(column: $table.status, builder: (column) => column);
+
+  GeneratedColumnWithTypeConverter<TuneType?, String> get type =>
+      $composableBuilder(column: $table.type, builder: (column) => column);
+
+  GeneratedColumn<String> get genre =>
+      $composableBuilder(column: $table.genre, builder: (column) => column);
+
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
 
@@ -1539,9 +1740,6 @@ class $$TunesTableAnnotationComposer
     column: $table.modifiedAt,
     builder: (column) => column,
   );
-
-  GeneratedColumn<String> get genre =>
-      $composableBuilder(column: $table.genre, builder: (column) => column);
 }
 
 class $$TunesTableTableManager
@@ -1574,29 +1772,41 @@ class $$TunesTableTableManager
               ({
                 Value<int> id = const Value.absent(),
                 Value<String> name = const Value.absent(),
+                Value<String?> from = const Value.absent(),
+                Value<TuneStatus?> status = const Value.absent(),
+                Value<TuneType?> type = const Value.absent(),
+                Value<String?> genre = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime?> modifiedAt = const Value.absent(),
-                Value<String> genre = const Value.absent(),
               }) => TunesCompanion(
                 id: id,
                 name: name,
+                from: from,
+                status: status,
+                type: type,
+                genre: genre,
                 createdAt: createdAt,
                 modifiedAt: modifiedAt,
-                genre: genre,
               ),
           createCompanionCallback:
               ({
                 Value<int> id = const Value.absent(),
                 required String name,
+                Value<String?> from = const Value.absent(),
+                Value<TuneStatus?> status = const Value.absent(),
+                Value<TuneType?> type = const Value.absent(),
+                Value<String?> genre = const Value.absent(),
                 required DateTime createdAt,
                 Value<DateTime?> modifiedAt = const Value.absent(),
-                required String genre,
               }) => TunesCompanion.insert(
                 id: id,
                 name: name,
+                from: from,
+                status: status,
+                type: type,
+                genre: genre,
                 createdAt: createdAt,
                 modifiedAt: modifiedAt,
-                genre: genre,
               ),
           withReferenceMapper: (p0) => p0
               .map((e) => (e.readTable(table), BaseReferences(db, table, e)))

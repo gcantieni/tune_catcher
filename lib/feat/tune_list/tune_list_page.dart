@@ -1,5 +1,10 @@
+import 'package:drift/drift.dart' as drift;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:tune_catcher/model/database.dart';
+import 'package:tune_catcher/model/database_provider.dart';
+import 'package:tune_catcher/model/providers/tunes_provider.dart';
+import 'package:tune_catcher/model/tables/tunes.dart';
 
 class TuneListPage extends StatelessWidget {
   @override
@@ -14,41 +19,6 @@ class TuneListPage extends StatelessWidget {
   }
 }
 
-enum TuneStatus { todo, canPlay, canStart, inSet, mastered }
-
-enum TuneType { reel, jig, polka, slide }
-
-@immutable
-class Tune {
-  const Tune({required this.name, this.status, this.type});
-
-  final String name;
-  final TuneStatus? status;
-  final TuneType? type;
-
-  Tune copyWith({String? name, TuneType? type}) {
-    return Tune(name: name ?? this.name, type: type ?? this.type);
-  }
-}
-
-class TuneFormNotifier extends StateNotifier<Tune> {
-  TuneFormNotifier() : super(const Tune(name: ""));
-
-  void setTitle(String title) {
-    state = state.copyWith(name: title);
-  }
-
-  void setType(TuneType? type) {
-    state = state.copyWith(type: type);
-  }
-
-  Tune getTune() => state;
-}
-
-final tuneFormProvider = StateNotifierProvider<TuneFormNotifier, Tune>(
-  (ref) => TuneFormNotifier(),
-);
-
 class TuneFormWidget extends ConsumerStatefulWidget {
   const TuneFormWidget({super.key});
 
@@ -61,12 +31,11 @@ class TuneFormWidget extends ConsumerStatefulWidget {
 class _TuneFormState extends ConsumerState<TuneFormWidget> {
   final _formKey = GlobalKey<FormState>();
   TuneType? _tuneType;
+  TuneStatus? _tuneStatus;
+  String? _tuneName;
 
   @override
   Widget build(BuildContext context) {
-    final tuneFormNotifier = ref.read(tuneFormProvider.notifier);
-    final tuneListNotifier = ref.read(tuneListProvider.notifier);
-
     return Form(
       key: _formKey,
       child: Column(
@@ -74,10 +43,10 @@ class _TuneFormState extends ConsumerState<TuneFormWidget> {
           TextFormField(
             decoration: const InputDecoration(
               // icon: Icon(Icons.abc), // TODO: is there a good icon for 'name'?
-              hintText: "What's the name of this tune?",
+              hintText: "Tune name?",
             ),
             onSaved: (newValue) {
-              if (newValue != null) tuneFormNotifier.setTitle(newValue);
+              if (newValue != null) _tuneName = newValue;
             },
             validator: (String? value) {
               if (value == null || value == "") {
@@ -96,7 +65,7 @@ class _TuneFormState extends ConsumerState<TuneFormWidget> {
             },
             onSaved: (newValue) {
               if (_tuneType != null) {
-                tuneFormNotifier.setType(_tuneType);
+                _tuneType = newValue;
               }
             },
             validator: (value) => null,
@@ -107,15 +76,24 @@ class _TuneFormState extends ConsumerState<TuneFormWidget> {
             onPressed: () {
               if (_formKey.currentState!.validate()) {
                 _formKey.currentState!.save();
-                final Tune tuneToSave = tuneFormNotifier.getTune();
 
-                tuneListNotifier.append(tuneToSave);
+                ref
+                    .read(databaseProvider)
+                    .tuneDao
+                    .insertTune(
+                      TunesCompanion.insert(
+                        name: _tuneName!,
+                        status: drift.Value(_tuneStatus),
+                        type: drift.Value(_tuneType),
+                        createdAt: DateTime.now(),
+                      ),
+                    );
 
                 _formKey.currentState!.reset();
 
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('"${tuneToSave.name}" saved!')),
-                );
+                ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(SnackBar(content: Text('"$_tuneName" saved!')));
               }
             },
             child: const Text('Submit tune'),
@@ -125,22 +103,6 @@ class _TuneFormState extends ConsumerState<TuneFormWidget> {
     );
   }
 }
-
-class TuneListNotifier extends StateNotifier<List<Tune>> {
-  TuneListNotifier() : super([]);
-
-  void add(Tune tune) {
-    state = [...state, tune];
-  }
-
-  void append(Tune tune) {
-    state = [...state, tune];
-  }
-}
-
-final tuneListProvider = StateNotifierProvider<TuneListNotifier, List<Tune>>(
-  (ref) => TuneListNotifier(),
-);
 
 class TuneWidget extends StatelessWidget {
   const TuneWidget({required this.tune});
@@ -157,30 +119,34 @@ class TuneListWidget extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     const fontSize = 19.0;
-    final List<Tune> myList = ref.watch(tuneListProvider);
+    final AsyncValue<List<Tune>> allTunesAsync = ref.watch(allTunesProvider);
 
-    return Column(
-      children: myList.isNotEmpty
-          ? [
-              for (final Tune myTune in myList)
-                ListTile(
-                  title: Text(
-                    myTune.name,
-                    style: const TextStyle(fontSize: fontSize),
+    return allTunesAsync.when(
+      loading: () => CircularProgressIndicator(),
+      error: (err, stack) => Text('Error: $err'),
+      data: (allTunes) => Column(
+        children: allTunes.isEmpty
+            ? [
+                const Padding(
+                  padding: EdgeInsets.all(20),
+                  child: Center(
+                    child: Text(
+                      'No tunes saved',
+                      style: TextStyle(fontSize: fontSize),
+                    ),
                   ),
                 ),
-            ]
-          : [
-              const Padding(
-                padding: EdgeInsets.all(20),
-                child: Center(
-                  child: Text(
-                    'No tunes saved',
-                    style: TextStyle(fontSize: fontSize),
+              ]
+            : [
+                for (final Tune t in allTunes)
+                  ListTile(
+                    title: Text(
+                      t.name,
+                      style: const TextStyle(fontSize: fontSize),
+                    ),
                   ),
-                ),
-              ),
-            ],
+              ],
+      ),
     );
   }
 }
