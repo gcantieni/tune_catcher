@@ -11,7 +11,7 @@ class Tunes extends Table {
   TextColumn get from => text().nullable()(); // Who or where a tune is from
   TextColumn get status =>
       textEnum<TuneStatus>().nullable()(); // How well is a tune known
-
+  TextColumn get key => text().nullable()();
   TextColumn get type =>
       textEnum<TuneType>().nullable()(); // How well is a tune known
   TextColumn get genre => text().nullable()(); // e.g. Irish, oldtime, Scottish
