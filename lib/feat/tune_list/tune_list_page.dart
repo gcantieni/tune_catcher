@@ -9,7 +9,7 @@ class TuneListPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Enter tune name')),
+      appBar: AppBar(title: const Text('Tune list')),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: ListView(
