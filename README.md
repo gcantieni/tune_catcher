@@ -19,6 +19,15 @@ dart run build_runner watch
 - The line `package:lint/strict.yaml` in `analysis_options.yaml` adds some opinionated Dart linting standards so we can have consistent styles in our codebase and help us learn good syntax for this new language. 😊
 - The VSCode `markdownlint` extension gives some easy auto-formatting (Option+Shift+F): [https://marketplace.visualstudio.com/items?itemName=DavidAnson.vscode-markdownlint](https://marketplace.visualstudio.com/items?itemName=DavidAnson.vscode-markdownlint)
 
+### Database location
+
+Finding the database to clear it is a bit of a pain. In the future, a 'clear' database button could be added, or a flag or some other switch to toggle the use of an in-memory database. 
+For you copy-and-paste convenience, on MacOS this should work to clear the database:
+
+``` sh
+rm "$HOME/Library/Containers/com.example.tuneCatcher/Data/Library/Application Support/com.example.tuneCatcher/my_database.sqlite"
+```
+
 ## Goals
 
 - [ ] Tune List
