@@ -454,6 +454,15 @@ class $TunesTable extends Tunes with TableInfo<$TunesTable, Tune> {
         type: DriftSqlType.string,
         requiredDuringInsert: false,
       ).withConverter<TuneStatus?>($TunesTable.$converterstatusn);
+  static const VerificationMeta _keyMeta = const VerificationMeta('key');
+  @override
+  late final GeneratedColumn<String> key = GeneratedColumn<String>(
+    'key',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   @override
   late final GeneratedColumnWithTypeConverter<TuneType?, String> type =
       GeneratedColumn<String>(
@@ -500,6 +509,7 @@ class $TunesTable extends Tunes with TableInfo<$TunesTable, Tune> {
     name,
     from,
     status,
+    key,
     type,
     genre,
     createdAt,
@@ -532,6 +542,12 @@ class $TunesTable extends Tunes with TableInfo<$TunesTable, Tune> {
       context.handle(
         _fromMeta,
         from.isAcceptableOrUnknown(data['from']!, _fromMeta),
+      );
+    }
+    if (data.containsKey('key')) {
+      context.handle(
+        _keyMeta,
+        key.isAcceptableOrUnknown(data['key']!, _keyMeta),
       );
     }
     if (data.containsKey('genre')) {
@@ -581,6 +597,10 @@ class $TunesTable extends Tunes with TableInfo<$TunesTable, Tune> {
           data['${effectivePrefix}status'],
         ),
       ),
+      key: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}key'],
+      ),
       type: $TunesTable.$convertertypen.fromSql(
         attachedDatabase.typeMapping.read(
           DriftSqlType.string,
@@ -622,6 +642,7 @@ class Tune extends DataClass implements Insertable<Tune> {
   final String name;
   final String? from;
   final TuneStatus? status;
+  final String? key;
   final TuneType? type;
   final String? genre;
   final DateTime createdAt;
@@ -631,6 +652,7 @@ class Tune extends DataClass implements Insertable<Tune> {
     required this.name,
     this.from,
     this.status,
+    this.key,
     this.type,
     this.genre,
     required this.createdAt,
@@ -648,6 +670,9 @@ class Tune extends DataClass implements Insertable<Tune> {
       map['status'] = Variable<String>(
         $TunesTable.$converterstatusn.toSql(status),
       );
+    }
+    if (!nullToAbsent || key != null) {
+      map['key'] = Variable<String>(key);
     }
     if (!nullToAbsent || type != null) {
       map['type'] = Variable<String>($TunesTable.$convertertypen.toSql(type));
@@ -670,6 +695,7 @@ class Tune extends DataClass implements Insertable<Tune> {
       status: status == null && nullToAbsent
           ? const Value.absent()
           : Value(status),
+      key: key == null && nullToAbsent ? const Value.absent() : Value(key),
       type: type == null && nullToAbsent ? const Value.absent() : Value(type),
       genre: genre == null && nullToAbsent
           ? const Value.absent()
@@ -693,6 +719,7 @@ class Tune extends DataClass implements Insertable<Tune> {
       status: $TunesTable.$converterstatusn.fromJson(
         serializer.fromJson<String?>(json['status']),
       ),
+      key: serializer.fromJson<String?>(json['key']),
       type: $TunesTable.$convertertypen.fromJson(
         serializer.fromJson<String?>(json['type']),
       ),
@@ -711,6 +738,7 @@ class Tune extends DataClass implements Insertable<Tune> {
       'status': serializer.toJson<String?>(
         $TunesTable.$converterstatusn.toJson(status),
       ),
+      'key': serializer.toJson<String?>(key),
       'type': serializer.toJson<String?>(
         $TunesTable.$convertertypen.toJson(type),
       ),
@@ -725,6 +753,7 @@ class Tune extends DataClass implements Insertable<Tune> {
     String? name,
     Value<String?> from = const Value.absent(),
     Value<TuneStatus?> status = const Value.absent(),
+    Value<String?> key = const Value.absent(),
     Value<TuneType?> type = const Value.absent(),
     Value<String?> genre = const Value.absent(),
     DateTime? createdAt,
@@ -734,6 +763,7 @@ class Tune extends DataClass implements Insertable<Tune> {
     name: name ?? this.name,
     from: from.present ? from.value : this.from,
     status: status.present ? status.value : this.status,
+    key: key.present ? key.value : this.key,
     type: type.present ? type.value : this.type,
     genre: genre.present ? genre.value : this.genre,
     createdAt: createdAt ?? this.createdAt,
@@ -745,6 +775,7 @@ class Tune extends DataClass implements Insertable<Tune> {
       name: data.name.present ? data.name.value : this.name,
       from: data.from.present ? data.from.value : this.from,
       status: data.status.present ? data.status.value : this.status,
+      key: data.key.present ? data.key.value : this.key,
       type: data.type.present ? data.type.value : this.type,
       genre: data.genre.present ? data.genre.value : this.genre,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
@@ -761,6 +792,7 @@ class Tune extends DataClass implements Insertable<Tune> {
           ..write('name: $name, ')
           ..write('from: $from, ')
           ..write('status: $status, ')
+          ..write('key: $key, ')
           ..write('type: $type, ')
           ..write('genre: $genre, ')
           ..write('createdAt: $createdAt, ')
@@ -770,8 +802,17 @@ class Tune extends DataClass implements Insertable<Tune> {
   }
 
   @override
-  int get hashCode =>
-      Object.hash(id, name, from, status, type, genre, createdAt, modifiedAt);
+  int get hashCode => Object.hash(
+    id,
+    name,
+    from,
+    status,
+    key,
+    type,
+    genre,
+    createdAt,
+    modifiedAt,
+  );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -780,6 +821,7 @@ class Tune extends DataClass implements Insertable<Tune> {
           other.name == this.name &&
           other.from == this.from &&
           other.status == this.status &&
+          other.key == this.key &&
           other.type == this.type &&
           other.genre == this.genre &&
           other.createdAt == this.createdAt &&
@@ -791,6 +833,7 @@ class TunesCompanion extends UpdateCompanion<Tune> {
   final Value<String> name;
   final Value<String?> from;
   final Value<TuneStatus?> status;
+  final Value<String?> key;
   final Value<TuneType?> type;
   final Value<String?> genre;
   final Value<DateTime> createdAt;
@@ -800,6 +843,7 @@ class TunesCompanion extends UpdateCompanion<Tune> {
     this.name = const Value.absent(),
     this.from = const Value.absent(),
     this.status = const Value.absent(),
+    this.key = const Value.absent(),
     this.type = const Value.absent(),
     this.genre = const Value.absent(),
     this.createdAt = const Value.absent(),
@@ -810,6 +854,7 @@ class TunesCompanion extends UpdateCompanion<Tune> {
     required String name,
     this.from = const Value.absent(),
     this.status = const Value.absent(),
+    this.key = const Value.absent(),
     this.type = const Value.absent(),
     this.genre = const Value.absent(),
     required DateTime createdAt,
@@ -821,6 +866,7 @@ class TunesCompanion extends UpdateCompanion<Tune> {
     Expression<String>? name,
     Expression<String>? from,
     Expression<String>? status,
+    Expression<String>? key,
     Expression<String>? type,
     Expression<String>? genre,
     Expression<DateTime>? createdAt,
@@ -831,6 +877,7 @@ class TunesCompanion extends UpdateCompanion<Tune> {
       if (name != null) 'name': name,
       if (from != null) 'from': from,
       if (status != null) 'status': status,
+      if (key != null) 'key': key,
       if (type != null) 'type': type,
       if (genre != null) 'genre': genre,
       if (createdAt != null) 'created_at': createdAt,
@@ -843,6 +890,7 @@ class TunesCompanion extends UpdateCompanion<Tune> {
     Value<String>? name,
     Value<String?>? from,
     Value<TuneStatus?>? status,
+    Value<String?>? key,
     Value<TuneType?>? type,
     Value<String?>? genre,
     Value<DateTime>? createdAt,
@@ -853,6 +901,7 @@ class TunesCompanion extends UpdateCompanion<Tune> {
       name: name ?? this.name,
       from: from ?? this.from,
       status: status ?? this.status,
+      key: key ?? this.key,
       type: type ?? this.type,
       genre: genre ?? this.genre,
       createdAt: createdAt ?? this.createdAt,
@@ -876,6 +925,9 @@ class TunesCompanion extends UpdateCompanion<Tune> {
       map['status'] = Variable<String>(
         $TunesTable.$converterstatusn.toSql(status.value),
       );
+    }
+    if (key.present) {
+      map['key'] = Variable<String>(key.value);
     }
     if (type.present) {
       map['type'] = Variable<String>(
@@ -901,6 +953,7 @@ class TunesCompanion extends UpdateCompanion<Tune> {
           ..write('name: $name, ')
           ..write('from: $from, ')
           ..write('status: $status, ')
+          ..write('key: $key, ')
           ..write('type: $type, ')
           ..write('genre: $genre, ')
           ..write('createdAt: $createdAt, ')
@@ -1588,6 +1641,7 @@ typedef $$TunesTableCreateCompanionBuilder =
       required String name,
       Value<String?> from,
       Value<TuneStatus?> status,
+      Value<String?> key,
       Value<TuneType?> type,
       Value<String?> genre,
       required DateTime createdAt,
@@ -1599,6 +1653,7 @@ typedef $$TunesTableUpdateCompanionBuilder =
       Value<String> name,
       Value<String?> from,
       Value<TuneStatus?> status,
+      Value<String?> key,
       Value<TuneType?> type,
       Value<String?> genre,
       Value<DateTime> createdAt,
@@ -1633,6 +1688,11 @@ class $$TunesTableFilterComposer extends Composer<_$AppDatabase, $TunesTable> {
         column: $table.status,
         builder: (column) => ColumnWithTypeConverterFilters(column),
       );
+
+  ColumnFilters<String> get key => $composableBuilder(
+    column: $table.key,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnWithTypeConverterFilters<TuneType?, TuneType, String> get type =>
       $composableBuilder(
@@ -1685,6 +1745,11 @@ class $$TunesTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get key => $composableBuilder(
+    column: $table.key,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get type => $composableBuilder(
     column: $table.type,
     builder: (column) => ColumnOrderings(column),
@@ -1726,6 +1791,9 @@ class $$TunesTableAnnotationComposer
 
   GeneratedColumnWithTypeConverter<TuneStatus?, String> get status =>
       $composableBuilder(column: $table.status, builder: (column) => column);
+
+  GeneratedColumn<String> get key =>
+      $composableBuilder(column: $table.key, builder: (column) => column);
 
   GeneratedColumnWithTypeConverter<TuneType?, String> get type =>
       $composableBuilder(column: $table.type, builder: (column) => column);
@@ -1774,6 +1842,7 @@ class $$TunesTableTableManager
                 Value<String> name = const Value.absent(),
                 Value<String?> from = const Value.absent(),
                 Value<TuneStatus?> status = const Value.absent(),
+                Value<String?> key = const Value.absent(),
                 Value<TuneType?> type = const Value.absent(),
                 Value<String?> genre = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
@@ -1783,6 +1852,7 @@ class $$TunesTableTableManager
                 name: name,
                 from: from,
                 status: status,
+                key: key,
                 type: type,
                 genre: genre,
                 createdAt: createdAt,
@@ -1794,6 +1864,7 @@ class $$TunesTableTableManager
                 required String name,
                 Value<String?> from = const Value.absent(),
                 Value<TuneStatus?> status = const Value.absent(),
+                Value<String?> key = const Value.absent(),
                 Value<TuneType?> type = const Value.absent(),
                 Value<String?> genre = const Value.absent(),
                 required DateTime createdAt,
@@ -1803,6 +1874,7 @@ class $$TunesTableTableManager
                 name: name,
                 from: from,
                 status: status,
+                key: key,
                 type: type,
                 genre: genre,
                 createdAt: createdAt,
