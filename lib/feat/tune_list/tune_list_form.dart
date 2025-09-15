@@ -1,6 +1,7 @@
 import 'package:drift/drift.dart' as drift;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:tune_catcher/feat/tune_list/tune_list_autocomplete.dart';
 import 'package:tune_catcher/model/database.dart';
 import 'package:tune_catcher/model/database_provider.dart';
 import 'package:tune_catcher/model/tables/tunes.dart';
@@ -22,54 +23,61 @@ class _TuneFormState extends ConsumerState<TuneFormWidget> {
   String? _from;
   String? _key;
 
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _keyController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Form(
       key: _formKey,
       child: Column(
         children: [
-          TextFormField(
-            decoration: const InputDecoration(hintText: "Tune name?"),
-            onSaved: (newValue) {
-              if (newValue != null) _tuneName = newValue;
-            },
-            validator: (String? value) {
-              if (value == null || value == "") {
-                return 'Please provide a tune name';
-              }
-              return null;
+          TuneNameAutoComplete(
+            controller: _nameController,
+            onTuneSelected: (tune) {
+              setState(() {
+                _nameController.text = tune.name.value;
+
+                // Our parsing doesn't allow null values
+                _keyController.text = tune.key.value!;
+
+                _tuneType = tune.type.value;
+              });
             },
           ),
           TextFormField(
-            decoration: const InputDecoration(hintText: "From whom/where?"),
-            onSaved: (newValue) {
-              if (newValue != null) _from = newValue;
+            decoration: const InputDecoration(labelText: "From whom/where?"),
+            onSaved: (value) {
+              if (value != null) _from = value;
             },
             validator: (String? value) => null,
           ),
           TextFormField(
-            decoration: const InputDecoration(hintText: "Key"),
-            onSaved: (newValue) {
-              if (newValue != null) _key = newValue;
+            controller: _keyController,
+            decoration: const InputDecoration(labelText: "Key"),
+            onSaved: (value) {
+              if (value != null) _key = value;
             },
             validator: (String? value) => null,
           ),
           DropdownButtonFormField(
+            value: _tuneType, // Possibly set by the autocomplete feature
             items: [
               for (final TuneType v in TuneType.values)
                 DropdownMenuItem<TuneType>(value: v, child: Text(v.name)),
             ],
-            onChanged: (changedTuneType) {
-              _tuneType = changedTuneType;
+            onChanged: (value) {
+              _tuneType = value;
             },
-            onSaved: (newValue) {
+            onSaved: (value) {
               if (_tuneType != null) {
-                _tuneType = newValue;
+                _tuneType = value;
               }
             },
             validator: (value) => null,
           ),
           DropdownButtonFormField(
+            value: _status,
             items: [
               for (final TuneStatus v in TuneStatus.values)
                 DropdownMenuItem<TuneStatus>(value: v, child: Text(v.name)),
