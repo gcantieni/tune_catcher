@@ -30,9 +30,9 @@ rm "$HOME/Library/Containers/com.example.tuneCatcher/Data/Library/Application Su
 
 ## Goals
 
-- [ ] Tune List
-  - [ ] store tunes
-  - [ ] fetch data about tunes from tune repositories (names, ABC of different versions, key, type, etc.)
+- [x] Tune List
+  - [x] store tunes
+  - [-] fetch data about tunes from tune repositories (names, ABC of different versions, key, type, etc.)
   - [ ] provide practicing assistance for committing tunes to memory
   - [ ] associate the tune entries with sections of recordings
 - [ ] Set lists
@@ -85,7 +85,7 @@ Presentation layer
 
 ### Architectural layout
 
-By separating the business logic from the user interface, we can prevent direct code dependence of business logic on UI elements. The ViewModel presents a programming interface for separaring the data manipulation and modification concerns from UI elements that are rendered, interacted with, and updated.
+By separating the business logic from the user interface, we can prevent direct code dependence of business logic on UI elements. The ViewModel presents a programming interface for separating the data manipulation and modification concerns from UI elements that are rendered, interacted with, and updated.
 
 By separating the business logic from the data contained in the model itself, we simplify the code that represents the data to just CRUD operations on the data we manage.
 
