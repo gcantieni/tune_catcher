@@ -436,6 +436,24 @@ class $TunesTable extends Tunes with TableInfo<$TunesTable, Tune> {
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _abcMeta = const VerificationMeta('abc');
+  @override
+  late final GeneratedColumn<String> abc = GeneratedColumn<String>(
+    'abc',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _tsIdMeta = const VerificationMeta('tsId');
+  @override
+  late final GeneratedColumn<int> tsId = GeneratedColumn<int>(
+    'ts_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _fromMeta = const VerificationMeta('from');
   @override
   late final GeneratedColumn<String> from = GeneratedColumn<String>(
@@ -507,6 +525,8 @@ class $TunesTable extends Tunes with TableInfo<$TunesTable, Tune> {
   List<GeneratedColumn> get $columns => [
     id,
     name,
+    abc,
+    tsId,
     from,
     status,
     key,
@@ -537,6 +557,18 @@ class $TunesTable extends Tunes with TableInfo<$TunesTable, Tune> {
       );
     } else if (isInserting) {
       context.missing(_nameMeta);
+    }
+    if (data.containsKey('abc')) {
+      context.handle(
+        _abcMeta,
+        abc.isAcceptableOrUnknown(data['abc']!, _abcMeta),
+      );
+    }
+    if (data.containsKey('ts_id')) {
+      context.handle(
+        _tsIdMeta,
+        tsId.isAcceptableOrUnknown(data['ts_id']!, _tsIdMeta),
+      );
     }
     if (data.containsKey('from')) {
       context.handle(
@@ -587,6 +619,14 @@ class $TunesTable extends Tunes with TableInfo<$TunesTable, Tune> {
         DriftSqlType.string,
         data['${effectivePrefix}name'],
       )!,
+      abc: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}abc'],
+      ),
+      tsId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}ts_id'],
+      ),
       from: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}from'],
@@ -640,6 +680,8 @@ class $TunesTable extends Tunes with TableInfo<$TunesTable, Tune> {
 class Tune extends DataClass implements Insertable<Tune> {
   final int id;
   final String name;
+  final String? abc;
+  final int? tsId;
   final String? from;
   final TuneStatus? status;
   final String? key;
@@ -650,6 +692,8 @@ class Tune extends DataClass implements Insertable<Tune> {
   const Tune({
     required this.id,
     required this.name,
+    this.abc,
+    this.tsId,
     this.from,
     this.status,
     this.key,
@@ -663,6 +707,12 @@ class Tune extends DataClass implements Insertable<Tune> {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
     map['name'] = Variable<String>(name);
+    if (!nullToAbsent || abc != null) {
+      map['abc'] = Variable<String>(abc);
+    }
+    if (!nullToAbsent || tsId != null) {
+      map['ts_id'] = Variable<int>(tsId);
+    }
     if (!nullToAbsent || from != null) {
       map['from'] = Variable<String>(from);
     }
@@ -691,6 +741,8 @@ class Tune extends DataClass implements Insertable<Tune> {
     return TunesCompanion(
       id: Value(id),
       name: Value(name),
+      abc: abc == null && nullToAbsent ? const Value.absent() : Value(abc),
+      tsId: tsId == null && nullToAbsent ? const Value.absent() : Value(tsId),
       from: from == null && nullToAbsent ? const Value.absent() : Value(from),
       status: status == null && nullToAbsent
           ? const Value.absent()
@@ -715,6 +767,8 @@ class Tune extends DataClass implements Insertable<Tune> {
     return Tune(
       id: serializer.fromJson<int>(json['id']),
       name: serializer.fromJson<String>(json['name']),
+      abc: serializer.fromJson<String?>(json['abc']),
+      tsId: serializer.fromJson<int?>(json['tsId']),
       from: serializer.fromJson<String?>(json['from']),
       status: $TunesTable.$converterstatusn.fromJson(
         serializer.fromJson<String?>(json['status']),
@@ -734,6 +788,8 @@ class Tune extends DataClass implements Insertable<Tune> {
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
       'name': serializer.toJson<String>(name),
+      'abc': serializer.toJson<String?>(abc),
+      'tsId': serializer.toJson<int?>(tsId),
       'from': serializer.toJson<String?>(from),
       'status': serializer.toJson<String?>(
         $TunesTable.$converterstatusn.toJson(status),
@@ -751,6 +807,8 @@ class Tune extends DataClass implements Insertable<Tune> {
   Tune copyWith({
     int? id,
     String? name,
+    Value<String?> abc = const Value.absent(),
+    Value<int?> tsId = const Value.absent(),
     Value<String?> from = const Value.absent(),
     Value<TuneStatus?> status = const Value.absent(),
     Value<String?> key = const Value.absent(),
@@ -761,6 +819,8 @@ class Tune extends DataClass implements Insertable<Tune> {
   }) => Tune(
     id: id ?? this.id,
     name: name ?? this.name,
+    abc: abc.present ? abc.value : this.abc,
+    tsId: tsId.present ? tsId.value : this.tsId,
     from: from.present ? from.value : this.from,
     status: status.present ? status.value : this.status,
     key: key.present ? key.value : this.key,
@@ -773,6 +833,8 @@ class Tune extends DataClass implements Insertable<Tune> {
     return Tune(
       id: data.id.present ? data.id.value : this.id,
       name: data.name.present ? data.name.value : this.name,
+      abc: data.abc.present ? data.abc.value : this.abc,
+      tsId: data.tsId.present ? data.tsId.value : this.tsId,
       from: data.from.present ? data.from.value : this.from,
       status: data.status.present ? data.status.value : this.status,
       key: data.key.present ? data.key.value : this.key,
@@ -790,6 +852,8 @@ class Tune extends DataClass implements Insertable<Tune> {
     return (StringBuffer('Tune(')
           ..write('id: $id, ')
           ..write('name: $name, ')
+          ..write('abc: $abc, ')
+          ..write('tsId: $tsId, ')
           ..write('from: $from, ')
           ..write('status: $status, ')
           ..write('key: $key, ')
@@ -805,6 +869,8 @@ class Tune extends DataClass implements Insertable<Tune> {
   int get hashCode => Object.hash(
     id,
     name,
+    abc,
+    tsId,
     from,
     status,
     key,
@@ -819,6 +885,8 @@ class Tune extends DataClass implements Insertable<Tune> {
       (other is Tune &&
           other.id == this.id &&
           other.name == this.name &&
+          other.abc == this.abc &&
+          other.tsId == this.tsId &&
           other.from == this.from &&
           other.status == this.status &&
           other.key == this.key &&
@@ -831,6 +899,8 @@ class Tune extends DataClass implements Insertable<Tune> {
 class TunesCompanion extends UpdateCompanion<Tune> {
   final Value<int> id;
   final Value<String> name;
+  final Value<String?> abc;
+  final Value<int?> tsId;
   final Value<String?> from;
   final Value<TuneStatus?> status;
   final Value<String?> key;
@@ -841,6 +911,8 @@ class TunesCompanion extends UpdateCompanion<Tune> {
   const TunesCompanion({
     this.id = const Value.absent(),
     this.name = const Value.absent(),
+    this.abc = const Value.absent(),
+    this.tsId = const Value.absent(),
     this.from = const Value.absent(),
     this.status = const Value.absent(),
     this.key = const Value.absent(),
@@ -852,6 +924,8 @@ class TunesCompanion extends UpdateCompanion<Tune> {
   TunesCompanion.insert({
     this.id = const Value.absent(),
     required String name,
+    this.abc = const Value.absent(),
+    this.tsId = const Value.absent(),
     this.from = const Value.absent(),
     this.status = const Value.absent(),
     this.key = const Value.absent(),
@@ -864,6 +938,8 @@ class TunesCompanion extends UpdateCompanion<Tune> {
   static Insertable<Tune> custom({
     Expression<int>? id,
     Expression<String>? name,
+    Expression<String>? abc,
+    Expression<int>? tsId,
     Expression<String>? from,
     Expression<String>? status,
     Expression<String>? key,
@@ -875,6 +951,8 @@ class TunesCompanion extends UpdateCompanion<Tune> {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (name != null) 'name': name,
+      if (abc != null) 'abc': abc,
+      if (tsId != null) 'ts_id': tsId,
       if (from != null) 'from': from,
       if (status != null) 'status': status,
       if (key != null) 'key': key,
@@ -888,6 +966,8 @@ class TunesCompanion extends UpdateCompanion<Tune> {
   TunesCompanion copyWith({
     Value<int>? id,
     Value<String>? name,
+    Value<String?>? abc,
+    Value<int?>? tsId,
     Value<String?>? from,
     Value<TuneStatus?>? status,
     Value<String?>? key,
@@ -899,6 +979,8 @@ class TunesCompanion extends UpdateCompanion<Tune> {
     return TunesCompanion(
       id: id ?? this.id,
       name: name ?? this.name,
+      abc: abc ?? this.abc,
+      tsId: tsId ?? this.tsId,
       from: from ?? this.from,
       status: status ?? this.status,
       key: key ?? this.key,
@@ -917,6 +999,12 @@ class TunesCompanion extends UpdateCompanion<Tune> {
     }
     if (name.present) {
       map['name'] = Variable<String>(name.value);
+    }
+    if (abc.present) {
+      map['abc'] = Variable<String>(abc.value);
+    }
+    if (tsId.present) {
+      map['ts_id'] = Variable<int>(tsId.value);
     }
     if (from.present) {
       map['from'] = Variable<String>(from.value);
@@ -951,6 +1039,8 @@ class TunesCompanion extends UpdateCompanion<Tune> {
     return (StringBuffer('TunesCompanion(')
           ..write('id: $id, ')
           ..write('name: $name, ')
+          ..write('abc: $abc, ')
+          ..write('tsId: $tsId, ')
           ..write('from: $from, ')
           ..write('status: $status, ')
           ..write('key: $key, ')
@@ -1639,6 +1729,8 @@ typedef $$TunesTableCreateCompanionBuilder =
     TunesCompanion Function({
       Value<int> id,
       required String name,
+      Value<String?> abc,
+      Value<int?> tsId,
       Value<String?> from,
       Value<TuneStatus?> status,
       Value<String?> key,
@@ -1651,6 +1743,8 @@ typedef $$TunesTableUpdateCompanionBuilder =
     TunesCompanion Function({
       Value<int> id,
       Value<String> name,
+      Value<String?> abc,
+      Value<int?> tsId,
       Value<String?> from,
       Value<TuneStatus?> status,
       Value<String?> key,
@@ -1675,6 +1769,16 @@ class $$TunesTableFilterComposer extends Composer<_$AppDatabase, $TunesTable> {
 
   ColumnFilters<String> get name => $composableBuilder(
     column: $table.name,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get abc => $composableBuilder(
+    column: $table.abc,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get tsId => $composableBuilder(
+    column: $table.tsId,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -1735,6 +1839,16 @@ class $$TunesTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get abc => $composableBuilder(
+    column: $table.abc,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get tsId => $composableBuilder(
+    column: $table.tsId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get from => $composableBuilder(
     column: $table.from,
     builder: (column) => ColumnOrderings(column),
@@ -1785,6 +1899,12 @@ class $$TunesTableAnnotationComposer
 
   GeneratedColumn<String> get name =>
       $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<String> get abc =>
+      $composableBuilder(column: $table.abc, builder: (column) => column);
+
+  GeneratedColumn<int> get tsId =>
+      $composableBuilder(column: $table.tsId, builder: (column) => column);
 
   GeneratedColumn<String> get from =>
       $composableBuilder(column: $table.from, builder: (column) => column);
@@ -1840,6 +1960,8 @@ class $$TunesTableTableManager
               ({
                 Value<int> id = const Value.absent(),
                 Value<String> name = const Value.absent(),
+                Value<String?> abc = const Value.absent(),
+                Value<int?> tsId = const Value.absent(),
                 Value<String?> from = const Value.absent(),
                 Value<TuneStatus?> status = const Value.absent(),
                 Value<String?> key = const Value.absent(),
@@ -1850,6 +1972,8 @@ class $$TunesTableTableManager
               }) => TunesCompanion(
                 id: id,
                 name: name,
+                abc: abc,
+                tsId: tsId,
                 from: from,
                 status: status,
                 key: key,
@@ -1862,6 +1986,8 @@ class $$TunesTableTableManager
               ({
                 Value<int> id = const Value.absent(),
                 required String name,
+                Value<String?> abc = const Value.absent(),
+                Value<int?> tsId = const Value.absent(),
                 Value<String?> from = const Value.absent(),
                 Value<TuneStatus?> status = const Value.absent(),
                 Value<String?> key = const Value.absent(),
@@ -1872,6 +1998,8 @@ class $$TunesTableTableManager
               }) => TunesCompanion.insert(
                 id: id,
                 name: name,
+                abc: abc,
+                tsId: tsId,
                 from: from,
                 status: status,
                 key: key,
