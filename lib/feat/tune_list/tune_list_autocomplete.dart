@@ -7,7 +7,8 @@ import 'package:tune_catcher/remote_tune_sources/thesession_tune_source.dart';
 
 class TuneMatcher {
   final List<TunesCompanion> tuneData;
-  TuneMatcher(this.tuneData);
+  final Duration timeout;
+  TuneMatcher(this.tuneData, this.timeout);
 
   Timer? _debounceTimer;
 
@@ -18,7 +19,7 @@ class TuneMatcher {
     final completer = Completer<Iterable<TunesCompanion>>();
     _debounceTimer?.cancel();
 
-    _debounceTimer = Timer(const Duration(milliseconds: 200), () {
+    _debounceTimer = Timer(timeout, () {
       completer.complete(
         tuneData.where(
           (element) =>
@@ -31,51 +32,75 @@ class TuneMatcher {
   }
 }
 
-class TuneNameAutoComplete extends ConsumerWidget {
+class TuneNameAutoComplete extends StatefulWidget {
   final void Function(TunesCompanion) onTuneSelected;
-  final TextEditingController controller;
+  final Duration timeout;
 
   const TuneNameAutoComplete({
+    super.key,
     required this.onTuneSelected,
-    required this.controller,
+    this.timeout = const Duration(milliseconds: 200),
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final tuneData = ref.watch(thesessionTuneProvider);
+  State<TuneNameAutoComplete> createState() => TuneNameAutoCompleteState();
+}
 
-    return tuneData.when(
-      loading: () => TextFormField(
-        controller: controller,
-        decoration: const InputDecoration(labelText: 'Tune name'),
-        validator: (value) =>
-            (value == null || value.isEmpty) ? 'Required' : null,
-      ),
-      error: (err, stack) => Text('Error: $err'),
-      data: (tuneData) {
-        final matcher = TuneMatcher(tuneData);
+class TuneNameAutoCompleteState extends State<TuneNameAutoComplete> {
+  TextEditingController? _controller;
 
-        return Autocomplete<TunesCompanion>(
-          optionsBuilder: (TextEditingValue textEditingValue) async {
-            if (textEditingValue.text.isEmpty) {
-              return const Iterable<TunesCompanion>.empty();
-            }
+  void clearName() {
+    setState(() {
+      _controller?.clear();
+    });
+  }
 
-            return matcher.match(textEditingValue);
+  @override
+  Widget build(BuildContext context) {
+    return Consumer(
+      builder: (context, ref, child) {
+        final tuneData = ref.watch(thesessionTuneProvider);
+
+        return tuneData.when(
+          loading: () => TextFormField(
+            decoration: const InputDecoration(labelText: 'Tune name'),
+            validator: (value) =>
+                (value == null || value.isEmpty) ? 'Required' : null,
+          ),
+          error: (err, stack) => Text('Error: $err'),
+          data: (tuneData) {
+            final matcher = TuneMatcher(tuneData, widget.timeout);
+
+            return Autocomplete<TunesCompanion>(
+              optionsBuilder: (TextEditingValue textEditingValue) async {
+                if (textEditingValue.text.isEmpty) {
+                  return const Iterable<TunesCompanion>.empty();
+                }
+
+                return matcher.match(textEditingValue);
+              },
+              onSelected: (option) {
+                widget.onTuneSelected(option);
+              },
+              displayStringForOption: (option) => option.name.value,
+              fieldViewBuilder:
+                  (
+                    context,
+                    textEditingController,
+                    focusNode,
+                    onFieldSubmitted,
+                  ) {
+                    _controller ??= textEditingController;
+                    return TextFormField(
+                      controller: textEditingController,
+                      focusNode: focusNode,
+                      decoration: const InputDecoration(labelText: 'Tune name'),
+                      validator: (value) =>
+                          (value == null || value.isEmpty) ? 'Required' : null,
+                    );
+                  },
+            );
           },
-          onSelected: (option) {
-            onTuneSelected(option);
-          },
-          displayStringForOption: (option) => option.name.value,
-          fieldViewBuilder:
-              (context, textEditingController, focusNode, onFieldSubmitted) =>
-                  TextFormField(
-                    controller: textEditingController,
-                    focusNode: focusNode,
-                    decoration: const InputDecoration(labelText: 'Tune name'),
-                    validator: (value) =>
-                        (value == null || value.isEmpty) ? 'Required' : null,
-                  ),
         );
       },
     );

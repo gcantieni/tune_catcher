@@ -19,12 +19,12 @@ class _TuneFormState extends ConsumerState<TuneFormWidget> {
   final _formKey = GlobalKey<FormState>();
   TuneType? _tuneType;
   TuneStatus? _status;
-  String? _tuneName;
   String? _from;
-  String? _key;
+  String? _name;
 
-  final TextEditingController _nameController = TextEditingController();
   final TextEditingController _keyController = TextEditingController();
+
+  final _autoCompleteKey = GlobalKey<TuneNameAutoCompleteState>();
 
   @override
   Widget build(BuildContext context) {
@@ -33,67 +33,90 @@ class _TuneFormState extends ConsumerState<TuneFormWidget> {
       child: Column(
         children: [
           TuneNameAutoComplete(
-            controller: _nameController,
+            key: _autoCompleteKey,
             onTuneSelected: (tune) {
               setState(() {
-                _nameController.text = tune.name.value;
-
-                // Our parsing doesn't allow null values
+                _name = tune.name.value;
                 _keyController.text = tune.key.value!;
-
                 _tuneType = tune.type.value;
+                _status = TuneStatus.todo;
               });
             },
           ),
-          TextFormField(
-            decoration: const InputDecoration(labelText: "From whom/where?"),
-            onSaved: (value) {
-              if (value != null) _from = value;
-            },
-            validator: (String? value) => null,
-          ),
-          TextFormField(
-            controller: _keyController,
-            decoration: const InputDecoration(labelText: "Key"),
-            onSaved: (value) {
-              if (value != null) _key = value;
-            },
-            validator: (String? value) => null,
-          ),
-          DropdownButtonFormField(
-            value: _tuneType, // Possibly set by the autocomplete feature
-            items: [
-              for (final TuneType v in TuneType.values)
-                DropdownMenuItem<TuneType>(value: v, child: Text(v.name)),
+          Row(
+            children: [
+              SizedBox(
+                width: 100,
+                child: TextFormField(
+                  controller: _keyController,
+                  decoration: const InputDecoration(labelText: "Key"),
+                  validator: (String? value) => null,
+                ),
+              ),
+              const SizedBox(width: 20),
+              SizedBox(
+                width: 110,
+                child: DropdownButtonFormField(
+                  value: _tuneType, // Possibly set by the autocomplete feature
+                  decoration: const InputDecoration(labelText: "Type"),
+                  items: [
+                    for (final TuneType v in TuneType.values)
+                      DropdownMenuItem<TuneType>(value: v, child: Text(v.name)),
+                  ],
+                  onChanged: (value) {
+                    _tuneType = value;
+                  },
+                  onSaved: (value) {
+                    if (_tuneType != null) {
+                      _tuneType = value;
+                    }
+                  },
+                  validator: (value) => null,
+                ),
+              ),
+              const SizedBox(width: 20),
+              SizedBox(
+                width: 110,
+                child: DropdownButtonFormField(
+                  value: _status,
+                  decoration: const InputDecoration(labelText: "Status"),
+                  items: [
+                    for (final TuneStatus v in TuneStatus.values)
+                      DropdownMenuItem<TuneStatus>(
+                        value: v,
+                        child: Text(v.name),
+                      ),
+                  ],
+                  onChanged: (changedTuneType) {
+                    _status = changedTuneType;
+                  },
+                  onSaved: (newValue) {
+                    if (_status != null) {
+                      _status = newValue;
+                    }
+                  },
+                  validator: (value) => null,
+                ),
+              ),
+
+              const SizedBox(width: 20),
+              SizedBox(
+                width: 150,
+                child: TextFormField(
+                  decoration: const InputDecoration(
+                    labelText: "From whom/where?",
+                  ),
+                  onSaved: (value) {
+                    if (value != null) _from = value;
+                  },
+                  validator: (String? value) => null,
+                ),
+              ),
             ],
-            onChanged: (value) {
-              _tuneType = value;
-            },
-            onSaved: (value) {
-              if (_tuneType != null) {
-                _tuneType = value;
-              }
-            },
-            validator: (value) => null,
-          ),
-          DropdownButtonFormField(
-            value: _status,
-            items: [
-              for (final TuneStatus v in TuneStatus.values)
-                DropdownMenuItem<TuneStatus>(value: v, child: Text(v.name)),
-            ],
-            onChanged: (changedTuneType) {
-              _status = changedTuneType;
-            },
-            onSaved: (newValue) {
-              if (_status != null) {
-                _status = newValue;
-              }
-            },
-            validator: (value) => null,
           ),
 
           const SizedBox(height: 10),
+
           ElevatedButton(
             onPressed: () {
               if (_formKey.currentState!.validate()) {
@@ -104,22 +127,27 @@ class _TuneFormState extends ConsumerState<TuneFormWidget> {
                     .tuneDao
                     .insertTune(
                       TunesCompanion.insert(
-                        name: _tuneName!,
+                        name: _name!,
                         createdAt: DateTime.now(),
                         status: drift.Value(_status),
-                        key: _key == null
-                            ? const drift.Value.absent()
-                            : drift.Value(_key),
+                        key: drift.Value(_keyController.text),
                         type: drift.Value(_tuneType),
                         from: drift.Value(_from),
                       ),
                     );
 
-                _formKey.currentState!.reset();
-
                 ScaffoldMessenger.of(
                   context,
-                ).showSnackBar(SnackBar(content: Text('"$_tuneName" saved!')));
+                ).showSnackBar(SnackBar(content: Text('"$_name saved!')));
+
+                setState(() {
+                  _formKey.currentState!.reset();
+                  _autoCompleteKey.currentState?.clearName();
+                  _keyController.clear();
+                  _tuneType = null;
+                  _status = null;
+                  _name = null;
+                });
               }
             },
             child: const Text('Submit tune'),
