@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:http/http.dart' as http;
+
 import 'package:html/parser.dart' as html;
-import 'package:html/dom.dart';
+import 'package:http/http.dart' as http;
 
 Future<void> main() async {
   final results = <Map<String, dynamic>>[];
