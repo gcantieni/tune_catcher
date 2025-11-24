@@ -3,14 +3,14 @@
 // Example:
 [
   {
-    "label": "Run flutter: macOS",
-    "command": "flutter run -d macOS",
+    "label": "Flutter: Doctor",
+    "command": "flutter doctor",
     "allow_concurrent_runs": false,
     "use_new_terminal": false
   },
   {
-    "label": "Run flutter: web",
-    "command": "flutter run -d web",
+    "label": "Flutter: run macOS",
+    "command": "flutter run -d macOS",
     "allow_concurrent_runs": false,
     "use_new_terminal": false
   }
