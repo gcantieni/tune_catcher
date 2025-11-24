@@ -3,8 +3,20 @@
 // Example:
 [
   {
+    "label": "Flutter: Install dependencies",
+    "command": "flutter pub get",
+    "allow_concurrent_runs": false,
+    "use_new_terminal": false
+  },
+  {
     "label": "Flutter: Doctor",
     "command": "flutter doctor",
+    "allow_concurrent_runs": false,
+    "use_new_terminal": false
+  },
+  {
+    "label": "Flutter: Run tests",
+    "command": "flutter test",
     "allow_concurrent_runs": false,
     "use_new_terminal": false
   },
