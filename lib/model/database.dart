@@ -2,12 +2,11 @@
 import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
 import 'package:path_provider/path_provider.dart';
-
 // local references
-import 'package:tune_catcher/model/tables/tunes.dart';
 import 'package:tune_catcher/model/accessors/tune_dao.dart';
 import 'package:tune_catcher/model/tables/recordings.dart';
 import 'package:tune_catcher/model/tables/tune_recording.dart';
+import 'package:tune_catcher/model/tables/tunes.dart';
 
 // generated code
 part 'database.g.dart';

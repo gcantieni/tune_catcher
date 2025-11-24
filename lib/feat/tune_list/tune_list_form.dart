@@ -1,7 +1,9 @@
 import 'package:drift/drift.dart' as drift;
+import 'package:drift/native.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tune_catcher/feat/tune_list/tune_list_autocomplete.dart';
+import 'package:tune_catcher/model/accessors/tune_dao.dart';
 import 'package:tune_catcher/model/database.dart';
 import 'package:tune_catcher/model/database_provider.dart';
 import 'package:tune_catcher/model/tables/tunes.dart';
@@ -43,7 +45,7 @@ class _TuneFormState extends ConsumerState<TuneFormWidget> {
               });
             },
           ),
-          Row(
+          Wrap(
             children: [
               SizedBox(
                 width: 100,
@@ -55,9 +57,9 @@ class _TuneFormState extends ConsumerState<TuneFormWidget> {
               ),
               const SizedBox(width: 20),
               SizedBox(
-                width: 110,
+                width: 120,
                 child: DropdownButtonFormField(
-                  value: _tuneType, // Possibly set by the autocomplete feature
+                  initialValue: _tuneType, // Possibly set by the autocomplete feature
                   decoration: const InputDecoration(labelText: "Type"),
                   items: [
                     for (final TuneType v in TuneType.values)
@@ -78,7 +80,7 @@ class _TuneFormState extends ConsumerState<TuneFormWidget> {
               SizedBox(
                 width: 110,
                 child: DropdownButtonFormField(
-                  value: _status,
+                  initialValue: _status,
                   decoration: const InputDecoration(labelText: "Status"),
                   items: [
                     for (final TuneStatus v in TuneStatus.values)

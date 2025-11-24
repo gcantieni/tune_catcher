@@ -1,8 +1,11 @@
+import 'package:drift/drift.dart' as drift;
+import 'package:drift/native.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tune_catcher/feat/tune_list/tune_list_form.dart';
 import 'package:tune_catcher/feat/tune_list/tune_list_item.dart';
 import 'package:tune_catcher/model/database.dart';
+import 'package:tune_catcher/model/database_provider.dart';
 import 'package:tune_catcher/model/providers/tunes_provider.dart';
 
 class TuneListPage extends StatelessWidget {
@@ -28,6 +31,7 @@ class TuneListWidget extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     const fontSize = 19.0;
+    // https://pub.dev/documentation/riverpod/latest/riverpod/StreamProvider-class.html
     final AsyncValue<List<Tune>> allTunesAsync = ref.watch(allTunesProvider);
 
     return allTunesAsync.when(
