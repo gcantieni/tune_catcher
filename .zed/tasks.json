@@ -25,5 +25,11 @@
     "command": "flutter run -d macOS",
     "allow_concurrent_runs": false,
     "use_new_terminal": false
+  },
+  {
+    "label": "Flutter: Watch and Generate DB Files",
+    "command": "dart run build_runner watch",
+    "allow_concurrent_runs": false,
+    "use_new_terminal": false
   }
 ]
