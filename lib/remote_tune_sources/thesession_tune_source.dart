@@ -22,6 +22,7 @@ List<TunesCompanion> parseTunes(List<dynamic> data) {
     return TunesCompanion.insert(
       name: entry['name'] as String,
       createdAt: DateTime.now(),
+      from: const drift.Value(null),
       tsId: drift.Value(entry['id'] as int),
       abc: drift.Value(entry['abc'] as String),
       key: drift.Value(entry['key'] as String),

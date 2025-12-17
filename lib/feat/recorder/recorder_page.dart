@@ -3,6 +3,6 @@ import 'package:flutter/material.dart';
 class RecorderPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Center(child: Text("Recorder Page"));
+    return const Center(child: Text("Recorder Page"));
   }
 }

@@ -1,0 +1,35 @@
+// Project tasks configuration. See https://zed.dev/docs/tasks for documentation.
+//
+// Example:
+[
+  {
+    "label": "Flutter: Install dependencies",
+    "command": "flutter pub get",
+    "allow_concurrent_runs": false,
+    "use_new_terminal": false
+  },
+  {
+    "label": "Flutter: Doctor",
+    "command": "flutter doctor",
+    "allow_concurrent_runs": false,
+    "use_new_terminal": false
+  },
+  {
+    "label": "Flutter: Run tests",
+    "command": "flutter test",
+    "allow_concurrent_runs": false,
+    "use_new_terminal": false
+  },
+  {
+    "label": "Flutter: run macOS",
+    "command": "flutter run -d macOS",
+    "allow_concurrent_runs": false,
+    "use_new_terminal": false
+  },
+  {
+    "label": "Flutter: Watch and Generate DB Files",
+    "command": "dart run build_runner watch",
+    "allow_concurrent_runs": false,
+    "use_new_terminal": false
+  }
+]
