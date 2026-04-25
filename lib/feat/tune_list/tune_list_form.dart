@@ -7,7 +7,9 @@ import 'package:tune_catcher/model/database_provider.dart';
 import 'package:tune_catcher/model/tables/tunes.dart';
 
 class TuneFormWidget extends ConsumerStatefulWidget {
-  const TuneFormWidget({super.key});
+  final VoidCallback? onSubmitted;
+
+  const TuneFormWidget({super.key, this.onSubmitted});
 
   @override
   _TuneFormState createState() {
@@ -122,12 +124,16 @@ class _TuneFormState extends ConsumerState<TuneFormWidget> {
               if (_formKey.currentState!.validate()) {
                 _formKey.currentState!.save();
 
+                final name =
+                    _name ?? _autoCompleteKey.currentState?.currentName;
+                if (name == null || name.isEmpty) return;
+
                 ref
                     .read(databaseProvider)
                     .tuneDao
                     .insertTune(
                       TunesCompanion.insert(
-                        name: _name!,
+                        name: name,
                         createdAt: DateTime.now(),
                         status: drift.Value(_status),
                         key: drift.Value(_keyController.text),
@@ -138,7 +144,7 @@ class _TuneFormState extends ConsumerState<TuneFormWidget> {
 
                 ScaffoldMessenger.of(
                   context,
-                ).showSnackBar(SnackBar(content: Text('"$_name saved!')));
+                ).showSnackBar(SnackBar(content: Text('"$name saved!')));
 
                 setState(() {
                   _formKey.currentState!.reset();
@@ -148,6 +154,8 @@ class _TuneFormState extends ConsumerState<TuneFormWidget> {
                   _status = null;
                   _name = null;
                 });
+
+                widget.onSubmitted?.call();
               }
             },
             child: const Text('Submit tune'),

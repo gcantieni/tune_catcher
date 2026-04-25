@@ -55,6 +55,8 @@ class TuneNameAutoCompleteState extends State<TuneNameAutoComplete> {
     });
   }
 
+  String? get currentName => _controller?.text;
+
   @override
   Widget build(BuildContext context) {
     return Consumer(

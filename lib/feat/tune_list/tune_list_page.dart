@@ -12,12 +12,44 @@ class TuneListPage extends StatelessWidget {
       appBar: AppBar(title: const Text('Tune list')),
       body: Padding(
         padding: const EdgeInsets.all(16),
-        child: ListView(
-          children: [
-            const TuneFormWidget(),
-            const SizedBox(height: 10),
-            TuneListWidget(),
-          ],
+        child: ListView(children: [TuneListWidget()]),
+      ),
+      floatingActionButton: FloatingActionButton(
+        tooltip: 'Add tune',
+        onPressed: () => _showAddTuneDialog(context),
+        child: const Icon(Icons.add),
+      ),
+    );
+  }
+
+  void _showAddTuneDialog(BuildContext context) {
+    showDialog<void>(
+      context: context,
+      builder: (dialogContext) => Dialog(
+        child: SizedBox(
+          width: 600,
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Add tune',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  TuneFormWidget(
+                    onSubmitted: () => Navigator.of(dialogContext).pop(),
+                  ),
+                ],
+              ),
+            ),
+          ),
         ),
       ),
     );
