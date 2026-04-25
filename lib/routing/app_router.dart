@@ -2,6 +2,7 @@ import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:tune_catcher/feat/recorder/recorder_page.dart';
+import 'package:tune_catcher/feat/recording_list/recording_detail_page.dart';
 import 'package:tune_catcher/feat/recording_list/recording_list_page.dart';
 import 'package:tune_catcher/feat/set_list/set_list_page.dart';
 import 'package:tune_catcher/feat/tune_list/tune_detail_page.dart';
@@ -70,6 +71,16 @@ final GoRouter router = GoRouter(
             path: '/recording_list',
             child: RecordingListPage(),
           ),
+          routes: [
+            GoRoute(
+              path: ':id',
+              name: 'recording_detail',
+              builder: (context, state) {
+                final id = int.parse(state.pathParameters['id']!);
+                return RecordingDetailPage(recordingId: id);
+              },
+            ),
+          ],
         ),
         GoRoute(
           path: '/recorder',

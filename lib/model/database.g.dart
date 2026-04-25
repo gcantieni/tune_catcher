@@ -1496,6 +1496,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $TunesTable tunes = $TunesTable(this);
   late final $TuneRecordingTable tuneRecording = $TuneRecordingTable(this);
   late final TuneDao tuneDao = TuneDao(this as AppDatabase);
+  late final RecordingDao recordingDao = RecordingDao(this as AppDatabase);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
