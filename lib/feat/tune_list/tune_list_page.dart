@@ -32,7 +32,7 @@ class TuneListWidget extends ConsumerWidget {
     final AsyncValue<List<Tune>> allTunesAsync = ref.watch(allTunesProvider);
 
     return allTunesAsync.when(
-      loading: () => const CircularProgressIndicator(),
+      loading: () => const Center(child: CircularProgressIndicator()),
       error: (err, stack) => Text('Error: $err'),
       data: (allTunes) => Column(
         mainAxisSize: MainAxisSize.min,
