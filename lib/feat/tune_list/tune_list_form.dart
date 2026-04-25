@@ -25,6 +25,7 @@ class _TuneFormState extends ConsumerState<TuneFormWidget> {
   String? _name;
 
   final TextEditingController _keyController = TextEditingController();
+  final TextEditingController _abcController = TextEditingController();
 
   final _autoCompleteKey = GlobalKey<TuneNameAutoCompleteState>();
 
@@ -40,6 +41,7 @@ class _TuneFormState extends ConsumerState<TuneFormWidget> {
               setState(() {
                 _name = tune.name.value;
                 _keyController.text = tune.key.value!;
+                _abcController.text = tune.abc.value ?? '';
                 _tuneType = tune.type.value;
                 _status = TuneStatus.todo;
               });
@@ -119,6 +121,19 @@ class _TuneFormState extends ConsumerState<TuneFormWidget> {
 
           const SizedBox(height: 10),
 
+          TextFormField(
+            controller: _abcController,
+            decoration: const InputDecoration(
+              labelText: 'ABC',
+              alignLabelWithHint: true,
+            ),
+            minLines: 3,
+            maxLines: 10,
+            style: const TextStyle(fontFamily: 'monospace'),
+          ),
+
+          const SizedBox(height: 10),
+
           ElevatedButton(
             onPressed: () {
               if (_formKey.currentState!.validate()) {
@@ -127,6 +142,8 @@ class _TuneFormState extends ConsumerState<TuneFormWidget> {
                 final name =
                     _name ?? _autoCompleteKey.currentState?.currentName;
                 if (name == null || name.isEmpty) return;
+
+                final abcText = _abcController.text.trim();
 
                 ref
                     .read(databaseProvider)
@@ -139,6 +156,7 @@ class _TuneFormState extends ConsumerState<TuneFormWidget> {
                         key: drift.Value(_keyController.text),
                         type: drift.Value(_tuneType),
                         from: drift.Value(_from),
+                        abc: drift.Value(abcText.isEmpty ? null : abcText),
                       ),
                     );
 
@@ -150,6 +168,7 @@ class _TuneFormState extends ConsumerState<TuneFormWidget> {
                   _formKey.currentState!.reset();
                   _autoCompleteKey.currentState?.clearName();
                   _keyController.clear();
+                  _abcController.clear();
                   _tuneType = null;
                   _status = null;
                   _name = null;
