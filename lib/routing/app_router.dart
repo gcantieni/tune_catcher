@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:tune_catcher/feat/recorder/recorder_page.dart';
 import 'package:tune_catcher/feat/recording_list/recording_list_page.dart';
 import 'package:tune_catcher/feat/set_list/set_list_page.dart';
+import 'package:tune_catcher/feat/tune_list/tune_detail_page.dart';
 import 'package:tune_catcher/feat/tune_list/tune_list_page.dart';
 import 'package:tune_catcher/routing/nav_scaffold.dart';
 
@@ -51,6 +52,16 @@ final GoRouter router = GoRouter(
           name: 'tune_list',
           pageBuilder: (context, state) =>
               _directionalPage(path: '/tune_list', child: TuneListPage()),
+          routes: [
+            GoRoute(
+              path: ':id',
+              name: 'tune_detail',
+              builder: (context, state) {
+                final id = int.parse(state.pathParameters['id']!);
+                return TuneDetailPage(tuneId: id);
+              },
+            ),
+          ],
         ),
         GoRoute(
           path: '/recording_list',

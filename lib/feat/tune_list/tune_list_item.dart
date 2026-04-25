@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:tune_catcher/model/database.dart';
 import 'package:tune_catcher/model/tables/tunes.dart';
 
@@ -53,6 +54,7 @@ class TuneListItem extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           ListTile(
+            onTap: () => context.push('/tune_list/${tune.id}'),
             title: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
