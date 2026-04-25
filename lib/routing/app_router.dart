@@ -1,3 +1,4 @@
+import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:tune_catcher/feat/recorder/recorder_page.dart';
@@ -5,6 +6,31 @@ import 'package:tune_catcher/feat/recording_list/recording_list_page.dart';
 import 'package:tune_catcher/feat/set_list/set_list_page.dart';
 import 'package:tune_catcher/feat/tune_list/tune_list_page.dart';
 import 'package:tune_catcher/routing/nav_scaffold.dart';
+
+const _navOrder = ['/set_list', '/tune_list', '/recording_list', '/recorder'];
+int _previousNavIndex = 3; // recorder is the initial location
+
+CustomTransitionPage<void> _directionalPage({
+  required String path,
+  required Widget child,
+}) {
+  final newIndex = _navOrder.indexOf(path);
+  final fromRight = newIndex >= _previousNavIndex;
+  _previousNavIndex = newIndex;
+  final begin = Offset(fromRight ? 1 : -1, 0);
+  return CustomTransitionPage<void>(
+    key: ValueKey(path),
+    child: child,
+    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+      return SlideTransition(
+        position: Tween<Offset>(begin: begin, end: Offset.zero).animate(
+          CurvedAnimation(parent: animation, curve: Curves.easeOut),
+        ),
+        child: child,
+      );
+    },
+  );
+}
 
 final GoRouter router = GoRouter(
   initialLocation: '/recorder', // recording should be the app's "quick draw"
@@ -17,22 +43,28 @@ final GoRouter router = GoRouter(
         GoRoute(
           path: '/set_list',
           name: 'set_list',
-          builder: (context, state) => SetListPage(),
+          pageBuilder: (context, state) =>
+              _directionalPage(path: '/set_list', child: SetListPage()),
         ),
         GoRoute(
           path: '/tune_list',
           name: 'tune_list',
-          builder: (context, state) => TuneListPage(),
+          pageBuilder: (context, state) =>
+              _directionalPage(path: '/tune_list', child: TuneListPage()),
         ),
         GoRoute(
           path: '/recording_list',
           name: 'recording_list',
-          builder: (context, state) => RecordingListPage(),
+          pageBuilder: (context, state) => _directionalPage(
+            path: '/recording_list',
+            child: RecordingListPage(),
+          ),
         ),
         GoRoute(
           path: '/recorder',
           name: 'recorder',
-          builder: (context, state) => RecorderPage(),
+          pageBuilder: (context, state) =>
+              _directionalPage(path: '/recorder', child: RecorderPage()),
         ),
       ],
     ),
