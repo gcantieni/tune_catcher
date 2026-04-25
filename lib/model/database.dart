@@ -4,6 +4,7 @@ import 'package:drift_flutter/drift_flutter.dart';
 import 'package:path_provider/path_provider.dart';
 // local references
 import 'package:tune_catcher/model/accessors/tune_dao.dart';
+import 'package:tune_catcher/model/database.steps.dart';
 import 'package:tune_catcher/model/tables/recordings.dart';
 import 'package:tune_catcher/model/tables/tune_recording.dart';
 import 'package:tune_catcher/model/tables/tunes.dart';
@@ -19,7 +20,22 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? executor]) : super(executor ?? _openConnection());
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
+
+  @override
+  MigrationStrategy get migration => MigrationStrategy(
+    onCreate: (m) => m.createAll(),
+    onUpgrade: stepByStep(
+      from1To2: (m, schema) async {
+        // The recordings table was reshaped: added name/url, dropped
+        // file_path/location, performers became nullable. There is no
+        // production data yet, so drop and recreate rather than reconcile
+        // missing values for the new NOT NULL columns.
+        await m.deleteTable('recordings');
+        await m.createTable(schema.recordings);
+      },
+    ),
+  );
 
   static QueryExecutor _openConnection() {
     return driftDatabase(
