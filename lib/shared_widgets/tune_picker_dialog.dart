@@ -207,21 +207,28 @@ class _LibraryTuneTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bg = isDark ? Colors.green.shade900 : Colors.green.shade50;
+    final fg = isDark ? Colors.green.shade100 : Colors.green.shade900;
+    final iconColor = isDark ? Colors.green.shade300 : Colors.green.shade700;
+
     final subtitle = [
       if (tune.type != null) tune.type!.name,
       if (tune.key != null && tune.key!.isNotEmpty) tune.key!,
     ].join(' · ');
 
     return Card(
-      color: Colors.green.shade50,
+      color: bg,
       margin: const EdgeInsets.symmetric(vertical: 2),
       child: ListTile(
-        leading: Icon(Icons.check_circle, color: Colors.green.shade700),
-        title: Text(tune.name),
-        subtitle: subtitle.isEmpty ? null : Text(subtitle),
+        leading: Icon(Icons.check_circle, color: iconColor),
+        title: Text(tune.name, style: TextStyle(color: fg)),
+        subtitle: subtitle.isEmpty
+            ? null
+            : Text(subtitle, style: TextStyle(color: fg)),
         trailing: Text(
           'In library',
-          style: TextStyle(fontSize: 12, color: Colors.green.shade800),
+          style: TextStyle(fontSize: 12, color: fg),
         ),
         onTap: onTap,
       ),
