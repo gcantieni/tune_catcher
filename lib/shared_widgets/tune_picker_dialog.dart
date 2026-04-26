@@ -104,8 +104,7 @@ class _TunePickerDialogState extends ConsumerState<TunePickerDialog> {
                 ),
               ),
               const SizedBox(height: 12),
-              ConstrainedBox(
-                constraints: const BoxConstraints(maxHeight: 420),
+              Flexible(
                 child: query.isEmpty
                     ? const Padding(
                         padding: EdgeInsets.symmetric(vertical: 16),
