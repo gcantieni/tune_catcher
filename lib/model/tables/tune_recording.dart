@@ -5,14 +5,11 @@ class TuneRecording extends Table {
   IntColumn get recordingId => integer()();
 
   /// Start timestamp in seconds
-  IntColumn get startTime => integer()();
+  IntColumn get startTime => integer().nullable()();
 
   /// End timestamp in seconds
-  IntColumn get endTime => integer()();
-
-  /// Key signature of this recording
-  TextColumn get keySignature => text()();
+  IntColumn get endTime => integer().nullable()();
 
   /// Free text for names of performers if known
-  TextColumn get performers => text()();
+  TextColumn get performers => text().nullable()();
 }

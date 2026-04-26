@@ -1082,9 +1082,9 @@ class $TuneRecordingTable extends TuneRecording
   late final GeneratedColumn<int> startTime = GeneratedColumn<int>(
     'start_time',
     aliasedName,
-    false,
+    true,
     type: DriftSqlType.int,
-    requiredDuringInsert: true,
+    requiredDuringInsert: false,
   );
   static const VerificationMeta _endTimeMeta = const VerificationMeta(
     'endTime',
@@ -1093,20 +1093,9 @@ class $TuneRecordingTable extends TuneRecording
   late final GeneratedColumn<int> endTime = GeneratedColumn<int>(
     'end_time',
     aliasedName,
-    false,
+    true,
     type: DriftSqlType.int,
-    requiredDuringInsert: true,
-  );
-  static const VerificationMeta _keySignatureMeta = const VerificationMeta(
-    'keySignature',
-  );
-  @override
-  late final GeneratedColumn<String> keySignature = GeneratedColumn<String>(
-    'key_signature',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
+    requiredDuringInsert: false,
   );
   static const VerificationMeta _performersMeta = const VerificationMeta(
     'performers',
@@ -1115,9 +1104,9 @@ class $TuneRecordingTable extends TuneRecording
   late final GeneratedColumn<String> performers = GeneratedColumn<String>(
     'performers',
     aliasedName,
-    false,
+    true,
     type: DriftSqlType.string,
-    requiredDuringInsert: true,
+    requiredDuringInsert: false,
   );
   @override
   List<GeneratedColumn> get $columns => [
@@ -1125,7 +1114,6 @@ class $TuneRecordingTable extends TuneRecording
     recordingId,
     startTime,
     endTime,
-    keySignature,
     performers,
   ];
   @override
@@ -1164,35 +1152,18 @@ class $TuneRecordingTable extends TuneRecording
         _startTimeMeta,
         startTime.isAcceptableOrUnknown(data['start_time']!, _startTimeMeta),
       );
-    } else if (isInserting) {
-      context.missing(_startTimeMeta);
     }
     if (data.containsKey('end_time')) {
       context.handle(
         _endTimeMeta,
         endTime.isAcceptableOrUnknown(data['end_time']!, _endTimeMeta),
       );
-    } else if (isInserting) {
-      context.missing(_endTimeMeta);
-    }
-    if (data.containsKey('key_signature')) {
-      context.handle(
-        _keySignatureMeta,
-        keySignature.isAcceptableOrUnknown(
-          data['key_signature']!,
-          _keySignatureMeta,
-        ),
-      );
-    } else if (isInserting) {
-      context.missing(_keySignatureMeta);
     }
     if (data.containsKey('performers')) {
       context.handle(
         _performersMeta,
         performers.isAcceptableOrUnknown(data['performers']!, _performersMeta),
       );
-    } else if (isInserting) {
-      context.missing(_performersMeta);
     }
     return context;
   }
@@ -1214,19 +1185,15 @@ class $TuneRecordingTable extends TuneRecording
       startTime: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}start_time'],
-      )!,
+      ),
       endTime: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}end_time'],
-      )!,
-      keySignature: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}key_signature'],
-      )!,
+      ),
       performers: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}performers'],
-      )!,
+      ),
     );
   }
 
@@ -1242,33 +1209,34 @@ class TuneRecordingData extends DataClass
   final int recordingId;
 
   /// Start timestamp in seconds
-  final int startTime;
+  final int? startTime;
 
   /// End timestamp in seconds
-  final int endTime;
-
-  /// Key signature of this recording
-  final String keySignature;
+  final int? endTime;
 
   /// Free text for names of performers if known
-  final String performers;
+  final String? performers;
   const TuneRecordingData({
     required this.tuneId,
     required this.recordingId,
-    required this.startTime,
-    required this.endTime,
-    required this.keySignature,
-    required this.performers,
+    this.startTime,
+    this.endTime,
+    this.performers,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['tune_id'] = Variable<int>(tuneId);
     map['recording_id'] = Variable<int>(recordingId);
-    map['start_time'] = Variable<int>(startTime);
-    map['end_time'] = Variable<int>(endTime);
-    map['key_signature'] = Variable<String>(keySignature);
-    map['performers'] = Variable<String>(performers);
+    if (!nullToAbsent || startTime != null) {
+      map['start_time'] = Variable<int>(startTime);
+    }
+    if (!nullToAbsent || endTime != null) {
+      map['end_time'] = Variable<int>(endTime);
+    }
+    if (!nullToAbsent || performers != null) {
+      map['performers'] = Variable<String>(performers);
+    }
     return map;
   }
 
@@ -1276,10 +1244,15 @@ class TuneRecordingData extends DataClass
     return TuneRecordingCompanion(
       tuneId: Value(tuneId),
       recordingId: Value(recordingId),
-      startTime: Value(startTime),
-      endTime: Value(endTime),
-      keySignature: Value(keySignature),
-      performers: Value(performers),
+      startTime: startTime == null && nullToAbsent
+          ? const Value.absent()
+          : Value(startTime),
+      endTime: endTime == null && nullToAbsent
+          ? const Value.absent()
+          : Value(endTime),
+      performers: performers == null && nullToAbsent
+          ? const Value.absent()
+          : Value(performers),
     );
   }
 
@@ -1291,10 +1264,9 @@ class TuneRecordingData extends DataClass
     return TuneRecordingData(
       tuneId: serializer.fromJson<int>(json['tuneId']),
       recordingId: serializer.fromJson<int>(json['recordingId']),
-      startTime: serializer.fromJson<int>(json['startTime']),
-      endTime: serializer.fromJson<int>(json['endTime']),
-      keySignature: serializer.fromJson<String>(json['keySignature']),
-      performers: serializer.fromJson<String>(json['performers']),
+      startTime: serializer.fromJson<int?>(json['startTime']),
+      endTime: serializer.fromJson<int?>(json['endTime']),
+      performers: serializer.fromJson<String?>(json['performers']),
     );
   }
   @override
@@ -1303,27 +1275,24 @@ class TuneRecordingData extends DataClass
     return <String, dynamic>{
       'tuneId': serializer.toJson<int>(tuneId),
       'recordingId': serializer.toJson<int>(recordingId),
-      'startTime': serializer.toJson<int>(startTime),
-      'endTime': serializer.toJson<int>(endTime),
-      'keySignature': serializer.toJson<String>(keySignature),
-      'performers': serializer.toJson<String>(performers),
+      'startTime': serializer.toJson<int?>(startTime),
+      'endTime': serializer.toJson<int?>(endTime),
+      'performers': serializer.toJson<String?>(performers),
     };
   }
 
   TuneRecordingData copyWith({
     int? tuneId,
     int? recordingId,
-    int? startTime,
-    int? endTime,
-    String? keySignature,
-    String? performers,
+    Value<int?> startTime = const Value.absent(),
+    Value<int?> endTime = const Value.absent(),
+    Value<String?> performers = const Value.absent(),
   }) => TuneRecordingData(
     tuneId: tuneId ?? this.tuneId,
     recordingId: recordingId ?? this.recordingId,
-    startTime: startTime ?? this.startTime,
-    endTime: endTime ?? this.endTime,
-    keySignature: keySignature ?? this.keySignature,
-    performers: performers ?? this.performers,
+    startTime: startTime.present ? startTime.value : this.startTime,
+    endTime: endTime.present ? endTime.value : this.endTime,
+    performers: performers.present ? performers.value : this.performers,
   );
   TuneRecordingData copyWithCompanion(TuneRecordingCompanion data) {
     return TuneRecordingData(
@@ -1333,9 +1302,6 @@ class TuneRecordingData extends DataClass
           : this.recordingId,
       startTime: data.startTime.present ? data.startTime.value : this.startTime,
       endTime: data.endTime.present ? data.endTime.value : this.endTime,
-      keySignature: data.keySignature.present
-          ? data.keySignature.value
-          : this.keySignature,
       performers: data.performers.present
           ? data.performers.value
           : this.performers,
@@ -1349,21 +1315,14 @@ class TuneRecordingData extends DataClass
           ..write('recordingId: $recordingId, ')
           ..write('startTime: $startTime, ')
           ..write('endTime: $endTime, ')
-          ..write('keySignature: $keySignature, ')
           ..write('performers: $performers')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(
-    tuneId,
-    recordingId,
-    startTime,
-    endTime,
-    keySignature,
-    performers,
-  );
+  int get hashCode =>
+      Object.hash(tuneId, recordingId, startTime, endTime, performers);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -1372,47 +1331,38 @@ class TuneRecordingData extends DataClass
           other.recordingId == this.recordingId &&
           other.startTime == this.startTime &&
           other.endTime == this.endTime &&
-          other.keySignature == this.keySignature &&
           other.performers == this.performers);
 }
 
 class TuneRecordingCompanion extends UpdateCompanion<TuneRecordingData> {
   final Value<int> tuneId;
   final Value<int> recordingId;
-  final Value<int> startTime;
-  final Value<int> endTime;
-  final Value<String> keySignature;
-  final Value<String> performers;
+  final Value<int?> startTime;
+  final Value<int?> endTime;
+  final Value<String?> performers;
   final Value<int> rowid;
   const TuneRecordingCompanion({
     this.tuneId = const Value.absent(),
     this.recordingId = const Value.absent(),
     this.startTime = const Value.absent(),
     this.endTime = const Value.absent(),
-    this.keySignature = const Value.absent(),
     this.performers = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   TuneRecordingCompanion.insert({
     required int tuneId,
     required int recordingId,
-    required int startTime,
-    required int endTime,
-    required String keySignature,
-    required String performers,
+    this.startTime = const Value.absent(),
+    this.endTime = const Value.absent(),
+    this.performers = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : tuneId = Value(tuneId),
-       recordingId = Value(recordingId),
-       startTime = Value(startTime),
-       endTime = Value(endTime),
-       keySignature = Value(keySignature),
-       performers = Value(performers);
+       recordingId = Value(recordingId);
   static Insertable<TuneRecordingData> custom({
     Expression<int>? tuneId,
     Expression<int>? recordingId,
     Expression<int>? startTime,
     Expression<int>? endTime,
-    Expression<String>? keySignature,
     Expression<String>? performers,
     Expression<int>? rowid,
   }) {
@@ -1421,7 +1371,6 @@ class TuneRecordingCompanion extends UpdateCompanion<TuneRecordingData> {
       if (recordingId != null) 'recording_id': recordingId,
       if (startTime != null) 'start_time': startTime,
       if (endTime != null) 'end_time': endTime,
-      if (keySignature != null) 'key_signature': keySignature,
       if (performers != null) 'performers': performers,
       if (rowid != null) 'rowid': rowid,
     });
@@ -1430,10 +1379,9 @@ class TuneRecordingCompanion extends UpdateCompanion<TuneRecordingData> {
   TuneRecordingCompanion copyWith({
     Value<int>? tuneId,
     Value<int>? recordingId,
-    Value<int>? startTime,
-    Value<int>? endTime,
-    Value<String>? keySignature,
-    Value<String>? performers,
+    Value<int?>? startTime,
+    Value<int?>? endTime,
+    Value<String?>? performers,
     Value<int>? rowid,
   }) {
     return TuneRecordingCompanion(
@@ -1441,7 +1389,6 @@ class TuneRecordingCompanion extends UpdateCompanion<TuneRecordingData> {
       recordingId: recordingId ?? this.recordingId,
       startTime: startTime ?? this.startTime,
       endTime: endTime ?? this.endTime,
-      keySignature: keySignature ?? this.keySignature,
       performers: performers ?? this.performers,
       rowid: rowid ?? this.rowid,
     );
@@ -1462,9 +1409,6 @@ class TuneRecordingCompanion extends UpdateCompanion<TuneRecordingData> {
     if (endTime.present) {
       map['end_time'] = Variable<int>(endTime.value);
     }
-    if (keySignature.present) {
-      map['key_signature'] = Variable<String>(keySignature.value);
-    }
     if (performers.present) {
       map['performers'] = Variable<String>(performers.value);
     }
@@ -1481,7 +1425,6 @@ class TuneRecordingCompanion extends UpdateCompanion<TuneRecordingData> {
           ..write('recordingId: $recordingId, ')
           ..write('startTime: $startTime, ')
           ..write('endTime: $endTime, ')
-          ..write('keySignature: $keySignature, ')
           ..write('performers: $performers, ')
           ..write('rowid: $rowid')
           ..write(')'))
@@ -1497,6 +1440,9 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $TuneRecordingTable tuneRecording = $TuneRecordingTable(this);
   late final TuneDao tuneDao = TuneDao(this as AppDatabase);
   late final RecordingDao recordingDao = RecordingDao(this as AppDatabase);
+  late final TuneRecordingDao tuneRecordingDao = TuneRecordingDao(
+    this as AppDatabase,
+  );
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -2031,20 +1977,18 @@ typedef $$TuneRecordingTableCreateCompanionBuilder =
     TuneRecordingCompanion Function({
       required int tuneId,
       required int recordingId,
-      required int startTime,
-      required int endTime,
-      required String keySignature,
-      required String performers,
+      Value<int?> startTime,
+      Value<int?> endTime,
+      Value<String?> performers,
       Value<int> rowid,
     });
 typedef $$TuneRecordingTableUpdateCompanionBuilder =
     TuneRecordingCompanion Function({
       Value<int> tuneId,
       Value<int> recordingId,
-      Value<int> startTime,
-      Value<int> endTime,
-      Value<String> keySignature,
-      Value<String> performers,
+      Value<int?> startTime,
+      Value<int?> endTime,
+      Value<String?> performers,
       Value<int> rowid,
     });
 
@@ -2074,11 +2018,6 @@ class $$TuneRecordingTableFilterComposer
 
   ColumnFilters<int> get endTime => $composableBuilder(
     column: $table.endTime,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get keySignature => $composableBuilder(
-    column: $table.keySignature,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -2117,11 +2056,6 @@ class $$TuneRecordingTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<String> get keySignature => $composableBuilder(
-    column: $table.keySignature,
-    builder: (column) => ColumnOrderings(column),
-  );
-
   ColumnOrderings<String> get performers => $composableBuilder(
     column: $table.performers,
     builder: (column) => ColumnOrderings(column),
@@ -2150,11 +2084,6 @@ class $$TuneRecordingTableAnnotationComposer
 
   GeneratedColumn<int> get endTime =>
       $composableBuilder(column: $table.endTime, builder: (column) => column);
-
-  GeneratedColumn<String> get keySignature => $composableBuilder(
-    column: $table.keySignature,
-    builder: (column) => column,
-  );
 
   GeneratedColumn<String> get performers => $composableBuilder(
     column: $table.performers,
@@ -2199,17 +2128,15 @@ class $$TuneRecordingTableTableManager
               ({
                 Value<int> tuneId = const Value.absent(),
                 Value<int> recordingId = const Value.absent(),
-                Value<int> startTime = const Value.absent(),
-                Value<int> endTime = const Value.absent(),
-                Value<String> keySignature = const Value.absent(),
-                Value<String> performers = const Value.absent(),
+                Value<int?> startTime = const Value.absent(),
+                Value<int?> endTime = const Value.absent(),
+                Value<String?> performers = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => TuneRecordingCompanion(
                 tuneId: tuneId,
                 recordingId: recordingId,
                 startTime: startTime,
                 endTime: endTime,
-                keySignature: keySignature,
                 performers: performers,
                 rowid: rowid,
               ),
@@ -2217,17 +2144,15 @@ class $$TuneRecordingTableTableManager
               ({
                 required int tuneId,
                 required int recordingId,
-                required int startTime,
-                required int endTime,
-                required String keySignature,
-                required String performers,
+                Value<int?> startTime = const Value.absent(),
+                Value<int?> endTime = const Value.absent(),
+                Value<String?> performers = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => TuneRecordingCompanion.insert(
                 tuneId: tuneId,
                 recordingId: recordingId,
                 startTime: startTime,
                 endTime: endTime,
-                keySignature: keySignature,
                 performers: performers,
                 rowid: rowid,
               ),

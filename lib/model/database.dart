@@ -5,6 +5,7 @@ import 'package:path_provider/path_provider.dart';
 // local references
 import 'package:tune_catcher/model/accessors/recording_dao.dart';
 import 'package:tune_catcher/model/accessors/tune_dao.dart';
+import 'package:tune_catcher/model/accessors/tune_recording_dao.dart';
 import 'package:tune_catcher/model/database.steps.dart';
 import 'package:tune_catcher/model/tables/recordings.dart';
 import 'package:tune_catcher/model/tables/tune_recording.dart';
@@ -15,7 +16,7 @@ part 'database.g.dart';
 
 @DriftDatabase(
   tables: [Recordings, Tunes, TuneRecording],
-  daos: [TuneDao, RecordingDao],
+  daos: [TuneDao, RecordingDao, TuneRecordingDao],
 )
 class AppDatabase extends _$AppDatabase {
   // After generating code, this class needs to define a `schemaVersion` getter
@@ -24,7 +25,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? executor]) : super(executor ?? _openConnection());
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -37,6 +38,12 @@ class AppDatabase extends _$AppDatabase {
         // missing values for the new NOT NULL columns.
         await m.deleteTable('recordings');
         await m.createTable(schema.recordings);
+      },
+      from2To3: (m, schema) async {
+        // tune_recording: start_time/end_time/performers became nullable
+        // and key_signature was dropped. Lets a link be created with just
+        // the two foreign keys; details can be filled in later.
+        await m.alterTable(TableMigration(schema.tuneRecording));
       },
     ),
   );

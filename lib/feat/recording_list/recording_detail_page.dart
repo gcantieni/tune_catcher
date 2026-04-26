@@ -2,11 +2,14 @@ import 'package:drift/drift.dart' as drift;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import 'package:tune_catcher/feat/recording_list/recording_link_kind.dart';
+import 'package:tune_catcher/shared_widgets/tune_picker_dialog.dart';
 import 'package:tune_catcher/model/database.dart';
 import 'package:tune_catcher/model/database_provider.dart';
 import 'package:tune_catcher/model/providers/recordings_provider.dart';
+import 'package:tune_catcher/model/providers/tune_recording_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class RecordingDetailPage extends ConsumerStatefulWidget {
@@ -167,7 +170,51 @@ class _RecordingDetailPageState extends ConsumerState<RecordingDetailPage> {
           'Performers',
           (r.performers?.isEmpty ?? true) ? '—' : r.performers!,
         ),
+        const SizedBox(height: 24),
+        const Divider(),
+        const SizedBox(height: 8),
+        Row(
+          children: [
+            const Text(
+              'Tunes',
+              style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
+            ),
+            const Spacer(),
+            TextButton.icon(
+              icon: const Icon(Icons.add, size: 18),
+              label: const Text('Add tune'),
+              onPressed: () => _showAddTuneDialog(r.id),
+            ),
+          ],
+        ),
+        const SizedBox(height: 4),
+        _LinkedTunes(recordingId: r.id),
       ],
+    );
+  }
+
+  void _showAddTuneDialog(int recordingId) {
+    final dao = ref.read(databaseProvider).tuneRecordingDao;
+    showDialog<void>(
+      context: context,
+      builder: (_) => TunePickerDialog(
+        title: 'Add tune to recording',
+        onLibraryTune: (tune) {
+          dao.linkTuneToRecording(tune.id, recordingId);
+        },
+        onThesessionTune: (companion) {
+          dao.createTuneAndLink(
+            companion.copyWith(createdAt: drift.Value(DateTime.now())),
+            recordingId,
+          );
+        },
+        onCreateNew: (name) {
+          dao.createTuneAndLink(
+            TunesCompanion.insert(name: name, createdAt: DateTime.now()),
+            recordingId,
+          );
+        },
+      ),
     );
   }
 
@@ -216,6 +263,52 @@ class _RecordingDetailPageState extends ConsumerState<RecordingDetailPage> {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _LinkedTunes extends ConsumerWidget {
+  final int recordingId;
+  const _LinkedTunes({required this.recordingId});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final async = ref.watch(tunesForRecordingProvider(recordingId));
+    return async.when(
+      loading: () => const Padding(
+        padding: EdgeInsets.all(8),
+        child: Center(child: CircularProgressIndicator()),
+      ),
+      error: (e, s) => Text('Error: $e'),
+      data: (tunes) {
+        if (tunes.isEmpty) {
+          return const Padding(
+            padding: EdgeInsets.symmetric(vertical: 8),
+            child: Text(
+              'No tunes linked yet.',
+              style: TextStyle(color: Colors.grey),
+            ),
+          );
+        }
+        return Column(
+          children: [
+            for (final t in tunes)
+              Card(
+                margin: const EdgeInsets.symmetric(vertical: 2),
+                child: ListTile(
+                  title: Text(t.name),
+                  subtitle: Text(
+                    [
+                      if (t.type != null) t.type!.name,
+                      if (t.key != null && t.key!.isNotEmpty) t.key!,
+                    ].join(' · '),
+                  ),
+                  onTap: () => context.push('/tune_list/${t.id}'),
+                ),
+              ),
+          ],
+        );
+      },
     );
   }
 }
