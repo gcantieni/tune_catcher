@@ -5,11 +5,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:tune_catcher/feat/recording_list/recording_link_kind.dart';
-import 'package:tune_catcher/shared_widgets/tune_picker_dialog.dart';
+import 'package:tune_catcher/model/accessors/tune_recording_dao.dart';
 import 'package:tune_catcher/model/database.dart';
 import 'package:tune_catcher/model/database_provider.dart';
 import 'package:tune_catcher/model/providers/recordings_provider.dart';
 import 'package:tune_catcher/model/providers/tune_recording_provider.dart';
+import 'package:tune_catcher/shared_widgets/timestamp_editor_dialog.dart';
+import 'package:tune_catcher/shared_widgets/tune_picker_dialog.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class RecordingDetailPage extends ConsumerStatefulWidget {
@@ -273,15 +275,15 @@ class _LinkedTunes extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final async = ref.watch(tunesForRecordingProvider(recordingId));
+    final async = ref.watch(linksForRecordingProvider(recordingId));
     return async.when(
       loading: () => const Padding(
         padding: EdgeInsets.all(8),
         child: Center(child: CircularProgressIndicator()),
       ),
       error: (e, s) => Text('Error: $e'),
-      data: (tunes) {
-        if (tunes.isEmpty) {
+      data: (links) {
+        if (links.isEmpty) {
           return const Padding(
             padding: EdgeInsets.symmetric(vertical: 8),
             child: Text(
@@ -291,24 +293,70 @@ class _LinkedTunes extends ConsumerWidget {
           );
         }
         return Column(
-          children: [
-            for (final t in tunes)
-              Card(
-                margin: const EdgeInsets.symmetric(vertical: 2),
-                child: ListTile(
-                  title: Text(t.name),
-                  subtitle: Text(
-                    [
-                      if (t.type != null) t.type!.name,
-                      if (t.key != null && t.key!.isNotEmpty) t.key!,
-                    ].join(' · '),
-                  ),
-                  onTap: () => context.push('/tune_list/${t.id}'),
-                ),
-              ),
-          ],
+          children: [for (final e in links) _LinkedTuneRow(entry: e)],
         );
       },
     );
+  }
+}
+
+class _LinkedTuneRow extends ConsumerWidget {
+  final RecordedTune entry;
+  const _LinkedTuneRow({required this.entry});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final tune = entry.tune;
+    final link = entry.link;
+    final subtitle = [
+      if (tune.type != null) tune.type!.name,
+      if (tune.key != null && tune.key!.isNotEmpty) tune.key!,
+    ].join(' · ');
+
+    return Card(
+      margin: const EdgeInsets.symmetric(vertical: 2),
+      child: ListTile(
+        title: Text(tune.name),
+        subtitle: subtitle.isEmpty ? null : Text(subtitle),
+        onTap: () => context.push('/tune_list/${tune.id}'),
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextButton(
+              onPressed: () => _editTimes(context, ref),
+              child: Text(
+                '${formatSeconds(link.startTime)} – ${formatSeconds(link.endTime)}',
+                style: const TextStyle(fontFamily: 'monospace'),
+              ),
+            ),
+            IconButton(
+              icon: const Icon(Icons.close, size: 18),
+              tooltip: 'Remove from recording',
+              onPressed: () => ref
+                  .read(databaseProvider)
+                  .tuneRecordingDao
+                  .unlinkTuneFromRecording(link.tuneId, link.recordingId),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _editTimes(BuildContext context, WidgetRef ref) async {
+    final link = entry.link;
+    final result = await showDialog<({int? start, int? end})>(
+      context: context,
+      builder: (_) => TimestampEditorDialog(
+        initialStart: link.startTime,
+        initialEnd: link.endTime,
+      ),
+    );
+    if (result == null) return;
+    final updated = link.copyWith(
+      startTime: drift.Value(result.start),
+      endTime: drift.Value(result.end),
+    );
+    await ref.read(databaseProvider).tuneRecordingDao.updateLink(updated);
   }
 }

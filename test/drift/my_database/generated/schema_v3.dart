@@ -918,7 +918,7 @@ class TuneRecording extends Table
   String get actualTableName => $name;
   static const String $name = 'tune_recording';
   @override
-  Set<GeneratedColumn> get $primaryKey => const {};
+  Set<GeneratedColumn> get $primaryKey => {tuneId, recordingId};
   @override
   TuneRecordingData map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';

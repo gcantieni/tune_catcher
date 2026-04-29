@@ -4,10 +4,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:tune_catcher/feat/tune_list/tune_list_item.dart';
-import 'package:tune_catcher/shared_widgets/tune_picker_dialog.dart';
 import 'package:tune_catcher/model/database.dart';
 import 'package:tune_catcher/model/database_provider.dart';
 import 'package:tune_catcher/model/providers/tunes_provider.dart';
+import 'package:tune_catcher/shared_widgets/tune_picker_dialog.dart';
 
 class TuneListPage extends ConsumerWidget {
   @override

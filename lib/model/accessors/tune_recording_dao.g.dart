@@ -6,4 +6,5 @@ part of 'tune_recording_dao.dart';
 mixin _$TuneRecordingDaoMixin on DatabaseAccessor<AppDatabase> {
   $TuneRecordingTable get tuneRecording => attachedDatabase.tuneRecording;
   $TunesTable get tunes => attachedDatabase.tunes;
+  $RecordingsTable get recordings => attachedDatabase.recordings;
 }

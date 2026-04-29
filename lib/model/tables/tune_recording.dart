@@ -12,4 +12,7 @@ class TuneRecording extends Table {
 
   /// Free text for names of performers if known
   TextColumn get performers => text().nullable()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {tuneId, recordingId};
 }

@@ -40,9 +40,16 @@ class AppDatabase extends _$AppDatabase {
         await m.createTable(schema.recordings);
       },
       from2To3: (m, schema) async {
-        // tune_recording: start_time/end_time/performers became nullable
-        // and key_signature was dropped. Lets a link be created with just
-        // the two foreign keys; details can be filled in later.
+        // tune_recording reshape: start_time/end_time/performers became
+        // nullable, key_signature dropped, and a composite primary key
+        // (tune_id, recording_id) was added so each link is uniquely
+        // addressable and the DB rejects duplicates. Dedup any existing
+        // rows first so the new PK constraint can take effect.
+        await customStatement('''
+          DELETE FROM tune_recording WHERE rowid NOT IN (
+            SELECT MIN(rowid) FROM tune_recording GROUP BY tune_id, recording_id
+          )
+        ''');
         await m.alterTable(TableMigration(schema.tuneRecording));
       },
     ),

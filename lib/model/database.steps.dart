@@ -325,7 +325,7 @@ final class Schema3 extends i0.VersionedSchema {
       entityName: 'tune_recording',
       withoutRowId: false,
       isStrict: false,
-      tableConstraints: [],
+      tableConstraints: ['PRIMARY KEY(tune_id, recording_id)'],
       columns: [_column_13, _column_14, _column_19, _column_20, _column_3],
       attachedDatabase: database,
     ),
