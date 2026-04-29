@@ -40,19 +40,19 @@ rm "$HOME/Library/Containers/com.example.tuneCatcher/Data/Library/Application Su
 
 - [x] Tune List
   - [x] store tunes
-  - [-] fetch data about tunes from tune repositories (names, ABC of different versions, key, type, etc.)
+  - [x] fetch data about tunes from tune repositories (names, ABC of different versions, key, type, etc.)
+  - [x] associate the tune entries with sections of recordings
   - [ ] provide practicing assistance for committing tunes to memory
-  - [ ] associate the tune entries with sections of recordings
 - [ ] Set lists
   - [ ] create set lists that reference tunes from tune list
   - [ ] provide practicing assistance for committing sets to memory and practicing transitions
 - [ ] Recorder
   - [ ] record audio
   - [ ] (stretch goal) identify tunes
-- [ ] Recording list
+- [-] Recording list
+  - [x] track recordings from remote sources like Spotify and YouTube
+  - [x] associate those recordings with tunes from tune list
   - [ ] track personal recordings
-  - [ ] track recordings from remote sources like Spotify and YouTube
-  - [ ] associate those recordings with tunes from tune list
 
 ## Architecture
 
