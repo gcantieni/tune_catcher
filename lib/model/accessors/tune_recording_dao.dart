@@ -19,12 +19,21 @@ class TuneRecordingDao extends DatabaseAccessor<AppDatabase>
   TuneRecordingDao(AppDatabase db) : super(db);
 
   /// Re-linking the same (tune, recording) pair is a silent no-op
-  /// thanks to the composite PK and insertOrIgnore mode.
+  /// thanks to the composite PK and insertOrIgnore mode. Bumps the
+  /// tune's modifiedAt on a real insert so it surfaces in "recently
+  /// updated" sorts.
   Future<int> linkTuneToRecording(int tuneId, int recordingId) {
-    return into(tuneRecording).insert(
-      TuneRecordingCompanion.insert(tuneId: tuneId, recordingId: recordingId),
-      mode: InsertMode.insertOrIgnore,
-    );
+    return transaction(() async {
+      final rowId = await into(tuneRecording).insert(
+        TuneRecordingCompanion.insert(
+          tuneId: tuneId,
+          recordingId: recordingId,
+        ),
+        mode: InsertMode.insertOrIgnore,
+      );
+      if (rowId > 0) await _bumpTuneModified(tuneId);
+      return rowId;
+    });
   }
 
   /// Insert a new tune and link it to the recording in a single transaction.
@@ -42,6 +51,7 @@ class TuneRecordingDao extends DatabaseAccessor<AppDatabase>
   }
 
   /// Insert a new recording and link it to the tune in a single transaction.
+  /// Bumps the tune's modifiedAt — the user just added a recording to it.
   Future<int> createRecordingAndLink(
     RecordingsCompanion recording,
     int tuneId,
@@ -54,24 +64,42 @@ class TuneRecordingDao extends DatabaseAccessor<AppDatabase>
           recordingId: recordingId,
         ),
       );
+      await _bumpTuneModified(tuneId);
       return recordingId;
     });
   }
 
   Future<int> updateLink(TuneRecordingData updated) {
-    return (update(tuneRecording)..where(
-          (t) =>
-              t.tuneId.equals(updated.tuneId) &
-              t.recordingId.equals(updated.recordingId),
-        ))
-        .write(updated.toCompanion(true));
+    return transaction(() async {
+      final rows =
+          await (update(tuneRecording)..where(
+                (t) =>
+                    t.tuneId.equals(updated.tuneId) &
+                    t.recordingId.equals(updated.recordingId),
+              ))
+              .write(updated.toCompanion(true));
+      if (rows > 0) await _bumpTuneModified(updated.tuneId);
+      return rows;
+    });
   }
 
   Future<int> unlinkTuneFromRecording(int tuneId, int recordingId) {
-    return (delete(tuneRecording)..where(
-          (t) => t.tuneId.equals(tuneId) & t.recordingId.equals(recordingId),
-        ))
-        .go();
+    return transaction(() async {
+      final rows =
+          await (delete(tuneRecording)..where(
+                (t) =>
+                    t.tuneId.equals(tuneId) & t.recordingId.equals(recordingId),
+              ))
+              .go();
+      if (rows > 0) await _bumpTuneModified(tuneId);
+      return rows;
+    });
+  }
+
+  Future<int> _bumpTuneModified(int tuneId) {
+    return (update(tunes)..where((t) => t.id.equals(tuneId))).write(
+      TunesCompanion(modifiedAt: Value(DateTime.now())),
+    );
   }
 
   Stream<List<RecordedTune>> watchLinksForRecording(int recordingId) {

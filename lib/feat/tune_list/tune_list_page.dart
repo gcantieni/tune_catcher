@@ -3,10 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:tune_catcher/feat/tune_list/tune_filter_bar.dart';
+import 'package:tune_catcher/feat/tune_list/tune_filters.dart';
 import 'package:tune_catcher/feat/tune_list/tune_list_item.dart';
 import 'package:tune_catcher/model/database.dart';
 import 'package:tune_catcher/model/database_provider.dart';
-import 'package:tune_catcher/model/providers/tunes_provider.dart';
 import 'package:tune_catcher/shared_widgets/tune_picker_dialog.dart';
 
 class TuneListPage extends ConsumerWidget {
@@ -16,7 +17,17 @@ class TuneListPage extends ConsumerWidget {
       appBar: AppBar(title: const Text('Tune list')),
       body: Padding(
         padding: const EdgeInsets.all(16),
-        child: ListView(children: [TuneListWidget()]),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            const TuneFilterBar(),
+            Expanded(
+              child: ListView(
+                children: [TuneListWidget()],
+              ),
+            ),
+          ],
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         tooltip: 'Add tune',
@@ -55,27 +66,31 @@ class TuneListWidget extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     const fontSize = 19.0;
-    final AsyncValue<List<Tune>> allTunesAsync = ref.watch(allTunesProvider);
+    final filters = ref.watch(tuneFiltersProvider);
+    final tunesAsync = ref.watch(filteredTunesProvider);
 
-    return allTunesAsync.when(
+    return tunesAsync.when(
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (err, stack) => Text('Error: $err'),
-      data: (allTunes) => Column(
-        mainAxisSize: MainAxisSize.min,
-        children: allTunes.isEmpty
-            ? [
-                const Padding(
-                  padding: EdgeInsets.all(20),
-                  child: Center(
-                    child: Text(
-                      'No tunes saved',
-                      style: TextStyle(fontSize: fontSize),
-                    ),
-                  ),
-                ),
-              ]
-            : [for (final Tune t in allTunes) TuneListItem(tune: t)],
-      ),
+      data: (tunes) {
+        if (tunes.isEmpty) {
+          return Padding(
+            padding: const EdgeInsets.all(20),
+            child: Center(
+              child: Text(
+                filters.isActive
+                    ? 'No tunes match these filters.'
+                    : 'No tunes saved',
+                style: const TextStyle(fontSize: fontSize),
+              ),
+            ),
+          );
+        }
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [for (final t in tunes) TuneListItem(tune: t)],
+        );
+      },
     );
   }
 }
