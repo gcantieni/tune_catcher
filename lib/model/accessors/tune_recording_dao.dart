@@ -41,6 +41,23 @@ class TuneRecordingDao extends DatabaseAccessor<AppDatabase>
     });
   }
 
+  /// Insert a new recording and link it to the tune in a single transaction.
+  Future<int> createRecordingAndLink(
+    RecordingsCompanion recording,
+    int tuneId,
+  ) {
+    return transaction(() async {
+      final recordingId = await into(recordings).insert(recording);
+      await into(tuneRecording).insert(
+        TuneRecordingCompanion.insert(
+          tuneId: tuneId,
+          recordingId: recordingId,
+        ),
+      );
+      return recordingId;
+    });
+  }
+
   Future<int> updateLink(TuneRecordingData updated) {
     return (update(tuneRecording)..where(
           (t) =>

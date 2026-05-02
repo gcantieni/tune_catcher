@@ -191,6 +191,9 @@ class _TuneDetailPageState extends ConsumerState<TuneDetailPage> {
         onPicked: (recording) {
           dao.linkTuneToRecording(tuneId, recording.id);
         },
+        onCreateNew: (companion) {
+          dao.createRecordingAndLink(companion, tuneId);
+        },
       ),
     );
   }
