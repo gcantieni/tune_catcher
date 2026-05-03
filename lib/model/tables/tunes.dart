@@ -22,6 +22,12 @@ class Tunes extends Table {
   IntColumn get id => integer().autoIncrement()();
   TextColumn get name => text()();
   TextColumn get abc => text().nullable()(); // ABC notation of the tune
+  // Cached SVG rendering of `abc`, produced by lib/feat/abc_render. Nullable
+  // because rendering happens after the row is written, and may fail
+  // (offline first-run, malformed ABC). Cleared and re-rendered on
+  // every update to `abc`. If the abc_render module is removed, this
+  // column can be dropped — nothing else reads it.
+  TextColumn get abcSvg => text().nullable()();
   IntColumn get tsId =>
       integer().nullable()(); // ID of the tune on thesession.com
   TextColumn get from => text().nullable()(); // Who or where a tune is from

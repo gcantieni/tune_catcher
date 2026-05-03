@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>html,body,#paper{margin:0;padding:0}#paper{visibility:hidden;width:800px}</style>
+<script src="abcjs-basic-min.js"></script>
+</head>
+<body>
+<div id="paper"></div>
+<script>
+window.renderAbcToSvg = function(abc) {
+  var paper = document.getElementById('paper');
+  paper.innerHTML = '';
+  try {
+    ABCJS.renderAbc(paper, abc, { responsive: 'resize', staffwidth: 760 });
+    var svg = paper.querySelector('svg');
+    if (!svg) return null;
+    // flutter_svg doesn't understand <style>/CSS — only inline attrs.
+    // abcjs already sets fill/stroke directly on glyphs, so the style
+    // block is non-essential (mostly hover/selection rules we don't
+    // need in a static cached render).
+    var styles = svg.querySelectorAll('style');
+    for (var i = 0; i < styles.length; i++) {
+      styles[i].parentNode.removeChild(styles[i]);
+    }
+    return svg.outerHTML;
+  } catch (e) {
+    return null;
+  }
+};
+</script>
+</body>
+</html>

@@ -1,8 +1,12 @@
+import 'dart:async';
+
 import 'package:drift/drift.dart' as drift;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:tune_catcher/feat/abc_render/abc_renderer.dart';
+import 'package:tune_catcher/feat/abc_render/abc_view.dart';
 import 'package:tune_catcher/feat/tune_list/tune_list_item.dart';
 import 'package:tune_catcher/model/accessors/tune_recording_dao.dart';
 import 'package:tune_catcher/model/database.dart';
@@ -61,25 +65,50 @@ class _TuneDetailPageState extends ConsumerState<TuneDetailPage> {
     final keyText = _keyController.text.trim();
     final fromText = _fromController.text.trim();
     final abcText = _abcController.text.trim();
+    final newAbc = abcText.isEmpty ? null : abcText;
+    final abcChanged = newAbc != tune.abc;
 
+    final dao = ref.read(databaseProvider).tuneDao;
+    await dao.updateTune(
+      TunesCompanion(
+        id: drift.Value(tune.id),
+        name: drift.Value(_nameController.text.trim()),
+        key: drift.Value(keyText.isEmpty ? null : keyText),
+        from: drift.Value(fromText.isEmpty ? null : fromText),
+        abc: drift.Value(newAbc),
+        // Invalidate the cached SVG when ABC changes; the renderer
+        // call below will fill it in (or leave it null on failure).
+        abcSvg: abcChanged
+            ? const drift.Value<String?>(null)
+            : const drift.Value.absent(),
+        type: drift.Value(_type),
+        status: drift.Value(_status),
+        modifiedAt: drift.Value(DateTime.now()),
+      ),
+    );
+
+    if (!mounted) return;
+    setState(() => _editing = false);
+
+    // Fire-and-forget render. UI shows plaintext fallback meanwhile.
+    if (abcChanged && newAbc != null) {
+      unawaited(_renderAndCacheSvg(tune.id, newAbc));
+    }
+  }
+
+  Future<void> _renderAndCacheSvg(int tuneId, String abc) async {
+    final renderer = ref.read(abcRendererProvider);
+    final svg = await renderer.render(abc);
+    if (svg == null) return;
     await ref
         .read(databaseProvider)
         .tuneDao
         .updateTune(
           TunesCompanion(
-            id: drift.Value(tune.id),
-            name: drift.Value(_nameController.text.trim()),
-            key: drift.Value(keyText.isEmpty ? null : keyText),
-            from: drift.Value(fromText.isEmpty ? null : fromText),
-            abc: drift.Value(abcText.isEmpty ? null : abcText),
-            type: drift.Value(_type),
-            status: drift.Value(_status),
-            modifiedAt: drift.Value(DateTime.now()),
+            id: drift.Value(tuneId),
+            abcSvg: drift.Value(svg),
           ),
         );
-
-    if (!mounted) return;
-    setState(() => _editing = false);
   }
 
   @override
@@ -135,7 +164,14 @@ class _TuneDetailPageState extends ConsumerState<TuneDetailPage> {
 
   Widget _buildReadView(Tune tune) {
     final statusLabel = tuneStatusToString(tune.status);
-    final abc = tune.abc;
+    // Backfill: if a tune has ABC but no cached SVG (existing rows
+    // pre-dating the column, or a previous render failure), kick off
+    // a render in the background.
+    if (tune.abc != null && tune.abc!.isNotEmpty && tune.abcSvg == null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _renderAndCacheSvg(tune.id, tune.abc!);
+      });
+    }
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
@@ -147,18 +183,7 @@ class _TuneDetailPageState extends ConsumerState<TuneDetailPage> {
         const SizedBox(height: 16),
         const Text('ABC', style: TextStyle(fontWeight: FontWeight.w600)),
         const SizedBox(height: 4),
-        Container(
-          width: double.infinity,
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surfaceContainerHighest,
-            borderRadius: BorderRadius.circular(6),
-          ),
-          child: SelectableText(
-            (abc == null || abc.isEmpty) ? '—' : abc,
-            style: const TextStyle(fontFamily: 'monospace'),
-          ),
-        ),
+        AbcView(abc: tune.abc, svg: tune.abcSvg),
         const SizedBox(height: 24),
         const Divider(),
         const SizedBox(height: 8),

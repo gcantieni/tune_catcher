@@ -25,7 +25,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? executor]) : super(executor ?? _openConnection());
 
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 4;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -51,6 +51,11 @@ class AppDatabase extends _$AppDatabase {
           )
         ''');
         await m.alterTable(TableMigration(schema.tuneRecording));
+      },
+      from3To4: (m, schema) async {
+        // Add cached SVG column for ABC rendering. Existing rows get
+        // null; the abc_render module fills them in lazily on next save.
+        await m.addColumn(schema.tunes, schema.tunes.abcSvg);
       },
     ),
   );
