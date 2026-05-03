@@ -8,7 +8,7 @@
 PRODUCT_NAME = tune_catcher
 
 // The application's bundle identifier
-PRODUCT_BUNDLE_IDENTIFIER = com.example.tuneCatcher
+PRODUCT_BUNDLE_IDENTIFIER = com.gcantieni.tuneCatcher
 
 // The copyright displayed in application information
 PRODUCT_COPYRIGHT = Copyright © 2025 com.example. All rights reserved.

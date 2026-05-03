@@ -33,7 +33,7 @@ Finding the database to clear it is a bit of a pain. In the future, a 'clear' da
 For you copy-and-paste convenience, on MacOS this should work to clear the database:
 
 ``` sh
-rm "$HOME/Library/Containers/com.example.tuneCatcher/Data/Library/Application Support/com.example.tuneCatcher/my_database.sqlite"
+rm "$HOME/Library/Containers/com.gcantieni.tuneCatcher/Data/Library/Application Support/com.gcantieni.tuneCatcher/my_database.sqlite"
 ```
 
 ## Goals
