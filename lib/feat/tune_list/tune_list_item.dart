@@ -1,6 +1,9 @@
+import 'package:drift/drift.dart' as drift;
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:tune_catcher/model/database.dart';
+import 'package:tune_catcher/model/database_provider.dart';
 import 'package:tune_catcher/model/tables/tunes.dart';
 
 String tuneStatusToString(TuneStatus? status) {
@@ -22,16 +25,91 @@ String tuneStatusToString(TuneStatus? status) {
   }
 }
 
-class TuneListItem extends StatelessWidget {
+int _statusDotCount(TuneStatus? status) {
+  switch (status) {
+    case null:
+      return 0;
+    case TuneStatus.todo:
+      return 1;
+    case TuneStatus.canPlay:
+      return 2;
+    case TuneStatus.canStart:
+      return 3;
+    case TuneStatus.inSet:
+      return 4;
+    case TuneStatus.mastered:
+      return 5;
+  }
+}
+
+Widget _buildDotRow(int filled, Color primary) {
+  return Row(
+    mainAxisSize: MainAxisSize.min,
+    children: List.generate(5, (i) {
+      final isFilled = i < filled;
+      return Container(
+        width: 8,
+        height: 8,
+        margin: EdgeInsets.only(left: i == 0 ? 0 : 4),
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: isFilled ? primary : Colors.transparent,
+          border: Border.all(
+            color: isFilled ? primary : Colors.grey.shade400,
+            width: 1.5,
+          ),
+        ),
+      );
+    }),
+  );
+}
+
+Future<void> _pickStatus(
+  BuildContext context,
+  WidgetRef ref,
+  Tune tune,
+) async {
+  final primary = Theme.of(context).colorScheme.primary;
+  final result = await showDialog<TuneStatus>(
+    context: context,
+    builder: (dialogContext) => SimpleDialog(
+      title: const Text('Set status'),
+      children: TuneStatus.values
+          .map(
+            (s) => SimpleDialogOption(
+              onPressed: () => Navigator.of(dialogContext).pop(s),
+              child: Row(
+                children: [
+                  _buildDotRow(_statusDotCount(s), primary),
+                  const SizedBox(width: 12),
+                  Text(tuneStatusToString(s)),
+                ],
+              ),
+            ),
+          )
+          .toList(),
+    ),
+  );
+
+  if (result == null) return;
+
+  await ref.read(databaseProvider).tuneDao.updateTune(
+        TunesCompanion(
+          id: drift.Value(tune.id),
+          status: drift.Value(result),
+        ),
+      );
+}
+
+class TuneListItem extends ConsumerWidget {
   const TuneListItem({required this.tune});
 
   final Tune tune;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     var subtitleString = "";
 
-    // Build subtitle
     if (tune.key != null) {
       subtitleString += tune.key!;
     }
@@ -45,9 +123,10 @@ class TuneListItem extends StatelessWidget {
 
     if (tune.from != null && tune.from!.isNotEmpty) {
       if (subtitleString.isNotEmpty) subtitleString += " ";
-
       subtitleString += "from ${tune.from}";
     }
+
+    final primary = Theme.of(context).colorScheme.primary;
 
     return Card(
       child: Column(
@@ -55,15 +134,19 @@ class TuneListItem extends StatelessWidget {
         children: [
           ListTile(
             onTap: () => context.push('/tune_list/${tune.id}'),
-            title: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(tune.name),
-                if (tune.status != null)
-                  Text("Status: ${tuneStatusToString(tune.status)}"),
-              ],
-            ),
-            subtitle: Text(subtitleString),
+            title: Text(tune.name),
+            subtitle: subtitleString.isNotEmpty ? Text(subtitleString) : null,
+            trailing: InkWell(
+                    onTap: () => _pickStatus(context, ref, tune),
+                    borderRadius: BorderRadius.circular(4),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 4,
+                        vertical: 8,
+                      ),
+                      child: _buildDotRow(_statusDotCount(tune.status), primary),
+                    ),
+                  ),
           ),
         ],
       ),
