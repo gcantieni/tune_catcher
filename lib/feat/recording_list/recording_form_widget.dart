@@ -2,6 +2,7 @@ import 'package:drift/drift.dart' as drift;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:tune_catcher/feat/recording_list/apple_music_search_delegate.dart';
 import 'package:tune_catcher/model/database.dart';
 import 'package:tune_catcher/model/database_provider.dart';
 
@@ -27,6 +28,17 @@ class _RecordingFormWidgetState extends ConsumerState<RecordingFormWidget> {
     _urlController.dispose();
     _performersController.dispose();
     super.dispose();
+  }
+
+  Future<void> _searchAppleMusic(BuildContext context) async {
+    final result = await showSearch(
+      context: context,
+      delegate: AppleMusicSearchDelegate(ref),
+    );
+    if (result == null) return;
+    _nameController.text = '${result.title} – ${result.artistName}';
+    _urlController.text = result.toRecordingUrl();
+    _performersController.text = result.artistName;
   }
 
   Future<void> _submit() async {
@@ -84,6 +96,12 @@ class _RecordingFormWidgetState extends ConsumerState<RecordingFormWidget> {
             ),
             validator: (v) =>
                 (v == null || v.trim().isEmpty) ? 'Required' : null,
+          ),
+          const SizedBox(height: 8),
+          OutlinedButton.icon(
+            icon: const Icon(Icons.library_music, size: 18),
+            label: const Text('Search Apple Music'),
+            onPressed: () => _searchAppleMusic(context),
           ),
           const SizedBox(height: 12),
           TextFormField(

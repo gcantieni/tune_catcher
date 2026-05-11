@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:tune_catcher/feat/recording_list/apple_music_player_widget.dart';
 import 'package:tune_catcher/feat/recording_list/recording_link_kind.dart';
 import 'package:tune_catcher/model/accessors/tune_recording_dao.dart';
 import 'package:tune_catcher/model/database.dart';
@@ -139,6 +140,8 @@ class _RecordingDetailPageState extends ConsumerState<RecordingDetailPage> {
       children: [
         _readRow('Name', r.name),
         const SizedBox(height: 8),
+        if (kind == RecordingLinkKind.appleMusic)
+          AppleMusicPlayerWidget(recordingUrl: r.url),
         Row(
           children: [
             const SizedBox(
