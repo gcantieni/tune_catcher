@@ -38,6 +38,7 @@ class MusicKitPlaybackState {
   final String event; // "statusChanged" | "positionUpdate"
   final String status; // "playing" | "paused" | "stopped" | "interrupted" | "unknown"
   final double position; // seconds
+  final double duration; // seconds
   final String catalogId;
   final String title;
   final String artistName;
@@ -46,6 +47,7 @@ class MusicKitPlaybackState {
     required this.event,
     required this.status,
     required this.position,
+    required this.duration,
     required this.catalogId,
     required this.title,
     required this.artistName,
@@ -56,6 +58,7 @@ class MusicKitPlaybackState {
       event: map['event'] as String? ?? '',
       status: map['status'] as String? ?? 'unknown',
       position: (map['position'] as num?)?.toDouble() ?? 0.0,
+      duration: ((map['durationMs'] as num?)?.toDouble() ?? 0.0) / 1000.0,
       catalogId: map['catalogId'] as String? ?? '',
       title: map['title'] as String? ?? '',
       artistName: map['artistName'] as String? ?? '',

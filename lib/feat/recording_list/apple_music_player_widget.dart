@@ -17,6 +17,7 @@ class AppleMusicPlayerWidget extends ConsumerStatefulWidget {
 class _AppleMusicPlayerWidgetState
     extends ConsumerState<AppleMusicPlayerWidget> {
   String? _catalogId;
+  double? _dragValue;
 
   @override
   void initState() {
@@ -102,14 +103,7 @@ class _AppleMusicPlayerWidgetState
                 ),
                 if (isCurrentTrack) ...[
                   const SizedBox(height: 4),
-                  const LinearProgressIndicator(),
-                  const SizedBox(height: 4),
-                  Text(
-                    _formatPosition(playback.position),
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      fontFamily: 'monospace',
-                    ),
-                  ),
+                  _buildSeekSlider(context, playback),
                 ],
               ],
             ),
@@ -119,9 +113,49 @@ class _AppleMusicPlayerWidgetState
     );
   }
 
-  String _formatPosition(double seconds) {
-    final m = seconds ~/ 60;
-    final s = (seconds % 60).toStringAsFixed(0).padLeft(2, '0');
-    return '$m:$s';
+  Widget _buildSeekSlider(BuildContext context, MusicKitPlaybackState playback) {
+    final duration = playback.duration;
+    final position = _dragValue ?? playback.position;
+    final sliderValue = duration > 0 ? position.clamp(0.0, duration) : 0.0;
+    final labelStyle = Theme.of(context).textTheme.bodySmall?.copyWith(
+      fontFamily: 'monospace',
+      fontSize: 11,
+    );
+
+    return Column(
+      children: [
+        Slider(
+          value: duration > 0 ? sliderValue : 0.0,
+          min: 0,
+          max: duration > 0 ? duration : 1,
+          onChanged: duration > 0
+              ? (v) => setState(() => _dragValue = v)
+              : null,
+          onChangeEnd: duration > 0
+              ? (v) {
+                  ref.read(musicKitProvider.notifier).seek(v);
+                  setState(() => _dragValue = null);
+                }
+              : null,
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(_formatTime(position), style: labelStyle),
+              Text(_formatTime(duration), style: labelStyle),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  String _formatTime(double seconds) {
+    final s = seconds.round();
+    final m = s ~/ 60;
+    final sec = (s % 60).toString().padLeft(2, '0');
+    return '$m:$sec';
   }
 }

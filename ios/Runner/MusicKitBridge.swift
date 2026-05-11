@@ -270,6 +270,8 @@ class MusicKitBridge: NSObject {
         default:           status = "unknown"
         }
 
+        let durationMs = Int((currentSong?.duration ?? 0) * 1000)
+
         if status != lastEmittedStatus {
             lastEmittedStatus = status
             let statusPayload: [String: Any] = [
@@ -279,6 +281,7 @@ class MusicKitBridge: NSObject {
                 "catalogId":  currentSong?.id.rawValue ?? "",
                 "title":      currentSong?.title       ?? "",
                 "artistName": currentSong?.artistName  ?? "",
+                "durationMs": durationMs,
             ]
             DispatchQueue.main.async { [weak self] in self?.eventSink?(statusPayload) }
         }
@@ -295,9 +298,11 @@ class MusicKitBridge: NSObject {
         }
 
         let posPayload: [String: Any] = [
-            "event":    "positionUpdate",
-            "position": position,
-            "status":   status,
+            "event":      "positionUpdate",
+            "position":   position,
+            "status":     status,
+            "catalogId":  currentSong?.id.rawValue ?? "",
+            "durationMs": durationMs,
         ]
         DispatchQueue.main.async { [weak self] in self?.eventSink?(posPayload) }
     }
