@@ -125,9 +125,11 @@ class MockMusicKitService implements MusicKitService {
 
   void _startTimer({double? endTime}) {
     _positionTimer?.cancel();
+    final trackDuration = (_currentTrack?.durationMs ?? 0) / 1000.0;
     _positionTimer = Timer.periodic(const Duration(milliseconds: 100), (_) {
       _position += 0.1;
-      if (endTime != null && _position >= endTime) {
+      final limit = endTime ?? (trackDuration > 0 ? trackDuration : null);
+      if (limit != null && _position >= limit) {
         stop();
         return;
       }

@@ -18,6 +18,7 @@ class _AppleMusicPlayerWidgetState
     extends ConsumerState<AppleMusicPlayerWidget> {
   String? _catalogId;
   double? _dragValue;
+  bool _isLooping = false;
 
   @override
   void initState() {
@@ -41,6 +42,17 @@ class _AppleMusicPlayerWidgetState
 
   @override
   Widget build(BuildContext context) {
+    ref.listen<AsyncValue<MusicKitState>>(musicKitProvider, (prev, next) {
+      final prevPlayback = prev?.valueOrNull?.playback;
+      final nextPlayback = next.valueOrNull?.playback;
+      if (_isLooping &&
+          nextPlayback?.catalogId == _catalogId &&
+          nextPlayback?.isStopped == true &&
+          prevPlayback?.isPlaying == true) {
+        _play();
+      }
+    });
+
     final musicKit = ref.watch(musicKitProvider);
 
     return musicKit.when(
@@ -84,6 +96,17 @@ class _AppleMusicPlayerWidgetState
                       style: TextStyle(fontWeight: FontWeight.w600),
                     ),
                     const Spacer(),
+                    IconButton(
+                      icon: Icon(
+                        Icons.repeat,
+                        size: 22,
+                        color: _isLooping
+                            ? Theme.of(context).colorScheme.primary
+                            : null,
+                      ),
+                      onPressed: () =>
+                          setState(() => _isLooping = !_isLooping),
+                    ),
                     IconButton(
                       icon: Icon(
                         isPlaying ? Icons.pause_circle : Icons.play_circle,
