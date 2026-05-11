@@ -21,6 +21,7 @@ class _AppleMusicPlayerWidgetState
   bool _isLooping = false;
   double _loopStart = 0;
   double _loopEnd = 0;
+  double _playbackRate = 1.0;
 
   @override
   void initState() {
@@ -148,6 +149,8 @@ class _AppleMusicPlayerWidgetState
                     const SizedBox(height: 8),
                     _buildLoopRangeSlider(context, duration),
                   ],
+                  const SizedBox(height: 8),
+                  _buildSpeedSlider(context),
                 ],
               ],
             ),
@@ -235,6 +238,47 @@ class _AppleMusicPlayerWidgetState
             children: [
               Text(_formatTime(_loopStart), style: labelStyle),
               Text(_formatTime(_loopEnd), style: labelStyle),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSpeedSlider(BuildContext context) {
+    final pct = (_playbackRate * 100).round();
+    final scheme = Theme.of(context).colorScheme;
+    final labelStyle = Theme.of(context).textTheme.bodySmall?.copyWith(
+      fontFamily: 'monospace',
+      fontSize: 11,
+    );
+    final dimStyle = labelStyle?.copyWith(
+      color: scheme.onSurfaceVariant.withValues(alpha: 0.6),
+    );
+
+    return Column(
+      children: [
+        Slider(
+          value: _playbackRate,
+          min: 0.5,
+          max: 1.5,
+          onChanged: (v) => setState(() => _playbackRate = v),
+          onChangeEnd: (v) =>
+              ref.read(musicKitProvider.notifier).setPlaybackRate(v),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          child: Row(
+            children: [
+              Text('50%', style: dimStyle),
+              Expanded(
+                child: Text(
+                  '$pct%',
+                  textAlign: TextAlign.center,
+                  style: labelStyle,
+                ),
+              ),
+              Text('150%', style: dimStyle),
             ],
           ),
         ),
