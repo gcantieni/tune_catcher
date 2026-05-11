@@ -19,6 +19,8 @@ class _AppleMusicPlayerWidgetState
   String? _catalogId;
   double? _dragValue;
   bool _isLooping = false;
+  double _loopStart = 0;
+  double _loopEnd = 0;
 
   @override
   void initState() {
@@ -35,20 +37,35 @@ class _AppleMusicPlayerWidgetState
   Future<void> _play() async {
     final id = _catalogId;
     if (id == null) return;
-    await ref
-        .read(musicKitProvider.notifier)
-        .play(MusicKitPlayParams(catalogId: id));
+    await ref.read(musicKitProvider.notifier).play(MusicKitPlayParams(
+      catalogId: id,
+      startTime: _isLooping ? _loopStart : null,
+    ));
+  }
+
+  void _toggleLoop(double duration) {
+    setState(() {
+      _isLooping = !_isLooping;
+      if (_isLooping) {
+        _loopStart = 0;
+        _loopEnd = duration > 0 ? duration : 60;
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     ref.listen<AsyncValue<MusicKitState>>(musicKitProvider, (prev, next) {
       final prevPlayback = prev?.valueOrNull?.playback;
-      final nextPlayback = next.valueOrNull?.playback;
-      if (_isLooping &&
-          nextPlayback?.catalogId == _catalogId &&
-          nextPlayback?.isStopped == true &&
-          prevPlayback?.isPlaying == true) {
+      final playback = next.valueOrNull?.playback;
+      if (!_isLooping || playback?.catalogId != _catalogId) return;
+
+      if (playback!.isPlaying) {
+        final pos = playback.position;
+        if (pos < _loopStart || pos >= _loopEnd) {
+          ref.read(musicKitProvider.notifier).seek(_loopStart);
+        }
+      } else if (playback.isStopped && prevPlayback?.isPlaying == true) {
         _play();
       }
     });
@@ -79,6 +96,7 @@ class _AppleMusicPlayerWidgetState
         final isCurrentTrack =
             playback != null && playback.catalogId == _catalogId;
         final isPlaying = isCurrentTrack && playback.isPlaying;
+        final duration = playback?.duration ?? 0;
 
         return Card(
           margin: const EdgeInsets.symmetric(vertical: 8),
@@ -101,11 +119,10 @@ class _AppleMusicPlayerWidgetState
                         Icons.repeat,
                         size: 22,
                         color: _isLooping
-                            ? Theme.of(context).colorScheme.primary
+                            ? Theme.of(context).colorScheme.tertiary
                             : null,
                       ),
-                      onPressed: () =>
-                          setState(() => _isLooping = !_isLooping),
+                      onPressed: () => _toggleLoop(duration),
                     ),
                     IconButton(
                       icon: Icon(
@@ -126,7 +143,11 @@ class _AppleMusicPlayerWidgetState
                 ),
                 if (isCurrentTrack) ...[
                   const SizedBox(height: 4),
-                  _buildSeekSlider(context, playback),
+                  _buildPlaybackSlider(context, playback),
+                  if (_isLooping) ...[
+                    const SizedBox(height: 8),
+                    _buildLoopRangeSlider(context, duration),
+                  ],
                 ],
               ],
             ),
@@ -136,7 +157,8 @@ class _AppleMusicPlayerWidgetState
     );
   }
 
-  Widget _buildSeekSlider(BuildContext context, MusicKitPlaybackState playback) {
+  Widget _buildPlaybackSlider(
+      BuildContext context, MusicKitPlaybackState playback) {
     final duration = playback.duration;
     final position = _dragValue ?? playback.position;
     final sliderValue = duration > 0 ? position.clamp(0.0, duration) : 0.0;
@@ -168,6 +190,51 @@ class _AppleMusicPlayerWidgetState
             children: [
               Text(_formatTime(position), style: labelStyle),
               Text(_formatTime(duration), style: labelStyle),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildLoopRangeSlider(BuildContext context, double duration) {
+    if (duration <= 0) return const SizedBox.shrink();
+    final tertiary = Theme.of(context).colorScheme.tertiary;
+    final labelStyle = Theme.of(context).textTheme.bodySmall?.copyWith(
+      fontFamily: 'monospace',
+      fontSize: 11,
+      color: tertiary,
+    );
+
+    return Column(
+      children: [
+        SliderTheme(
+          data: SliderTheme.of(context).copyWith(
+            activeTrackColor: tertiary,
+            thumbColor: tertiary,
+            inactiveTrackColor: tertiary.withValues(alpha: 0.24),
+            overlayColor: tertiary.withValues(alpha: 0.12),
+          ),
+          child: RangeSlider(
+          values: RangeValues(
+            _loopStart.clamp(0.0, duration),
+            _loopEnd.clamp(0.0, duration),
+          ),
+          min: 0,
+          max: duration,
+          onChanged: (values) => setState(() {
+            _loopStart = values.start;
+            _loopEnd = values.end;
+          }),
+        ),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(_formatTime(_loopStart), style: labelStyle),
+              Text(_formatTime(_loopEnd), style: labelStyle),
             ],
           ),
         ),
