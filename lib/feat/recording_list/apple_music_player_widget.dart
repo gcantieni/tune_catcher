@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tune_catcher/feat/music_kit/music_kit_constants.dart';
@@ -17,31 +19,44 @@ class AppleMusicPlayerWidget extends ConsumerStatefulWidget {
 class _AppleMusicPlayerWidgetState
     extends ConsumerState<AppleMusicPlayerWidget> {
   String? _catalogId;
+  MusicKitNotifier? _notifier;
   double? _dragValue;
   bool _isLooping = false;
   double _loopStart = 0;
   double _loopEnd = 0;
   double _playbackRate = 1.0;
+  Timer? _rateDebounce;
+  bool _playPending = false;
+  bool _seekPending = false;
 
   @override
   void initState() {
     super.initState();
     _catalogId = catalogIdFromUrl(widget.recordingUrl);
+    _notifier = ref.read(musicKitProvider.notifier);
   }
 
   @override
   void dispose() {
-    ref.read(musicKitProvider.notifier).stop();
+    _rateDebounce?.cancel();
+    _notifier?.stop();
     super.dispose();
   }
 
   Future<void> _play() async {
+    if (_playPending) return;
     final id = _catalogId;
     if (id == null) return;
-    await ref.read(musicKitProvider.notifier).play(MusicKitPlayParams(
-      catalogId: id,
-      startTime: _isLooping ? _loopStart : null,
-    ));
+    _playPending = true;
+    try {
+      await _notifier?.play(MusicKitPlayParams(
+        catalogId: id,
+        startTime: _isLooping ? _loopStart : null,
+      ));
+    } finally {
+      _playPending = false;
+      if (mounted) setState(() {});
+    }
   }
 
   void _toggleLoop(double duration) {
@@ -57,17 +72,22 @@ class _AppleMusicPlayerWidgetState
   @override
   Widget build(BuildContext context) {
     ref.listen<AsyncValue<MusicKitState>>(musicKitProvider, (prev, next) {
-      final prevPlayback = prev?.valueOrNull?.playback;
       final playback = next.valueOrNull?.playback;
-      if (!_isLooping || playback?.catalogId != _catalogId) return;
+      if (playback?.catalogId != _catalogId) return;
 
-      if (playback!.isPlaying) {
+      if (playback!.isStopped && _isLooping) {
+        if (!_playPending) _play();
+        return;
+      }
+
+      if (_isLooping && playback.isPlaying && !_seekPending) {
         final pos = playback.position;
         if (pos < _loopStart || pos >= _loopEnd) {
-          ref.read(musicKitProvider.notifier).seek(_loopStart);
+          _seekPending = true;
+          ref.read(musicKitProvider.notifier).seek(_loopStart).whenComplete(() {
+            if (mounted) _seekPending = false;
+          });
         }
-      } else if (playback.isStopped && prevPlayback?.isPlaying == true) {
-        _play();
       }
     });
 
@@ -97,7 +117,7 @@ class _AppleMusicPlayerWidgetState
         final isCurrentTrack =
             playback != null && playback.catalogId == _catalogId;
         final isPlaying = isCurrentTrack && playback.isPlaying;
-        final duration = playback?.duration ?? 0;
+        final duration = isCurrentTrack ? playback.duration : 0.0;
 
         return Card(
           margin: const EdgeInsets.symmetric(vertical: 8),
@@ -161,9 +181,9 @@ class _AppleMusicPlayerWidgetState
   }
 
   Widget _buildPlaybackSlider(
-      BuildContext context, MusicKitPlaybackState playback) {
-    final duration = playback.duration;
-    final position = _dragValue ?? playback.position;
+      BuildContext context, MusicKitPlaybackState? playback) {
+    final duration = playback?.duration ?? 0;
+    final position = _dragValue ?? playback?.position ?? 0;
     final sliderValue = duration > 0 ? position.clamp(0.0, duration) : 0.0;
     final labelStyle = Theme.of(context).textTheme.bodySmall?.copyWith(
       fontFamily: 'monospace',
@@ -262,9 +282,13 @@ class _AppleMusicPlayerWidgetState
           value: _playbackRate,
           min: 0.5,
           max: 1.5,
-          onChanged: (v) => setState(() => _playbackRate = v),
-          onChangeEnd: (v) =>
-              ref.read(musicKitProvider.notifier).setPlaybackRate(v),
+          onChanged: (v) {
+            setState(() => _playbackRate = v);
+            _rateDebounce?.cancel();
+            _rateDebounce = Timer(const Duration(milliseconds: 80), () {
+              ref.read(musicKitProvider.notifier).setPlaybackRate(v);
+            });
+          },
         ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12),

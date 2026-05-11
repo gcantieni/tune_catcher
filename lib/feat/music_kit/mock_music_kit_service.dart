@@ -1,9 +1,14 @@
 import 'dart:async';
 
+import 'package:just_audio/just_audio.dart';
 import 'package:tune_catcher/feat/music_kit/music_kit_models.dart';
 import 'package:tune_catcher/feat/music_kit/music_kit_service.dart';
 
-// Fake catalog entries for testing without the MusicKit entitlement.
+const _mockAsset = 'assets/song.mp3';
+
+// Position update interval — real MusicKit fires events at ~500ms when playing.
+const _positionInterval = Duration(milliseconds: 500);
+
 const _fakeResults = [
   MusicKitSearchResult(
     kind: 'song',
@@ -45,10 +50,27 @@ const _fakeResults = [
 
 class MockMusicKitService implements MusicKitService {
   final _stateController = StreamController<MusicKitPlaybackState>.broadcast();
+  final _player = AudioPlayer();
+  StreamSubscription<PlayerState>? _playerStateSub;
   Timer? _positionTimer;
-  double _position = 0;
-  String _status = 'stopped';
   MusicKitSearchResult? _currentTrack;
+  String _requestedCatalogId = '';
+  double _duration = 0;
+  String _status = 'stopped';
+  // Asset stays loaded between play/pause/seek cycles — mirrors MusicKit's
+  // buffered queue. Reset only on stop() since that dequeues the item.
+  bool _assetLoaded = false;
+
+  MockMusicKitService() {
+    _playerStateSub = _player.playerStateStream.listen((state) {
+      if (state.processingState == ProcessingState.completed &&
+          _status == 'playing') {
+        _status = 'stopped';
+        _stopPositionTimer();
+        _emitStatus(0);
+      }
+    });
+  }
 
   @override
   Future<String> authorize() async => 'authorized';
@@ -70,46 +92,61 @@ class MockMusicKitService implements MusicKitService {
 
   @override
   Future<void> play(MusicKitPlayParams params) async {
+    _requestedCatalogId = params.catalogId;
     _currentTrack = _fakeResults.firstWhere(
       (r) => r.id == params.catalogId,
       orElse: () => _fakeResults.first,
     );
-    _position = params.startTime ?? 0;
+
+    if (!_assetLoaded) {
+      final audioDuration = await _player.setAsset(_mockAsset);
+      _duration = (audioDuration?.inMilliseconds ?? 0) / 1000.0;
+      _assetLoaded = true;
+    }
+
+    final startMs = ((params.startTime ?? 0) * 1000).round();
+    await _player.seek(Duration(milliseconds: startMs));
+    _player.play(); // ignore: discarded_futures — completes when song ends, not on start
     _status = 'playing';
-    _emitStatus();
-    _startTimer(endTime: params.endTime);
+    _startPositionTimer();
+    _emitStatus(_player.position.inMilliseconds / 1000.0);
   }
 
   @override
   Future<void> pause() async {
+    await _player.pause();
     _status = 'paused';
-    _positionTimer?.cancel();
-    _emitStatus();
+    _stopPositionTimer();
+    _emitStatus(_player.position.inMilliseconds / 1000.0);
   }
 
   @override
   Future<void> resume() async {
+    _player.play(); // ignore: discarded_futures
     _status = 'playing';
-    _emitStatus();
-    _startTimer();
+    _startPositionTimer();
+    _emitStatus(_player.position.inMilliseconds / 1000.0);
   }
 
   @override
   Future<void> stop() async {
-    _positionTimer?.cancel();
+    await _player.stop();
     _status = 'stopped';
-    _position = 0;
-    _emitStatus();
+    _stopPositionTimer();
+    _assetLoaded = false;
+    _emitStatus(0);
   }
 
   @override
   Future<void> seek(double positionSeconds) async {
-    _position = positionSeconds;
-    _emitPosition();
+    await _player.seek(Duration(milliseconds: (positionSeconds * 1000).round()));
+    _emitPosition(_player.position.inMilliseconds / 1000.0);
   }
 
   @override
-  Future<void> setPlaybackRate(double rate) async {}
+  Future<void> setPlaybackRate(double rate) async {
+    await _player.setSpeed(rate);
+  }
 
   @override
   Future<void> setRepeatMode(String mode) async {}
@@ -119,43 +156,45 @@ class MockMusicKitService implements MusicKitService {
 
   @override
   void dispose() {
-    _positionTimer?.cancel();
+    _stopPositionTimer();
+    _playerStateSub?.cancel();
+    _player.dispose();
     _stateController.close();
   }
 
-  void _startTimer({double? endTime}) {
+  void _startPositionTimer() {
     _positionTimer?.cancel();
-    final trackDuration = (_currentTrack?.durationMs ?? 0) / 1000.0;
-    _positionTimer = Timer.periodic(const Duration(milliseconds: 100), (_) {
-      _position += 0.1;
-      final limit = endTime ?? (trackDuration > 0 ? trackDuration : null);
-      if (limit != null && _position >= limit) {
-        stop();
-        return;
+    _positionTimer = Timer.periodic(_positionInterval, (_) {
+      if (_status == 'playing') {
+        _emitPosition(_player.position.inMilliseconds / 1000.0);
       }
-      _emitPosition();
     });
   }
 
-  void _emitStatus() {
+  void _stopPositionTimer() {
+    _positionTimer?.cancel();
+    _positionTimer = null;
+  }
+
+  void _emitStatus(double position) {
     _stateController.add(MusicKitPlaybackState(
       event: 'statusChanged',
       status: _status,
-      position: _position,
-      duration: (_currentTrack?.durationMs ?? 0) / 1000.0,
-      catalogId: _currentTrack?.id ?? '',
+      position: position,
+      duration: _duration,
+      catalogId: _requestedCatalogId,
       title: _currentTrack?.title ?? '',
       artistName: _currentTrack?.artistName ?? '',
     ));
   }
 
-  void _emitPosition() {
+  void _emitPosition(double position) {
     _stateController.add(MusicKitPlaybackState(
       event: 'positionUpdate',
       status: _status,
-      position: _position,
-      duration: (_currentTrack?.durationMs ?? 0) / 1000.0,
-      catalogId: _currentTrack?.id ?? '',
+      position: position,
+      duration: _duration,
+      catalogId: _requestedCatalogId,
       title: _currentTrack?.title ?? '',
       artistName: _currentTrack?.artistName ?? '',
     ));
