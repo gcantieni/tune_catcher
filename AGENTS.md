@@ -49,6 +49,20 @@ lib/
 
 Four primary routes via bottom nav: Set List → Tune List → Recording List → Recorder (initial location). Directional slide transitions based on nav position.
 
+## Development Standards
+
+Follow TDD for all code changes:
+1. **Red** — write a failing unit test that captures the desired behavior (`make test`)
+2. **Green** — write the minimal code to make it pass (`make test`)
+
+After completing any code changes, always run:
+
+```
+make format
+make analyze
+make test
+```
+
 ## Context Files
 
 - [.context/playbooks/](/.context/playbooks/) — Step-by-step guides for common development actions
