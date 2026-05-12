@@ -2,6 +2,7 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<!-- Add com.apple.developer.musickit (true) after enabling MusicKit in Apple Developer portal -->
+	<key>com.apple.developer.musickit</key>
+	<true/>
 </dict>
 </plist>
