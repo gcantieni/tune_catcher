@@ -1,15 +1,24 @@
 import Cocoa
 import FlutterMacOS
+import MusicKit
 
 class MainFlutterWindow: NSWindow {
-  override func awakeFromNib() {
-    let flutterViewController = FlutterViewController()
-    let windowFrame = self.frame
-    self.contentViewController = flutterViewController
-    self.setFrame(windowFrame, display: true)
+    private var musicKitBridge: AnyObject?
 
-    RegisterGeneratedPlugins(registry: flutterViewController)
+    override func awakeFromNib() {
+        let flutterViewController = FlutterViewController()
+        let windowFrame = self.frame
+        self.contentViewController = flutterViewController
+        self.setFrame(windowFrame, display: true)
 
-    super.awakeFromNib()
-  }
+        RegisterGeneratedPlugins(registry: flutterViewController)
+
+        if #available(macOS 14, *) {
+            let bridge = MusicKitBridge()
+            bridge.setup(binaryMessenger: flutterViewController.engine.binaryMessenger)
+            musicKitBridge = bridge
+        }
+
+        super.awakeFromNib()
+    }
 }

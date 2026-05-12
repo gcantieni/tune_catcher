@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 
-enum RecordingLinkKind { youtube, spotify, file, generic }
+enum RecordingLinkKind { youtube, spotify, appleMusic, file, generic }
 
 RecordingLinkKind recordingLinkKindOf(String url) {
   final trimmed = url.trim().toLowerCase();
   if (trimmed.isEmpty) return RecordingLinkKind.generic;
   if (trimmed.startsWith('app-data:') || trimmed.startsWith('file:')) {
     return RecordingLinkKind.file;
+  }
+  if (trimmed.startsWith('music-catalog:') || trimmed.startsWith('music://')) {
+    return RecordingLinkKind.appleMusic;
   }
   final uri = Uri.tryParse(trimmed);
   final host = uri?.host ?? '';
@@ -25,6 +28,8 @@ IconData iconForLinkKind(RecordingLinkKind kind) {
       return Icons.smart_display;
     case RecordingLinkKind.spotify:
       return Icons.music_note;
+    case RecordingLinkKind.appleMusic:
+      return Icons.library_music;
     case RecordingLinkKind.file:
       return Icons.audio_file_outlined;
     case RecordingLinkKind.generic:
