@@ -122,7 +122,7 @@ class MusicKitBridge: NSObject {
                     switch mode {
                     case "one": ApplicationMusicPlayer.shared.state.repeatMode = .one
                     case "all": ApplicationMusicPlayer.shared.state.repeatMode = .all
-                    default:    ApplicationMusicPlayer.shared.state.repeatMode = .none
+                    default:    ApplicationMusicPlayer.shared.state.repeatMode = MusicPlayer.RepeatMode.none
                     }
                     result(nil)
 
