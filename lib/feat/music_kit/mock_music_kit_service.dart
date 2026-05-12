@@ -106,7 +106,8 @@ class MockMusicKitService implements MusicKitService {
 
     final startMs = ((params.startTime ?? 0) * 1000).round();
     await _player.seek(Duration(milliseconds: startMs));
-    _player.play(); // ignore: discarded_futures — completes when song ends, not on start
+    _player
+        .play(); // ignore: discarded_futures — completes when song ends, not on start
     _status = 'playing';
     _startPositionTimer();
     _emitStatus(_player.position.inMilliseconds / 1000.0);
@@ -139,7 +140,9 @@ class MockMusicKitService implements MusicKitService {
 
   @override
   Future<void> seek(double positionSeconds) async {
-    await _player.seek(Duration(milliseconds: (positionSeconds * 1000).round()));
+    await _player.seek(
+      Duration(milliseconds: (positionSeconds * 1000).round()),
+    );
     _emitPosition(_player.position.inMilliseconds / 1000.0);
   }
 
@@ -177,26 +180,30 @@ class MockMusicKitService implements MusicKitService {
   }
 
   void _emitStatus(double position) {
-    _stateController.add(MusicKitPlaybackState(
-      event: 'statusChanged',
-      status: _status,
-      position: position,
-      duration: _duration,
-      catalogId: _requestedCatalogId,
-      title: _currentTrack?.title ?? '',
-      artistName: _currentTrack?.artistName ?? '',
-    ));
+    _stateController.add(
+      MusicKitPlaybackState(
+        event: 'statusChanged',
+        status: _status,
+        position: position,
+        duration: _duration,
+        catalogId: _requestedCatalogId,
+        title: _currentTrack?.title ?? '',
+        artistName: _currentTrack?.artistName ?? '',
+      ),
+    );
   }
 
   void _emitPosition(double position) {
-    _stateController.add(MusicKitPlaybackState(
-      event: 'positionUpdate',
-      status: _status,
-      position: position,
-      duration: _duration,
-      catalogId: _requestedCatalogId,
-      title: _currentTrack?.title ?? '',
-      artistName: _currentTrack?.artistName ?? '',
-    ));
+    _stateController.add(
+      MusicKitPlaybackState(
+        event: 'positionUpdate',
+        status: _status,
+        position: position,
+        duration: _duration,
+        catalogId: _requestedCatalogId,
+        title: _currentTrack?.title ?? '',
+        artistName: _currentTrack?.artistName ?? '',
+      ),
+    );
   }
 }

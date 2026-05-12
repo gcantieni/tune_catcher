@@ -108,17 +108,18 @@ class _PlaybackSliderState extends ConsumerState<_PlaybackSlider> {
 
     final position = _dragValue ?? state.position;
     final sliderValue = duration > 0 ? position.clamp(0.0, duration) : 0.0;
-    final labelStyle = Theme.of(context).textTheme.bodySmall?.copyWith(
-      fontFamily: 'monospace',
-      fontSize: 11,
-    );
+    final labelStyle = Theme.of(
+      context,
+    ).textTheme.bodySmall?.copyWith(fontFamily: 'monospace', fontSize: 11);
 
     return Column(
       children: [
         Slider(
           value: duration > 0 ? sliderValue : 0.0,
           max: duration > 0 ? duration : 1,
-          onChanged: duration > 0 ? (v) => setState(() => _dragValue = v) : null,
+          onChanged: duration > 0
+              ? (v) => setState(() => _dragValue = v)
+              : null,
           onChangeEnd: duration > 0
               ? (v) {
                   ref.read(audioPlayerProvider.notifier).seek(v);
@@ -214,10 +215,9 @@ class _SpeedSlider extends ConsumerWidget {
     final rate = ref.watch(audioPlayerProvider.select((s) => s.playbackRate));
     final pct = (rate * 100).round();
     final scheme = Theme.of(context).colorScheme;
-    final labelStyle = Theme.of(context).textTheme.bodySmall?.copyWith(
-      fontFamily: 'monospace',
-      fontSize: 11,
-    );
+    final labelStyle = Theme.of(
+      context,
+    ).textTheme.bodySmall?.copyWith(fontFamily: 'monospace', fontSize: 11);
     final dimStyle = labelStyle?.copyWith(
       color: scheme.onSurfaceVariant.withValues(alpha: 0.6),
     );

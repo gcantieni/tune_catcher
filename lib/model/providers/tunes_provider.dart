@@ -8,7 +8,10 @@ final allTunesProvider = StreamProvider.autoDispose<List<Tune>>((ref) {
   return db.tuneDao.watchAllTunes();
 });
 
-final singleTuneProvider = StreamProvider.family.autoDispose<Tune?, int>((ref, id) {
+final singleTuneProvider = StreamProvider.family.autoDispose<Tune?, int>((
+  ref,
+  id,
+) {
   final db = ref.watch(databaseProvider);
   return db.tuneDao.watchTune(id);
 });

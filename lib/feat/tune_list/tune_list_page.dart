@@ -21,11 +21,7 @@ class TuneListPage extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             const TuneFilterBar(),
-            Expanded(
-              child: ListView(
-                children: [TuneListWidget()],
-              ),
-            ),
+            Expanded(child: ListView(children: [TuneListWidget()])),
           ],
         ),
       ),

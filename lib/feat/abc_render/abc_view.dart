@@ -24,10 +24,7 @@ class AbcView extends StatelessWidget {
             color: Theme.of(context).colorScheme.outlineVariant,
           ),
         ),
-        child: SvgPicture.string(
-          svg!,
-          alignment: Alignment.topLeft,
-        ),
+        child: SvgPicture.string(svg!, alignment: Alignment.topLeft),
       );
     }
     return Container(

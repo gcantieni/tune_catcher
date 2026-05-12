@@ -64,11 +64,7 @@ Widget _buildDotRow(int filled, Color primary) {
   );
 }
 
-Future<void> _pickStatus(
-  BuildContext context,
-  WidgetRef ref,
-  Tune tune,
-) async {
+Future<void> _pickStatus(BuildContext context, WidgetRef ref, Tune tune) async {
   final primary = Theme.of(context).colorScheme.primary;
   final result = await showDialog<TuneStatus>(
     context: context,
@@ -93,11 +89,11 @@ Future<void> _pickStatus(
 
   if (result == null) return;
 
-  await ref.read(databaseProvider).tuneDao.updateTune(
-        TunesCompanion(
-          id: drift.Value(tune.id),
-          status: drift.Value(result),
-        ),
+  await ref
+      .read(databaseProvider)
+      .tuneDao
+      .updateTune(
+        TunesCompanion(id: drift.Value(tune.id), status: drift.Value(result)),
       );
 }
 
@@ -137,16 +133,13 @@ class TuneListItem extends ConsumerWidget {
             title: Text(tune.name),
             subtitle: subtitleString.isNotEmpty ? Text(subtitleString) : null,
             trailing: InkWell(
-                    onTap: () => _pickStatus(context, ref, tune),
-                    borderRadius: BorderRadius.circular(4),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 4,
-                        vertical: 8,
-                      ),
-                      child: _buildDotRow(_statusDotCount(tune.status), primary),
-                    ),
-                  ),
+              onTap: () => _pickStatus(context, ref, tune),
+              borderRadius: BorderRadius.circular(4),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+                child: _buildDotRow(_statusDotCount(tune.status), primary),
+              ),
+            ),
           ),
         ],
       ),

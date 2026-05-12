@@ -272,10 +272,7 @@ class _RecordingPickerDialogState extends ConsumerState<RecordingPickerDialog> {
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              TextButton(
-                onPressed: _cancelCreate,
-                child: const Text('Back'),
-              ),
+              TextButton(onPressed: _cancelCreate, child: const Text('Back')),
               const SizedBox(width: 8),
               ElevatedButton(
                 onPressed: _submitCreate,

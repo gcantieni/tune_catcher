@@ -59,7 +59,9 @@ class _RecordingFormWidgetState extends ConsumerState<RecordingFormWidget> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('File is not available locally — download it first.'),
+              content: Text(
+                'File is not available locally — download it first.',
+              ),
             ),
           );
         }
@@ -72,7 +74,9 @@ class _RecordingFormWidgetState extends ConsumerState<RecordingFormWidget> {
       await destDir.create(recursive: true);
 
       final filename = _uniqueFilename(destDir, picked.name);
-      final destFile = await File(sourcePath).copy(p.join(destDir.path, filename));
+      final destFile = await File(
+        sourcePath,
+      ).copy(p.join(destDir.path, filename));
 
       if (!mounted) return;
       final fileUri = 'file://${destFile.path}';
@@ -111,9 +115,7 @@ class _RecordingFormWidgetState extends ConsumerState<RecordingFormWidget> {
             name: _nameController.text.trim(),
             url: _urlController.text.trim(),
             createdAt: DateTime.now(),
-            performers: drift.Value(
-              performers.isEmpty ? null : performers,
-            ),
+            performers: drift.Value(performers.isEmpty ? null : performers),
           ),
         );
 

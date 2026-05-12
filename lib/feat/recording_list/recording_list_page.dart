@@ -38,10 +38,7 @@ class RecordingListPage extends StatelessWidget {
                 children: [
                   const Text(
                     'Add recording',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w600,
-                    ),
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
                   ),
                   const SizedBox(height: 16),
                   RecordingFormWidget(
@@ -80,9 +77,7 @@ class RecordingListWidget extends ConsumerWidget {
                   ),
                 ),
               ]
-            : [
-                for (final r in recordings) RecordingListItem(recording: r),
-              ],
+            : [for (final r in recordings) RecordingListItem(recording: r)],
       ),
     );
   }

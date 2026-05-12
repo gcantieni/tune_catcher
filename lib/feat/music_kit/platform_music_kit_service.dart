@@ -12,14 +12,11 @@ class PlatformMusicKitService implements MusicKitService {
   final _stateController = StreamController<MusicKitPlaybackState>.broadcast();
 
   PlatformMusicKitService() {
-    _sub = _eventChannel.receiveBroadcastStream().listen(
-      (dynamic event) {
-        if (event is Map) {
-          _stateController.add(MusicKitPlaybackState.fromMap(event.cast()));
-        }
-      },
-      onError: _stateController.addError,
-    );
+    _sub = _eventChannel.receiveBroadcastStream().listen((dynamic event) {
+      if (event is Map) {
+        _stateController.add(MusicKitPlaybackState.fromMap(event.cast()));
+      }
+    }, onError: _stateController.addError);
   }
 
   @override
@@ -30,7 +27,9 @@ class PlatformMusicKitService implements MusicKitService {
 
   @override
   Future<String> authorizationStatus() async {
-    final result = await _methodChannel.invokeMethod<String>('authorizationStatus');
+    final result = await _methodChannel.invokeMethod<String>(
+      'authorizationStatus',
+    );
     return result ?? 'notDetermined';
   }
 

@@ -36,7 +36,8 @@ class MusicKitSearchResult {
 
 class MusicKitPlaybackState {
   final String event; // "statusChanged" | "positionUpdate"
-  final String status; // "playing" | "paused" | "stopped" | "interrupted" | "unknown"
+  final String
+  status; // "playing" | "paused" | "stopped" | "interrupted" | "unknown"
   final double position; // seconds
   final double duration; // seconds
   final String catalogId;

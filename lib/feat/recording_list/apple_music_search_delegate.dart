@@ -13,10 +13,7 @@ class AppleMusicSearchDelegate extends SearchDelegate<MusicKitSearchResult?> {
 
   @override
   List<Widget> buildActions(BuildContext context) => [
-    IconButton(
-      icon: const Icon(Icons.clear),
-      onPressed: () => query = '',
-    ),
+    IconButton(icon: const Icon(Icons.clear), onPressed: () => query = ''),
   ];
 
   @override

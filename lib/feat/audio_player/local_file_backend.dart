@@ -73,7 +73,9 @@ class LocalFileBackend implements AudioPlayerBackend {
 
   @override
   Future<void> seek(double positionSeconds) async {
-    await _player.seek(Duration(milliseconds: (positionSeconds * 1000).round()));
+    await _player.seek(
+      Duration(milliseconds: (positionSeconds * 1000).round()),
+    );
     _emit(_player.position.inMilliseconds / 1000.0);
   }
 
@@ -89,13 +91,15 @@ class LocalFileBackend implements AudioPlayerBackend {
   }
 
   void _emit(double position) {
-    _controller.add(AudioPlayerState(
-      trackUri: _trackUri,
-      status: _status,
-      position: position,
-      duration: _duration,
-      title: _title,
-    ));
+    _controller.add(
+      AudioPlayerState(
+        trackUri: _trackUri,
+        status: _status,
+        position: position,
+        duration: _duration,
+        title: _title,
+      ),
+    );
   }
 
   String _pathFromUri(String uri) {

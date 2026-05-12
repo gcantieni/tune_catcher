@@ -47,10 +47,9 @@ class MusicKitBackend implements AudioPlayerBackend {
   @override
   Future<void> play(String trackUri, {double? startTime}) {
     final catalogId = catalogIdFromUrl(trackUri) ?? trackUri;
-    return _service.play(MusicKitPlayParams(
-      catalogId: catalogId,
-      startTime: startTime,
-    ));
+    return _service.play(
+      MusicKitPlayParams(catalogId: catalogId, startTime: startTime),
+    );
   }
 
   @override

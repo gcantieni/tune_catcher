@@ -56,5 +56,6 @@ class MusicKitNotifier extends AsyncNotifier<MusicKitState> {
   }
 }
 
-final musicKitProvider =
-    AsyncNotifierProvider<MusicKitNotifier, MusicKitState>(MusicKitNotifier.new);
+final musicKitProvider = AsyncNotifierProvider<MusicKitNotifier, MusicKitState>(
+  MusicKitNotifier.new,
+);

@@ -71,9 +71,7 @@ class _RecordingDetailPageState extends ConsumerState<RecordingDetailPage> {
     final updated = r.copyWith(
       name: _nameController.text.trim(),
       url: _urlController.text.trim(),
-      performers: drift.Value(
-        performersText.isEmpty ? null : performersText,
-      ),
+      performers: drift.Value(performersText.isEmpty ? null : performersText),
       modifiedAt: drift.Value(DateTime.now()),
     );
 
@@ -153,10 +151,7 @@ class _RecordingDetailPageState extends ConsumerState<RecordingDetailPage> {
           children: [
             const SizedBox(
               width: 100,
-              child: Text(
-                'URL',
-                style: TextStyle(fontWeight: FontWeight.w600),
-              ),
+              child: Text('URL', style: TextStyle(fontWeight: FontWeight.w600)),
             ),
             Icon(iconForLinkKind(kind), size: 18),
             const SizedBox(width: 6),
@@ -391,8 +386,7 @@ class _AppleMusicPlayerSection extends ConsumerWidget {
             child: OutlinedButton.icon(
               icon: const Icon(Icons.library_music, size: 18),
               label: const Text('Allow Apple Music access'),
-              onPressed: () =>
-                  ref.read(musicKitProvider.notifier).authorize(),
+              onPressed: () => ref.read(musicKitProvider.notifier).authorize(),
             ),
           );
         }

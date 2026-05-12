@@ -25,10 +25,7 @@ class TuneRecordingDao extends DatabaseAccessor<AppDatabase>
   Future<int> linkTuneToRecording(int tuneId, int recordingId) {
     return transaction(() async {
       final rowId = await into(tuneRecording).insert(
-        TuneRecordingCompanion.insert(
-          tuneId: tuneId,
-          recordingId: recordingId,
-        ),
+        TuneRecordingCompanion.insert(tuneId: tuneId, recordingId: recordingId),
         mode: InsertMode.insertOrIgnore,
       );
       if (rowId > 0) await _bumpTuneModified(tuneId);
@@ -41,10 +38,7 @@ class TuneRecordingDao extends DatabaseAccessor<AppDatabase>
     return transaction(() async {
       final tuneId = await into(tunes).insert(tune);
       await into(tuneRecording).insert(
-        TuneRecordingCompanion.insert(
-          tuneId: tuneId,
-          recordingId: recordingId,
-        ),
+        TuneRecordingCompanion.insert(tuneId: tuneId, recordingId: recordingId),
       );
       return tuneId;
     });
@@ -59,10 +53,7 @@ class TuneRecordingDao extends DatabaseAccessor<AppDatabase>
     return transaction(() async {
       final recordingId = await into(recordings).insert(recording);
       await into(tuneRecording).insert(
-        TuneRecordingCompanion.insert(
-          tuneId: tuneId,
-          recordingId: recordingId,
-        ),
+        TuneRecordingCompanion.insert(tuneId: tuneId, recordingId: recordingId),
       );
       await _bumpTuneModified(tuneId);
       return recordingId;

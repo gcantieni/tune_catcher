@@ -62,7 +62,9 @@ class AudioPlayerNotifier extends Notifier<AudioPlayerState> {
     if (s.isPlaying && s.duration > 0) {
       if (s.position < s.loopStart || s.position >= s.loopEnd) {
         _seekPending = true;
-        _activeBackend?.seek(s.loopStart).whenComplete(() => _seekPending = false);
+        _activeBackend
+            ?.seek(s.loopStart)
+            .whenComplete(() => _seekPending = false);
       }
     }
   }
@@ -129,5 +131,5 @@ class AudioPlayerNotifier extends Notifier<AudioPlayerState> {
 
 final audioPlayerProvider =
     NotifierProvider<AudioPlayerNotifier, AudioPlayerState>(
-  AudioPlayerNotifier.new,
-);
+      AudioPlayerNotifier.new,
+    );

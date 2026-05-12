@@ -53,8 +53,9 @@ class TuneFiltersNotifier extends Notifier<TuneFilters> {
   void clear() => state = const TuneFilters();
 }
 
-final tuneFiltersProvider =
-    NotifierProvider<TuneFiltersNotifier, TuneFilters>(TuneFiltersNotifier.new);
+final tuneFiltersProvider = NotifierProvider<TuneFiltersNotifier, TuneFilters>(
+  TuneFiltersNotifier.new,
+);
 
 /// Tunes after filters and sort are applied. Filtering is done in Dart
 /// because the library is small (hundreds at most) — pushing this into
@@ -68,7 +69,9 @@ final filteredTunesProvider = Provider.autoDispose<AsyncValue<List<Tune>>>((
     final query = filters.nameQuery.trim().toLowerCase();
     final filtered = all.where((t) {
       if (filters.type != null && t.type != filters.type) return false;
-      if (filters.key != null && filters.key!.isNotEmpty && t.key != filters.key) {
+      if (filters.key != null &&
+          filters.key!.isNotEmpty &&
+          t.key != filters.key) {
         return false;
       }
       if (query.isNotEmpty && !t.name.toLowerCase().contains(query)) {

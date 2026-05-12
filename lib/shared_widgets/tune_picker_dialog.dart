@@ -114,14 +114,12 @@ class _TunePickerDialogState extends ConsumerState<TunePickerDialog> {
                         ),
                       )
                     : localTunesAsync.when(
-                        loading: () => const Center(
-                          child: CircularProgressIndicator(),
-                        ),
+                        loading: () =>
+                            const Center(child: CircularProgressIndicator()),
                         error: (e, s) => Text('Error: $e'),
                         data: (localTunes) => thesessionTunesAsync.when(
-                          loading: () => const Center(
-                            child: CircularProgressIndicator(),
-                          ),
+                          loading: () =>
+                              const Center(child: CircularProgressIndicator()),
                           error: (e, s) => Text('Error: $e'),
                           data: (thesessionTunes) => _buildSuggestions(
                             query,
@@ -226,10 +224,7 @@ class _LibraryTuneTile extends StatelessWidget {
         subtitle: subtitle.isEmpty
             ? null
             : Text(subtitle, style: TextStyle(color: fg)),
-        trailing: Text(
-          'In library',
-          style: TextStyle(fontSize: 12, color: fg),
-        ),
+        trailing: Text('In library', style: TextStyle(fontSize: 12, color: fg)),
         onTap: onTap,
       ),
     );
