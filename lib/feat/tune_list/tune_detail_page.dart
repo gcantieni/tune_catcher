@@ -8,9 +8,11 @@ import 'package:go_router/go_router.dart';
 import 'package:tune_catcher/feat/abc_render/abc_renderer.dart';
 import 'package:tune_catcher/feat/abc_render/abc_view.dart';
 import 'package:tune_catcher/feat/tune_list/tune_list_item.dart';
+import 'package:tune_catcher/model/accessors/set_tune_dao.dart';
 import 'package:tune_catcher/model/accessors/tune_recording_dao.dart';
 import 'package:tune_catcher/model/database.dart';
 import 'package:tune_catcher/model/database_provider.dart';
+import 'package:tune_catcher/model/providers/sets_provider.dart';
 import 'package:tune_catcher/model/providers/tune_recording_provider.dart';
 import 'package:tune_catcher/model/providers/tunes_provider.dart';
 import 'package:tune_catcher/model/tables/tunes.dart';
@@ -104,10 +106,7 @@ class _TuneDetailPageState extends ConsumerState<TuneDetailPage> {
         .read(databaseProvider)
         .tuneDao
         .updateTune(
-          TunesCompanion(
-            id: drift.Value(tuneId),
-            abcSvg: drift.Value(svg),
-          ),
+          TunesCompanion(id: drift.Value(tuneId), abcSvg: drift.Value(svg)),
         );
   }
 
@@ -203,7 +202,33 @@ class _TuneDetailPageState extends ConsumerState<TuneDetailPage> {
         ),
         const SizedBox(height: 4),
         _LinkedRecordings(tuneId: tune.id),
+        const SizedBox(height: 24),
+        const Divider(),
+        const SizedBox(height: 8),
+        Row(
+          children: [
+            const Text(
+              'Sets',
+              style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
+            ),
+            const Spacer(),
+            TextButton.icon(
+              icon: const Icon(Icons.add, size: 18),
+              label: const Text('Add to set'),
+              onPressed: () => _showAddToSetDialog(tune.id),
+            ),
+          ],
+        ),
+        const SizedBox(height: 4),
+        _LinkedSets(tuneId: tune.id),
       ],
+    );
+  }
+
+  void _showAddToSetDialog(int tuneId) {
+    showDialog<void>(
+      context: context,
+      builder: (_) => _AddToSetDialog(tuneId: tuneId),
     );
   }
 
@@ -302,6 +327,111 @@ class _TuneDetailPageState extends ConsumerState<TuneDetailPage> {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _LinkedSets extends ConsumerWidget {
+  final int tuneId;
+  const _LinkedSets({required this.tuneId});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final async = ref.watch(setsForTuneProvider(tuneId));
+    return async.when(
+      loading: () => const Padding(
+        padding: EdgeInsets.all(8),
+        child: Center(child: CircularProgressIndicator()),
+      ),
+      error: (e, s) => Text('Error: $e'),
+      data: (entries) {
+        if (entries.isEmpty) {
+          return const Padding(
+            padding: EdgeInsets.symmetric(vertical: 8),
+            child: Text(
+              'Not in any sets yet.',
+              style: TextStyle(color: Colors.grey),
+            ),
+          );
+        }
+        return Column(
+          children: [for (final e in entries) _LinkedSetRow(entry: e)],
+        );
+      },
+    );
+  }
+}
+
+class _LinkedSetRow extends ConsumerWidget {
+  final TuneSetEntry entry;
+  const _LinkedSetRow({required this.entry});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return Card(
+      margin: const EdgeInsets.symmetric(vertical: 2),
+      child: ListTile(
+        title: Text(entry.tuneSet.name),
+        onTap: () => context.push('/set_list/${entry.tuneSet.id}'),
+        trailing: IconButton(
+          icon: const Icon(Icons.close, size: 18),
+          tooltip: 'Remove from set',
+          onPressed: () => ref
+              .read(databaseProvider)
+              .setTuneDao
+              .removeTuneFromSet(entry.link.id),
+        ),
+      ),
+    );
+  }
+}
+
+class _AddToSetDialog extends ConsumerWidget {
+  final int tuneId;
+  const _AddToSetDialog({required this.tuneId});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final allSetsAsync = ref.watch(allSetsProvider);
+    final currentEntriesAsync = ref.watch(setsForTuneProvider(tuneId));
+
+    return allSetsAsync.when(
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (e, _) => AlertDialog(content: Text('Error: $e')),
+      data: (allSets) {
+        final currentSetIds =
+            currentEntriesAsync.valueOrNull?.map((e) => e.tuneSet.id).toSet() ??
+            {};
+        final available = allSets
+            .where((s) => !currentSetIds.contains(s.id))
+            .toList();
+
+        return SimpleDialog(
+          title: const Text('Add to set'),
+          children: [
+            if (available.isEmpty)
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                child: Text(
+                  'No other sets available. Create a set first.',
+                  style: TextStyle(color: Colors.grey),
+                ),
+              )
+            else
+              for (final s in available)
+                SimpleDialogOption(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    ref
+                        .read(databaseProvider)
+                        .setTuneDao
+                        .addTuneToSet(s.id, tuneId);
+                  },
+                  child: Text(s.name),
+                ),
+          ],
+        );
+      },
     );
   }
 }

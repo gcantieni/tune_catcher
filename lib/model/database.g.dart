@@ -1479,17 +1479,618 @@ class TuneRecordingCompanion extends UpdateCompanion<TuneRecordingData> {
   }
 }
 
+class $TuneSetsTable extends TuneSets with TableInfo<$TuneSetsTable, TuneSet> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $TuneSetsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _modifiedAtMeta = const VerificationMeta(
+    'modifiedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> modifiedAt = GeneratedColumn<DateTime>(
+    'modified_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [id, name, createdAt, modifiedAt];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'tune_sets';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<TuneSet> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('modified_at')) {
+      context.handle(
+        _modifiedAtMeta,
+        modifiedAt.isAcceptableOrUnknown(data['modified_at']!, _modifiedAtMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  TuneSet map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return TuneSet(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      name: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+      modifiedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}modified_at'],
+      ),
+    );
+  }
+
+  @override
+  $TuneSetsTable createAlias(String alias) {
+    return $TuneSetsTable(attachedDatabase, alias);
+  }
+}
+
+class TuneSet extends DataClass implements Insertable<TuneSet> {
+  final int id;
+  final String name;
+  final DateTime createdAt;
+  final DateTime? modifiedAt;
+  const TuneSet({
+    required this.id,
+    required this.name,
+    required this.createdAt,
+    this.modifiedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['name'] = Variable<String>(name);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    if (!nullToAbsent || modifiedAt != null) {
+      map['modified_at'] = Variable<DateTime>(modifiedAt);
+    }
+    return map;
+  }
+
+  TuneSetsCompanion toCompanion(bool nullToAbsent) {
+    return TuneSetsCompanion(
+      id: Value(id),
+      name: Value(name),
+      createdAt: Value(createdAt),
+      modifiedAt: modifiedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(modifiedAt),
+    );
+  }
+
+  factory TuneSet.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return TuneSet(
+      id: serializer.fromJson<int>(json['id']),
+      name: serializer.fromJson<String>(json['name']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      modifiedAt: serializer.fromJson<DateTime?>(json['modifiedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'name': serializer.toJson<String>(name),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+      'modifiedAt': serializer.toJson<DateTime?>(modifiedAt),
+    };
+  }
+
+  TuneSet copyWith({
+    int? id,
+    String? name,
+    DateTime? createdAt,
+    Value<DateTime?> modifiedAt = const Value.absent(),
+  }) => TuneSet(
+    id: id ?? this.id,
+    name: name ?? this.name,
+    createdAt: createdAt ?? this.createdAt,
+    modifiedAt: modifiedAt.present ? modifiedAt.value : this.modifiedAt,
+  );
+  TuneSet copyWithCompanion(TuneSetsCompanion data) {
+    return TuneSet(
+      id: data.id.present ? data.id.value : this.id,
+      name: data.name.present ? data.name.value : this.name,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      modifiedAt: data.modifiedAt.present
+          ? data.modifiedAt.value
+          : this.modifiedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('TuneSet(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('modifiedAt: $modifiedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, name, createdAt, modifiedAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is TuneSet &&
+          other.id == this.id &&
+          other.name == this.name &&
+          other.createdAt == this.createdAt &&
+          other.modifiedAt == this.modifiedAt);
+}
+
+class TuneSetsCompanion extends UpdateCompanion<TuneSet> {
+  final Value<int> id;
+  final Value<String> name;
+  final Value<DateTime> createdAt;
+  final Value<DateTime?> modifiedAt;
+  const TuneSetsCompanion({
+    this.id = const Value.absent(),
+    this.name = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.modifiedAt = const Value.absent(),
+  });
+  TuneSetsCompanion.insert({
+    this.id = const Value.absent(),
+    required String name,
+    required DateTime createdAt,
+    this.modifiedAt = const Value.absent(),
+  }) : name = Value(name),
+       createdAt = Value(createdAt);
+  static Insertable<TuneSet> custom({
+    Expression<int>? id,
+    Expression<String>? name,
+    Expression<DateTime>? createdAt,
+    Expression<DateTime>? modifiedAt,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (name != null) 'name': name,
+      if (createdAt != null) 'created_at': createdAt,
+      if (modifiedAt != null) 'modified_at': modifiedAt,
+    });
+  }
+
+  TuneSetsCompanion copyWith({
+    Value<int>? id,
+    Value<String>? name,
+    Value<DateTime>? createdAt,
+    Value<DateTime?>? modifiedAt,
+  }) {
+    return TuneSetsCompanion(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      createdAt: createdAt ?? this.createdAt,
+      modifiedAt: modifiedAt ?? this.modifiedAt,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (modifiedAt.present) {
+      map['modified_at'] = Variable<DateTime>(modifiedAt.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('TuneSetsCompanion(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('modifiedAt: $modifiedAt')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $SetTuneTable extends SetTune with TableInfo<$SetTuneTable, SetTuneData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $SetTuneTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _setIdMeta = const VerificationMeta('setId');
+  @override
+  late final GeneratedColumn<int> setId = GeneratedColumn<int>(
+    'set_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES tune_sets (id)',
+    ),
+  );
+  static const VerificationMeta _tuneIdMeta = const VerificationMeta('tuneId');
+  @override
+  late final GeneratedColumn<int> tuneId = GeneratedColumn<int>(
+    'tune_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES tunes (id)',
+    ),
+  );
+  static const VerificationMeta _positionMeta = const VerificationMeta(
+    'position',
+  );
+  @override
+  late final GeneratedColumn<int> position = GeneratedColumn<int>(
+    'position',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [id, setId, tuneId, position];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'set_tune';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<SetTuneData> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('set_id')) {
+      context.handle(
+        _setIdMeta,
+        setId.isAcceptableOrUnknown(data['set_id']!, _setIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_setIdMeta);
+    }
+    if (data.containsKey('tune_id')) {
+      context.handle(
+        _tuneIdMeta,
+        tuneId.isAcceptableOrUnknown(data['tune_id']!, _tuneIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_tuneIdMeta);
+    }
+    if (data.containsKey('position')) {
+      context.handle(
+        _positionMeta,
+        position.isAcceptableOrUnknown(data['position']!, _positionMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_positionMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  SetTuneData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return SetTuneData(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      setId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}set_id'],
+      )!,
+      tuneId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}tune_id'],
+      )!,
+      position: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}position'],
+      )!,
+    );
+  }
+
+  @override
+  $SetTuneTable createAlias(String alias) {
+    return $SetTuneTable(attachedDatabase, alias);
+  }
+}
+
+class SetTuneData extends DataClass implements Insertable<SetTuneData> {
+  final int id;
+  final int setId;
+  final int tuneId;
+  final int position;
+  const SetTuneData({
+    required this.id,
+    required this.setId,
+    required this.tuneId,
+    required this.position,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['set_id'] = Variable<int>(setId);
+    map['tune_id'] = Variable<int>(tuneId);
+    map['position'] = Variable<int>(position);
+    return map;
+  }
+
+  SetTuneCompanion toCompanion(bool nullToAbsent) {
+    return SetTuneCompanion(
+      id: Value(id),
+      setId: Value(setId),
+      tuneId: Value(tuneId),
+      position: Value(position),
+    );
+  }
+
+  factory SetTuneData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return SetTuneData(
+      id: serializer.fromJson<int>(json['id']),
+      setId: serializer.fromJson<int>(json['setId']),
+      tuneId: serializer.fromJson<int>(json['tuneId']),
+      position: serializer.fromJson<int>(json['position']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'setId': serializer.toJson<int>(setId),
+      'tuneId': serializer.toJson<int>(tuneId),
+      'position': serializer.toJson<int>(position),
+    };
+  }
+
+  SetTuneData copyWith({int? id, int? setId, int? tuneId, int? position}) =>
+      SetTuneData(
+        id: id ?? this.id,
+        setId: setId ?? this.setId,
+        tuneId: tuneId ?? this.tuneId,
+        position: position ?? this.position,
+      );
+  SetTuneData copyWithCompanion(SetTuneCompanion data) {
+    return SetTuneData(
+      id: data.id.present ? data.id.value : this.id,
+      setId: data.setId.present ? data.setId.value : this.setId,
+      tuneId: data.tuneId.present ? data.tuneId.value : this.tuneId,
+      position: data.position.present ? data.position.value : this.position,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SetTuneData(')
+          ..write('id: $id, ')
+          ..write('setId: $setId, ')
+          ..write('tuneId: $tuneId, ')
+          ..write('position: $position')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, setId, tuneId, position);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is SetTuneData &&
+          other.id == this.id &&
+          other.setId == this.setId &&
+          other.tuneId == this.tuneId &&
+          other.position == this.position);
+}
+
+class SetTuneCompanion extends UpdateCompanion<SetTuneData> {
+  final Value<int> id;
+  final Value<int> setId;
+  final Value<int> tuneId;
+  final Value<int> position;
+  const SetTuneCompanion({
+    this.id = const Value.absent(),
+    this.setId = const Value.absent(),
+    this.tuneId = const Value.absent(),
+    this.position = const Value.absent(),
+  });
+  SetTuneCompanion.insert({
+    this.id = const Value.absent(),
+    required int setId,
+    required int tuneId,
+    required int position,
+  }) : setId = Value(setId),
+       tuneId = Value(tuneId),
+       position = Value(position);
+  static Insertable<SetTuneData> custom({
+    Expression<int>? id,
+    Expression<int>? setId,
+    Expression<int>? tuneId,
+    Expression<int>? position,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (setId != null) 'set_id': setId,
+      if (tuneId != null) 'tune_id': tuneId,
+      if (position != null) 'position': position,
+    });
+  }
+
+  SetTuneCompanion copyWith({
+    Value<int>? id,
+    Value<int>? setId,
+    Value<int>? tuneId,
+    Value<int>? position,
+  }) {
+    return SetTuneCompanion(
+      id: id ?? this.id,
+      setId: setId ?? this.setId,
+      tuneId: tuneId ?? this.tuneId,
+      position: position ?? this.position,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (setId.present) {
+      map['set_id'] = Variable<int>(setId.value);
+    }
+    if (tuneId.present) {
+      map['tune_id'] = Variable<int>(tuneId.value);
+    }
+    if (position.present) {
+      map['position'] = Variable<int>(position.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SetTuneCompanion(')
+          ..write('id: $id, ')
+          ..write('setId: $setId, ')
+          ..write('tuneId: $tuneId, ')
+          ..write('position: $position')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
   late final $RecordingsTable recordings = $RecordingsTable(this);
   late final $TunesTable tunes = $TunesTable(this);
   late final $TuneRecordingTable tuneRecording = $TuneRecordingTable(this);
+  late final $TuneSetsTable tuneSets = $TuneSetsTable(this);
+  late final $SetTuneTable setTune = $SetTuneTable(this);
   late final TuneDao tuneDao = TuneDao(this as AppDatabase);
   late final RecordingDao recordingDao = RecordingDao(this as AppDatabase);
   late final TuneRecordingDao tuneRecordingDao = TuneRecordingDao(
     this as AppDatabase,
   );
+  late final SetDao setDao = SetDao(this as AppDatabase);
+  late final SetTuneDao setTuneDao = SetTuneDao(this as AppDatabase);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -1498,6 +2099,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     recordings,
     tunes,
     tuneRecording,
+    tuneSets,
+    setTune,
   ];
 }
 
@@ -1746,6 +2349,29 @@ typedef $$TunesTableUpdateCompanionBuilder =
       Value<DateTime?> modifiedAt,
     });
 
+final class $$TunesTableReferences
+    extends BaseReferences<_$AppDatabase, $TunesTable, Tune> {
+  $$TunesTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static MultiTypedResultKey<$SetTuneTable, List<SetTuneData>>
+  _setTuneRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.setTune,
+    aliasName: $_aliasNameGenerator(db.tunes.id, db.setTune.tuneId),
+  );
+
+  $$SetTuneTableProcessedTableManager get setTuneRefs {
+    final manager = $$SetTuneTableTableManager(
+      $_db,
+      $_db.setTune,
+    ).filter((f) => f.tuneId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_setTuneRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+}
+
 class $$TunesTableFilterComposer extends Composer<_$AppDatabase, $TunesTable> {
   $$TunesTableFilterComposer({
     required super.$db,
@@ -1815,6 +2441,31 @@ class $$TunesTableFilterComposer extends Composer<_$AppDatabase, $TunesTable> {
     column: $table.modifiedAt,
     builder: (column) => ColumnFilters(column),
   );
+
+  Expression<bool> setTuneRefs(
+    Expression<bool> Function($$SetTuneTableFilterComposer f) f,
+  ) {
+    final $$SetTuneTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.setTune,
+      getReferencedColumn: (t) => t.tuneId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$SetTuneTableFilterComposer(
+            $db: $db,
+            $table: $db.setTune,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
 class $$TunesTableOrderingComposer
@@ -1933,6 +2584,31 @@ class $$TunesTableAnnotationComposer
     column: $table.modifiedAt,
     builder: (column) => column,
   );
+
+  Expression<T> setTuneRefs<T extends Object>(
+    Expression<T> Function($$SetTuneTableAnnotationComposer a) f,
+  ) {
+    final $$SetTuneTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.setTune,
+      getReferencedColumn: (t) => t.tuneId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$SetTuneTableAnnotationComposer(
+            $db: $db,
+            $table: $db.setTune,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
 class $$TunesTableTableManager
@@ -1946,9 +2622,9 @@ class $$TunesTableTableManager
           $$TunesTableAnnotationComposer,
           $$TunesTableCreateCompanionBuilder,
           $$TunesTableUpdateCompanionBuilder,
-          (Tune, BaseReferences<_$AppDatabase, $TunesTable, Tune>),
+          (Tune, $$TunesTableReferences),
           Tune,
-          PrefetchHooks Function()
+          PrefetchHooks Function({bool setTuneRefs})
         > {
   $$TunesTableTableManager(_$AppDatabase db, $TunesTable table)
     : super(
@@ -2018,9 +2694,34 @@ class $$TunesTableTableManager
                 modifiedAt: modifiedAt,
               ),
           withReferenceMapper: (p0) => p0
-              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .map(
+                (e) =>
+                    (e.readTable(table), $$TunesTableReferences(db, table, e)),
+              )
               .toList(),
-          prefetchHooksCallback: null,
+          prefetchHooksCallback: ({setTuneRefs = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [if (setTuneRefs) db.setTune],
+              addJoins: null,
+              getPrefetchedDataCallback: (items) async {
+                return [
+                  if (setTuneRefs)
+                    await $_getPrefetchedData<Tune, $TunesTable, SetTuneData>(
+                      currentTable: table,
+                      referencedTable: $$TunesTableReferences._setTuneRefsTable(
+                        db,
+                      ),
+                      managerFromTypedResult: (p0) =>
+                          $$TunesTableReferences(db, table, p0).setTuneRefs,
+                      referencedItemsForCurrentItem: (item, referencedItems) =>
+                          referencedItems.where((e) => e.tuneId == item.id),
+                      typedResults: items,
+                    ),
+                ];
+              },
+            );
+          },
         ),
       );
 }
@@ -2035,9 +2736,9 @@ typedef $$TunesTableProcessedTableManager =
       $$TunesTableAnnotationComposer,
       $$TunesTableCreateCompanionBuilder,
       $$TunesTableUpdateCompanionBuilder,
-      (Tune, BaseReferences<_$AppDatabase, $TunesTable, Tune>),
+      (Tune, $$TunesTableReferences),
       Tune,
-      PrefetchHooks Function()
+      PrefetchHooks Function({bool setTuneRefs})
     >;
 typedef $$TuneRecordingTableCreateCompanionBuilder =
     TuneRecordingCompanion Function({
@@ -2247,6 +2948,659 @@ typedef $$TuneRecordingTableProcessedTableManager =
       TuneRecordingData,
       PrefetchHooks Function()
     >;
+typedef $$TuneSetsTableCreateCompanionBuilder =
+    TuneSetsCompanion Function({
+      Value<int> id,
+      required String name,
+      required DateTime createdAt,
+      Value<DateTime?> modifiedAt,
+    });
+typedef $$TuneSetsTableUpdateCompanionBuilder =
+    TuneSetsCompanion Function({
+      Value<int> id,
+      Value<String> name,
+      Value<DateTime> createdAt,
+      Value<DateTime?> modifiedAt,
+    });
+
+final class $$TuneSetsTableReferences
+    extends BaseReferences<_$AppDatabase, $TuneSetsTable, TuneSet> {
+  $$TuneSetsTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static MultiTypedResultKey<$SetTuneTable, List<SetTuneData>>
+  _setTuneRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.setTune,
+    aliasName: $_aliasNameGenerator(db.tuneSets.id, db.setTune.setId),
+  );
+
+  $$SetTuneTableProcessedTableManager get setTuneRefs {
+    final manager = $$SetTuneTableTableManager(
+      $_db,
+      $_db.setTune,
+    ).filter((f) => f.setId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_setTuneRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+}
+
+class $$TuneSetsTableFilterComposer
+    extends Composer<_$AppDatabase, $TuneSetsTable> {
+  $$TuneSetsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get modifiedAt => $composableBuilder(
+    column: $table.modifiedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  Expression<bool> setTuneRefs(
+    Expression<bool> Function($$SetTuneTableFilterComposer f) f,
+  ) {
+    final $$SetTuneTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.setTune,
+      getReferencedColumn: (t) => t.setId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$SetTuneTableFilterComposer(
+            $db: $db,
+            $table: $db.setTune,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$TuneSetsTableOrderingComposer
+    extends Composer<_$AppDatabase, $TuneSetsTable> {
+  $$TuneSetsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get modifiedAt => $composableBuilder(
+    column: $table.modifiedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$TuneSetsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $TuneSetsTable> {
+  $$TuneSetsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get modifiedAt => $composableBuilder(
+    column: $table.modifiedAt,
+    builder: (column) => column,
+  );
+
+  Expression<T> setTuneRefs<T extends Object>(
+    Expression<T> Function($$SetTuneTableAnnotationComposer a) f,
+  ) {
+    final $$SetTuneTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.setTune,
+      getReferencedColumn: (t) => t.setId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$SetTuneTableAnnotationComposer(
+            $db: $db,
+            $table: $db.setTune,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$TuneSetsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $TuneSetsTable,
+          TuneSet,
+          $$TuneSetsTableFilterComposer,
+          $$TuneSetsTableOrderingComposer,
+          $$TuneSetsTableAnnotationComposer,
+          $$TuneSetsTableCreateCompanionBuilder,
+          $$TuneSetsTableUpdateCompanionBuilder,
+          (TuneSet, $$TuneSetsTableReferences),
+          TuneSet,
+          PrefetchHooks Function({bool setTuneRefs})
+        > {
+  $$TuneSetsTableTableManager(_$AppDatabase db, $TuneSetsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$TuneSetsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$TuneSetsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$TuneSetsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<String> name = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime?> modifiedAt = const Value.absent(),
+              }) => TuneSetsCompanion(
+                id: id,
+                name: name,
+                createdAt: createdAt,
+                modifiedAt: modifiedAt,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required String name,
+                required DateTime createdAt,
+                Value<DateTime?> modifiedAt = const Value.absent(),
+              }) => TuneSetsCompanion.insert(
+                id: id,
+                name: name,
+                createdAt: createdAt,
+                modifiedAt: modifiedAt,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$TuneSetsTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({setTuneRefs = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [if (setTuneRefs) db.setTune],
+              addJoins: null,
+              getPrefetchedDataCallback: (items) async {
+                return [
+                  if (setTuneRefs)
+                    await $_getPrefetchedData<
+                      TuneSet,
+                      $TuneSetsTable,
+                      SetTuneData
+                    >(
+                      currentTable: table,
+                      referencedTable: $$TuneSetsTableReferences
+                          ._setTuneRefsTable(db),
+                      managerFromTypedResult: (p0) =>
+                          $$TuneSetsTableReferences(db, table, p0).setTuneRefs,
+                      referencedItemsForCurrentItem: (item, referencedItems) =>
+                          referencedItems.where((e) => e.setId == item.id),
+                      typedResults: items,
+                    ),
+                ];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$TuneSetsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $TuneSetsTable,
+      TuneSet,
+      $$TuneSetsTableFilterComposer,
+      $$TuneSetsTableOrderingComposer,
+      $$TuneSetsTableAnnotationComposer,
+      $$TuneSetsTableCreateCompanionBuilder,
+      $$TuneSetsTableUpdateCompanionBuilder,
+      (TuneSet, $$TuneSetsTableReferences),
+      TuneSet,
+      PrefetchHooks Function({bool setTuneRefs})
+    >;
+typedef $$SetTuneTableCreateCompanionBuilder =
+    SetTuneCompanion Function({
+      Value<int> id,
+      required int setId,
+      required int tuneId,
+      required int position,
+    });
+typedef $$SetTuneTableUpdateCompanionBuilder =
+    SetTuneCompanion Function({
+      Value<int> id,
+      Value<int> setId,
+      Value<int> tuneId,
+      Value<int> position,
+    });
+
+final class $$SetTuneTableReferences
+    extends BaseReferences<_$AppDatabase, $SetTuneTable, SetTuneData> {
+  $$SetTuneTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static $TuneSetsTable _setIdTable(_$AppDatabase db) => db.tuneSets
+      .createAlias($_aliasNameGenerator(db.setTune.setId, db.tuneSets.id));
+
+  $$TuneSetsTableProcessedTableManager get setId {
+    final $_column = $_itemColumn<int>('set_id')!;
+
+    final manager = $$TuneSetsTableTableManager(
+      $_db,
+      $_db.tuneSets,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_setIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static $TunesTable _tuneIdTable(_$AppDatabase db) => db.tunes.createAlias(
+    $_aliasNameGenerator(db.setTune.tuneId, db.tunes.id),
+  );
+
+  $$TunesTableProcessedTableManager get tuneId {
+    final $_column = $_itemColumn<int>('tune_id')!;
+
+    final manager = $$TunesTableTableManager(
+      $_db,
+      $_db.tunes,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_tuneIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$SetTuneTableFilterComposer
+    extends Composer<_$AppDatabase, $SetTuneTable> {
+  $$SetTuneTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get position => $composableBuilder(
+    column: $table.position,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$TuneSetsTableFilterComposer get setId {
+    final $$TuneSetsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.setId,
+      referencedTable: $db.tuneSets,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TuneSetsTableFilterComposer(
+            $db: $db,
+            $table: $db.tuneSets,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$TunesTableFilterComposer get tuneId {
+    final $$TunesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.tuneId,
+      referencedTable: $db.tunes,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TunesTableFilterComposer(
+            $db: $db,
+            $table: $db.tunes,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$SetTuneTableOrderingComposer
+    extends Composer<_$AppDatabase, $SetTuneTable> {
+  $$SetTuneTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get position => $composableBuilder(
+    column: $table.position,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$TuneSetsTableOrderingComposer get setId {
+    final $$TuneSetsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.setId,
+      referencedTable: $db.tuneSets,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TuneSetsTableOrderingComposer(
+            $db: $db,
+            $table: $db.tuneSets,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$TunesTableOrderingComposer get tuneId {
+    final $$TunesTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.tuneId,
+      referencedTable: $db.tunes,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TunesTableOrderingComposer(
+            $db: $db,
+            $table: $db.tunes,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$SetTuneTableAnnotationComposer
+    extends Composer<_$AppDatabase, $SetTuneTable> {
+  $$SetTuneTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<int> get position =>
+      $composableBuilder(column: $table.position, builder: (column) => column);
+
+  $$TuneSetsTableAnnotationComposer get setId {
+    final $$TuneSetsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.setId,
+      referencedTable: $db.tuneSets,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TuneSetsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.tuneSets,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$TunesTableAnnotationComposer get tuneId {
+    final $$TunesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.tuneId,
+      referencedTable: $db.tunes,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TunesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.tunes,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$SetTuneTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $SetTuneTable,
+          SetTuneData,
+          $$SetTuneTableFilterComposer,
+          $$SetTuneTableOrderingComposer,
+          $$SetTuneTableAnnotationComposer,
+          $$SetTuneTableCreateCompanionBuilder,
+          $$SetTuneTableUpdateCompanionBuilder,
+          (SetTuneData, $$SetTuneTableReferences),
+          SetTuneData,
+          PrefetchHooks Function({bool setId, bool tuneId})
+        > {
+  $$SetTuneTableTableManager(_$AppDatabase db, $SetTuneTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$SetTuneTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$SetTuneTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$SetTuneTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<int> setId = const Value.absent(),
+                Value<int> tuneId = const Value.absent(),
+                Value<int> position = const Value.absent(),
+              }) => SetTuneCompanion(
+                id: id,
+                setId: setId,
+                tuneId: tuneId,
+                position: position,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required int setId,
+                required int tuneId,
+                required int position,
+              }) => SetTuneCompanion.insert(
+                id: id,
+                setId: setId,
+                tuneId: tuneId,
+                position: position,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$SetTuneTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({setId = false, tuneId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (setId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.setId,
+                                referencedTable: $$SetTuneTableReferences
+                                    ._setIdTable(db),
+                                referencedColumn: $$SetTuneTableReferences
+                                    ._setIdTable(db)
+                                    .id,
+                              )
+                              as T;
+                    }
+                    if (tuneId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.tuneId,
+                                referencedTable: $$SetTuneTableReferences
+                                    ._tuneIdTable(db),
+                                referencedColumn: $$SetTuneTableReferences
+                                    ._tuneIdTable(db)
+                                    .id,
+                              )
+                              as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$SetTuneTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $SetTuneTable,
+      SetTuneData,
+      $$SetTuneTableFilterComposer,
+      $$SetTuneTableOrderingComposer,
+      $$SetTuneTableAnnotationComposer,
+      $$SetTuneTableCreateCompanionBuilder,
+      $$SetTuneTableUpdateCompanionBuilder,
+      (SetTuneData, $$SetTuneTableReferences),
+      SetTuneData,
+      PrefetchHooks Function({bool setId, bool tuneId})
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -2257,4 +3611,8 @@ class $AppDatabaseManager {
       $$TunesTableTableManager(_db, _db.tunes);
   $$TuneRecordingTableTableManager get tuneRecording =>
       $$TuneRecordingTableTableManager(_db, _db.tuneRecording);
+  $$TuneSetsTableTableManager get tuneSets =>
+      $$TuneSetsTableTableManager(_db, _db.tuneSets);
+  $$SetTuneTableTableManager get setTune =>
+      $$SetTuneTableTableManager(_db, _db.setTune);
 }

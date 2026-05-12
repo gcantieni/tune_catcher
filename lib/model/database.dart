@@ -4,10 +4,14 @@ import 'package:drift_flutter/drift_flutter.dart';
 import 'package:path_provider/path_provider.dart';
 // local references
 import 'package:tune_catcher/model/accessors/recording_dao.dart';
+import 'package:tune_catcher/model/accessors/set_dao.dart';
+import 'package:tune_catcher/model/accessors/set_tune_dao.dart';
 import 'package:tune_catcher/model/accessors/tune_dao.dart';
 import 'package:tune_catcher/model/accessors/tune_recording_dao.dart';
 import 'package:tune_catcher/model/database.steps.dart';
 import 'package:tune_catcher/model/tables/recordings.dart';
+import 'package:tune_catcher/model/tables/set_tune.dart';
+import 'package:tune_catcher/model/tables/sets.dart';
 import 'package:tune_catcher/model/tables/tune_recording.dart';
 import 'package:tune_catcher/model/tables/tunes.dart';
 
@@ -15,8 +19,8 @@ import 'package:tune_catcher/model/tables/tunes.dart';
 part 'database.g.dart';
 
 @DriftDatabase(
-  tables: [Recordings, Tunes, TuneRecording],
-  daos: [TuneDao, RecordingDao, TuneRecordingDao],
+  tables: [Recordings, Tunes, TuneRecording, TuneSets, SetTune],
+  daos: [TuneDao, RecordingDao, TuneRecordingDao, SetDao, SetTuneDao],
 )
 class AppDatabase extends _$AppDatabase {
   // After generating code, this class needs to define a `schemaVersion` getter
@@ -25,7 +29,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? executor]) : super(executor ?? _openConnection());
 
   @override
-  int get schemaVersion => 4;
+  int get schemaVersion => 5;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -56,6 +60,10 @@ class AppDatabase extends _$AppDatabase {
         // Add cached SVG column for ABC rendering. Existing rows get
         // null; the abc_render module fills them in lazily on next save.
         await m.addColumn(schema.tunes, schema.tunes.abcSvg);
+      },
+      from4To5: (m, schema) async {
+        await m.createTable(schema.tuneSets);
+        await m.createTable(schema.setTune);
       },
     ),
   );

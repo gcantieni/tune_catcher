@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:tune_catcher/feat/recorder/recorder_page.dart';
 import 'package:tune_catcher/feat/recording_list/recording_detail_page.dart';
 import 'package:tune_catcher/feat/recording_list/recording_list_page.dart';
+import 'package:tune_catcher/feat/set_list/set_detail_page.dart';
 import 'package:tune_catcher/feat/set_list/set_list_page.dart';
 import 'package:tune_catcher/feat/tune_list/tune_detail_page.dart';
 import 'package:tune_catcher/feat/tune_list/tune_list_page.dart';
@@ -25,9 +26,10 @@ CustomTransitionPage<void> _directionalPage({
     child: child,
     transitionsBuilder: (context, animation, secondaryAnimation, child) {
       return SlideTransition(
-        position: Tween<Offset>(begin: begin, end: Offset.zero).animate(
-          CurvedAnimation(parent: animation, curve: Curves.easeOut),
-        ),
+        position: Tween<Offset>(
+          begin: begin,
+          end: Offset.zero,
+        ).animate(CurvedAnimation(parent: animation, curve: Curves.easeOut)),
         child: child,
       );
     },
@@ -47,6 +49,16 @@ final GoRouter router = GoRouter(
           name: 'set_list',
           pageBuilder: (context, state) =>
               _directionalPage(path: '/set_list', child: SetListPage()),
+          routes: [
+            GoRoute(
+              path: ':id',
+              name: 'set_detail',
+              builder: (context, state) {
+                final id = int.parse(state.pathParameters['id']!);
+                return SetDetailPage(setId: id);
+              },
+            ),
+          ],
         ),
         GoRoute(
           path: '/tune_list',
