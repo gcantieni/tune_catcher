@@ -10,6 +10,8 @@
 	<true/>
 	<key>com.apple.security.network.client</key>
 	<true/>
+	<key>com.apple.security.files.user-selected.read-only</key>
+	<true/>
 	<!-- com.apple.developer.musickit: add back after enabling capability in Apple Developer portal -->
 </dict>
 </plist>
