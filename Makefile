@@ -1,4 +1,4 @@
-.PHONY: format analyze test coverage
+.PHONY: format analyze test coverage lcov
 
 format:
 	dart format lib/
@@ -8,6 +8,9 @@ analyze:
 
 test:
 	flutter test
+
+lcov:
+	flutter test --coverage
 
 coverage:
 	flutter test --coverage
