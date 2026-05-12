@@ -16,7 +16,7 @@ typedef LinkedRecording = ({Recording recording, TuneRecordingData link});
 @DriftAccessor(tables: [TuneRecording, Tunes, Recordings])
 class TuneRecordingDao extends DatabaseAccessor<AppDatabase>
     with _$TuneRecordingDaoMixin {
-  TuneRecordingDao(AppDatabase db) : super(db);
+  TuneRecordingDao(super.db);
 
   /// Re-linking the same (tune, recording) pair is a silent no-op
   /// thanks to the composite PK and insertOrIgnore mode. Bumps the

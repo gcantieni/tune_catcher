@@ -10,14 +10,15 @@ final thesessionTuneProvider = FutureProvider<List<TunesCompanion>>((
   ref,
 ) async {
   final tuneJsonData =
-      json.decode(
+      (json.decode(
             await rootBundle.loadString('assets/data/thesession_tunes.json'),
           )
-          as List<dynamic>;
+          as List)
+          .cast<Map<String, dynamic>>();
   return parseTunes(tuneJsonData);
 });
 
-List<TunesCompanion> parseTunes(List<dynamic> data) {
+List<TunesCompanion> parseTunes(List<Map<String, dynamic>> data) {
   return data.map((entry) {
     return TunesCompanion.insert(
       name: entry['name'] as String,

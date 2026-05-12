@@ -7,7 +7,7 @@ part 'set_dao.g.dart';
 
 @DriftAccessor(tables: [TuneSets])
 class SetDao extends DatabaseAccessor<AppDatabase> with _$SetDaoMixin {
-  SetDao(AppDatabase db) : super(db);
+  SetDao(super.db);
 
   Future<int> insertSet(TuneSetsCompanion set) => into(tuneSets).insert(set);
 

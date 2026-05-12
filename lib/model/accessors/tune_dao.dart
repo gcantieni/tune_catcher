@@ -7,7 +7,7 @@ part 'tune_dao.g.dart';
 
 @DriftAccessor(tables: [Tunes])
 class TuneDao extends DatabaseAccessor<AppDatabase> with _$TuneDaoMixin {
-  TuneDao(AppDatabase db) : super(db);
+  TuneDao(super.db);
 
   // create
   Future<int> insertTune(TunesCompanion tune) => into(tunes).insert(tune);

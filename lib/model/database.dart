@@ -54,7 +54,7 @@ class AppDatabase extends _$AppDatabase {
             SELECT MIN(rowid) FROM tune_recording GROUP BY tune_id, recording_id
           )
         ''');
-        await m.alterTable(TableMigration(schema.tuneRecording));
+        await m.alterTable(TableMigration(schema.tuneRecording)); // ignore: experimental_member_use
       },
       from3To4: (m, schema) async {
         // Add cached SVG column for ABC rendering. Existing rows get

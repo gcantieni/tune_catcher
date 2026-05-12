@@ -12,7 +12,7 @@ typedef TuneSetEntry = ({SetTuneData link, TuneSet tuneSet});
 
 @DriftAccessor(tables: [SetTune, TuneSets, Tunes])
 class SetTuneDao extends DatabaseAccessor<AppDatabase> with _$SetTuneDaoMixin {
-  SetTuneDao(AppDatabase db) : super(db);
+  SetTuneDao(super.db);
 
   Stream<List<SetTuneEntry>> watchTunesInSet(int setId) {
     final query =

@@ -1,3 +1,4 @@
+// ignore_for_file: avoid_print
 import 'dart:convert';
 import 'dart:io';
 
@@ -61,7 +62,6 @@ Future<void> main() async {
   final file = File('../data/tunes.json');
   await file.writeAsString(
     const JsonEncoder.withIndent('  ').convert(results),
-    mode: FileMode.write,
   );
 
   print('Saved ${results.length} items to ../data/tunes.json');

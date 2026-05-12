@@ -8,7 +8,7 @@ part 'recording_dao.g.dart';
 @DriftAccessor(tables: [Recordings])
 class RecordingDao extends DatabaseAccessor<AppDatabase>
     with _$RecordingDaoMixin {
-  RecordingDao(AppDatabase db) : super(db);
+  RecordingDao(super.db);
 
   // create
   Future insertRecording(RecordingsCompanion recording) =>

@@ -1,9 +1,7 @@
-import 'package:flutter_test/flutter_test.dart';
-import 'package:drift/native.dart';
-
 import 'package:drift/drift.dart' as drift;
-
+import 'package:drift/native.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:tune_catcher/model/accessors/tune_dao.dart';
 import 'package:tune_catcher/model/database.dart';
 import 'package:tune_catcher/model/database_provider.dart';
@@ -34,9 +32,9 @@ void main() {
 
     final id = await tuneDao.insertTune(
       TunesCompanion(
-        name: drift.Value('test tune'),
+        name: const drift.Value('test tune'),
         createdAt: drift.Value(DateTime.now()),
-        genre: drift.Value('irish'),
+        genre: const drift.Value('irish'),
       ),
     );
 
@@ -50,7 +48,7 @@ void main() {
     await Future.delayed(const Duration(milliseconds: 10));
 
     await tuneDao.updateTune(
-      TunesCompanion(id: drift.Value(id), genre: drift.Value('contra')),
+      TunesCompanion(id: drift.Value(id), genre: const drift.Value('contra')),
     );
 
     // wait for second emit
@@ -76,17 +74,17 @@ void main() {
 
     final id1 = await tuneDao.insertTune(
       TunesCompanion(
-        name: drift.Value('test tune'),
+        name: const drift.Value('test tune'),
         createdAt: drift.Value(DateTime.now()),
-        genre: drift.Value('irish'),
+        genre: const drift.Value('irish'),
       ),
     );
 
     final id2 = await tuneDao.insertTune(
       TunesCompanion(
-        name: drift.Value('test tune'),
+        name: const drift.Value('test tune'),
         createdAt: drift.Value(DateTime.now()),
-        genre: drift.Value('irish'),
+        genre: const drift.Value('irish'),
       ),
     );
 

@@ -33,14 +33,14 @@ void main() {
 
     final id = await tuneDao.insertTune(
       TunesCompanion(
-        name: drift.Value(name),
+        name: const drift.Value(name),
         createdAt: drift.Value(DateTime.now()),
         modifiedAt: drift.Value(DateTime.now()),
-        genre: drift.Value(genre),
-        status: drift.Value(status),
-        key: drift.Value(key),
-        type: drift.Value(type),
-        from: drift.Value(from),
+        genre: const drift.Value(genre),
+        status: const drift.Value(status),
+        key: const drift.Value(key),
+        type: const drift.Value(type),
+        from: const drift.Value(from),
       ),
     );
 
@@ -70,9 +70,9 @@ void main() {
 
     final id = await tuneDao.insertTune(
       TunesCompanion(
-        name: drift.Value(name),
+        name: const drift.Value(name),
         createdAt: drift.Value(createdAt),
-        genre: drift.Value(genre),
+        genre: const drift.Value(genre),
       ),
     );
 

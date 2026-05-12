@@ -8,10 +8,11 @@ import 'package:tune_catcher/remote_tune_sources/thesession_tune_source.dart';
 void main() {
   test('parse tune json', () {
     final fakeJson =
-        json.decode(
+        (json.decode(
               '[{"id":1,"name":"Cooley\'s","key":"Em","type":"reel","abc":"asdf"},{"id":2,"name":"Lark in the Morning","key":"D","type":"jig","abc":"asdf"}]',
             )
-            as List<dynamic>;
+            as List)
+            .cast<Map<String, dynamic>>();
     final tunes = parseTunes(fakeJson);
     expect(tunes[0].name.value, "Cooley's");
     expect(tunes[0].tsId.value, 1);
@@ -28,7 +29,7 @@ void main() {
     final file = File('./test/test_data/test_tunes.json');
     final contents = await file.readAsString();
 
-    final tunesJson = json.decode(contents) as List<dynamic>;
+    final tunesJson = (json.decode(contents) as List).cast<Map<String, dynamic>>();
     final tunes = parseTunes(tunesJson);
 
     expect(tunes[0].name.value, "Cooley's");
