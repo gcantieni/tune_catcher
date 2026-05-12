@@ -4,7 +4,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:tune_catcher/feat/recording_list/apple_music_player_widget.dart';
+import 'package:tune_catcher/feat/audio_player/playback_card.dart';
+import 'package:tune_catcher/feat/music_kit/music_kit_notifier.dart';
 import 'package:tune_catcher/feat/recording_list/recording_link_kind.dart';
 import 'package:tune_catcher/model/accessors/tune_recording_dao.dart';
 import 'package:tune_catcher/model/database.dart';
@@ -141,7 +142,13 @@ class _RecordingDetailPageState extends ConsumerState<RecordingDetailPage> {
         _readRow('Name', r.name),
         const SizedBox(height: 8),
         if (kind == RecordingLinkKind.appleMusic)
-          AppleMusicPlayerWidget(recordingUrl: r.url),
+          _AppleMusicPlayerSection(recordingUrl: r.url, title: r.name),
+        if (kind == RecordingLinkKind.file)
+          PlaybackCard(
+            trackUri: r.url,
+            title: r.name,
+            leadingIcon: const Icon(Icons.audio_file_outlined, size: 20),
+          ),
         Row(
           children: [
             const SizedBox(
@@ -361,5 +368,41 @@ class _LinkedTuneRow extends ConsumerWidget {
       endTime: drift.Value(result.end),
     );
     await ref.read(databaseProvider).tuneRecordingDao.updateLink(updated);
+  }
+}
+
+class _AppleMusicPlayerSection extends ConsumerWidget {
+  final String recordingUrl;
+  final String title;
+
+  const _AppleMusicPlayerSection({
+    required this.recordingUrl,
+    required this.title,
+  });
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final musicKit = ref.watch(musicKitProvider);
+    return musicKit.maybeWhen(
+      data: (state) {
+        if (state.authStatus != 'authorized') {
+          return Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            child: OutlinedButton.icon(
+              icon: const Icon(Icons.library_music, size: 18),
+              label: const Text('Allow Apple Music access'),
+              onPressed: () =>
+                  ref.read(musicKitProvider.notifier).authorize(),
+            ),
+          );
+        }
+        return PlaybackCard(
+          trackUri: recordingUrl,
+          title: title,
+          leadingIcon: const Icon(Icons.library_music, size: 20),
+        );
+      },
+      orElse: () => const SizedBox.shrink(),
+    );
   }
 }
