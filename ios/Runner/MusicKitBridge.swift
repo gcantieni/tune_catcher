@@ -7,8 +7,8 @@ import FlutterMacOS
 #endif
 
 enum MusicKitChannels {
-    static let method = "com.gcantieni.tuneCatcher/musickit"
-    static let event  = "com.gcantieni.tuneCatcher/musickit_state"
+    static let method = "com.gcantieni.tuneTrove/musickit"
+    static let event  = "com.gcantieni.tuneTrove/musickit_state"
 }
 
 @available(iOS 15, macOS 14, *)
