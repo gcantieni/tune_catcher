@@ -56,6 +56,23 @@ void main() {
     expect(tune?.type, type);
   });
 
+  test('tuneDao.deleteTune removes the tune', () async {
+    final tuneDao = TuneDao(db);
+
+    final id = await tuneDao.insertTune(
+      TunesCompanion(
+        name: const drift.Value('To Be Deleted'),
+        createdAt: drift.Value(DateTime.now()),
+      ),
+    );
+
+    expect(await tuneDao.getTune(id), isNotNull);
+
+    await tuneDao.deleteTune(id);
+
+    expect(await tuneDao.getTune(id), isNull);
+  });
+
   test('tuneDao.watchTune', () async {
     final tuneDao = TuneDao(db);
 

@@ -61,6 +61,31 @@ class _TuneDetailPageState extends ConsumerState<TuneDetailPage> {
     setState(() => _editing = false);
   }
 
+  Future<void> _confirmDelete(Tune tune) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Delete tune'),
+        content: Text('Delete "${tune.name}"? This cannot be undone.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(true),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true) return;
+    await ref.read(databaseProvider).tuneDao.deleteTune(tune.id);
+    if (!mounted) return;
+    context.pop();
+  }
+
   Future<void> _save(Tune tune) async {
     if (!_formKey.currentState!.validate()) return;
 
@@ -138,6 +163,11 @@ class _TuneDetailPageState extends ConsumerState<TuneDetailPage> {
               ];
             }
             return [
+              IconButton(
+                icon: const Icon(Icons.delete_outline),
+                tooltip: 'Delete tune',
+                onPressed: () => _confirmDelete(tune),
+              ),
               IconButton(
                 icon: const Icon(Icons.edit),
                 tooltip: 'Edit',

@@ -60,9 +60,7 @@ Future<void> main() async {
 
   // Save results to JSON file
   final file = File('../data/tunes.json');
-  await file.writeAsString(
-    const JsonEncoder.withIndent('  ').convert(results),
-  );
+  await file.writeAsString(const JsonEncoder.withIndent('  ').convert(results));
 
   print('Saved ${results.length} items to ../data/tunes.json');
 }
