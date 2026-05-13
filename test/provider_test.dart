@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:drift/drift.dart' as drift;
 import 'package:drift/native.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -38,39 +40,53 @@ void main() {
       ),
     );
 
-    final emittedTunes = <AsyncValue<Tune?>>[];
+    final emitted = <Tune?>[];
+    final firstValue = Completer<void>();
+    final secondValue = Completer<void>();
+
     final sub = container.listen<AsyncValue<Tune?>>(
       singleTuneProvider(id),
-      (previous, next) => emittedTunes.add(next), // insert items
+      (_, next) {
+        if (!next.hasValue) return;
+        emitted.add(next.value);
+        if (!firstValue.isCompleted) firstValue.complete();
+        else if (!secondValue.isCompleted) secondValue.complete();
+      },
+      fireImmediately: true,
     );
 
-    // wait for first emit
-    await Future.delayed(const Duration(milliseconds: 10));
+    await firstValue.future;
 
     await tuneDao.updateTune(
       TunesCompanion(id: drift.Value(id), genre: const drift.Value('contra')),
     );
 
-    // wait for second emit
-    await Future.delayed(const Duration(milliseconds: 10));
-
-    expect(emittedTunes.length, greaterThanOrEqualTo(2));
-    expect(emittedTunes[0].value?.genre, 'irish');
-    expect(emittedTunes.last.value?.genre, 'contra');
-
-    // cleanup
+    await secondValue.future;
     sub.close();
+
+    expect(emitted[0]?.genre, 'irish');
+    expect(emitted.last?.genre, 'contra');
   });
 
   test('allTunesProvider', () async {
     final tuneDao = TuneDao(db);
 
-    final tunesHistory = <AsyncValue<List<Tune>>>[];
+    final history = <List<Tune>>[];
+    final firstEmit = Completer<void>();
+    final thirdEmit = Completer<void>();
+
     final sub = container.listen<AsyncValue<List<Tune>>>(
       allTunesProvider,
-      (previous, next) => tunesHistory.add(next), // insert list to history
-      fireImmediately: true, // get an empty entry
+      (_, next) {
+        if (!next.hasValue) return;
+        history.add(next.value!);
+        if (!firstEmit.isCompleted) firstEmit.complete();
+        if (history.length >= 3 && !thirdEmit.isCompleted) thirdEmit.complete();
+      },
+      fireImmediately: true,
     );
+
+    await firstEmit.future;
 
     final id1 = await tuneDao.insertTune(
       TunesCompanion(
@@ -88,23 +104,14 @@ void main() {
       ),
     );
 
-    await Future.delayed(const Duration(milliseconds: 10));
-
-    expect(
-      tunesHistory.length,
-      greaterThanOrEqualTo(3),
-      reason: 'should have [], [id1], [id1, id2] in final result',
-    );
-    expect(tunesHistory[0].value?.length ?? 0, equals(0));
-
-    expect(tunesHistory[1].value?.length, equals(1));
-    expect(tunesHistory[1].value?[0].id, equals(id1));
-
-    expect(tunesHistory[2].value?.length, equals(2));
-    expect(tunesHistory[2].value?[0].id, equals(id1));
-    expect(tunesHistory[2].value?[1].id, equals(id2));
-
-    // cleanup
+    await thirdEmit.future;
     sub.close();
+
+    expect(history[0], isEmpty);
+    expect(history[1].length, equals(1));
+    expect(history[1][0].id, equals(id1));
+    expect(history[2].length, equals(2));
+    expect(history[2][0].id, equals(id1));
+    expect(history[2][1].id, equals(id2));
   });
 }
