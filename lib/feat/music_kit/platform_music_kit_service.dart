@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/services.dart';
-import 'package:tune_catcher/feat/music_kit/music_kit_models.dart';
-import 'package:tune_catcher/feat/music_kit/music_kit_service.dart';
+import 'package:tune_trove/feat/music_kit/music_kit_models.dart';
+import 'package:tune_trove/feat/music_kit/music_kit_service.dart';
 
 const _methodChannel = MethodChannel('com.gcantieni.tuneCatcher/musickit');
 const _eventChannel = EventChannel('com.gcantieni.tuneCatcher/musickit_state');

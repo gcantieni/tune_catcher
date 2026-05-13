@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:tune_catcher/feat/audio_player/audio_player_notifier.dart';
+import 'package:tune_trove/feat/audio_player/audio_player_notifier.dart';
 
 class PlaybackCard extends ConsumerWidget {
   final String trackUri;

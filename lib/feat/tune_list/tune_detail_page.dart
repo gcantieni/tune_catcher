@@ -5,19 +5,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:tune_catcher/feat/abc_render/abc_renderer.dart';
-import 'package:tune_catcher/feat/abc_render/abc_view.dart';
-import 'package:tune_catcher/feat/tune_list/tune_list_item.dart';
-import 'package:tune_catcher/model/accessors/set_tune_dao.dart';
-import 'package:tune_catcher/model/accessors/tune_recording_dao.dart';
-import 'package:tune_catcher/model/database.dart';
-import 'package:tune_catcher/model/database_provider.dart';
-import 'package:tune_catcher/model/providers/sets_provider.dart';
-import 'package:tune_catcher/model/providers/tune_recording_provider.dart';
-import 'package:tune_catcher/model/providers/tunes_provider.dart';
-import 'package:tune_catcher/model/tables/tunes.dart';
-import 'package:tune_catcher/shared_widgets/recording_picker_dialog.dart';
-import 'package:tune_catcher/shared_widgets/timestamp_editor_dialog.dart';
+import 'package:tune_trove/feat/abc_render/abc_renderer.dart';
+import 'package:tune_trove/feat/abc_render/abc_view.dart';
+import 'package:tune_trove/feat/tune_list/tune_list_item.dart';
+import 'package:tune_trove/model/accessors/set_tune_dao.dart';
+import 'package:tune_trove/model/accessors/tune_recording_dao.dart';
+import 'package:tune_trove/model/database.dart';
+import 'package:tune_trove/model/database_provider.dart';
+import 'package:tune_trove/model/providers/sets_provider.dart';
+import 'package:tune_trove/model/providers/tune_recording_provider.dart';
+import 'package:tune_trove/model/providers/tunes_provider.dart';
+import 'package:tune_trove/model/tables/tunes.dart';
+import 'package:tune_trove/shared_widgets/recording_picker_dialog.dart';
+import 'package:tune_trove/shared_widgets/timestamp_editor_dialog.dart';
 
 class TuneDetailPage extends ConsumerStatefulWidget {
   final int tuneId;

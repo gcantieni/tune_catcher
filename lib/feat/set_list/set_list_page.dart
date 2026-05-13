@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:tune_catcher/model/database.dart';
-import 'package:tune_catcher/model/database_provider.dart';
-import 'package:tune_catcher/model/providers/sets_provider.dart';
+import 'package:tune_trove/model/database.dart';
+import 'package:tune_trove/model/database_provider.dart';
+import 'package:tune_trove/model/providers/sets_provider.dart';
 
 class SetListPage extends ConsumerWidget {
   @override

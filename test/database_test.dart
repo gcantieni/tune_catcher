@@ -1,9 +1,9 @@
 import 'package:drift/drift.dart' as drift;
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:tune_catcher/model/accessors/tune_dao.dart';
-import 'package:tune_catcher/model/database.dart';
-import 'package:tune_catcher/model/tables/tunes.dart';
+import 'package:tune_trove/model/accessors/tune_dao.dart';
+import 'package:tune_trove/model/database.dart';
+import 'package:tune_trove/model/tables/tunes.dart';
 
 void main() {
   late AppDatabase db;

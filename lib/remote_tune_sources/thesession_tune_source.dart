@@ -3,8 +3,8 @@ import 'dart:convert';
 import 'package:drift/drift.dart' as drift;
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:tune_catcher/model/database.dart';
-import 'package:tune_catcher/model/tables/tunes.dart';
+import 'package:tune_trove/model/database.dart';
+import 'package:tune_trove/model/tables/tunes.dart';
 
 final thesessionTuneProvider = FutureProvider<List<TunesCompanion>>((
   ref,

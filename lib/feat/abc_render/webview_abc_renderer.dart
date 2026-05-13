@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 
-import 'package:tune_catcher/feat/abc_render/abc_renderer.dart';
+import 'package:tune_trove/feat/abc_render/abc_renderer.dart';
 
 /// Headless flutter_inappwebview that hosts a tiny HTML shim bundled
 /// at `assets/abcjs/render.html`. The shim loads abcjs and exposes

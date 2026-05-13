@@ -1,4 +1,4 @@
-import 'package:tune_catcher/feat/audio_player/audio_player_state.dart';
+import 'package:tune_trove/feat/audio_player/audio_player_state.dart';
 
 abstract class AudioPlayerBackend {
   Stream<AudioPlayerState> get stateStream;

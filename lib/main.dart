@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:tune_catcher/routing/app_router.dart';
+import 'package:tune_trove/routing/app_router.dart';
 
 void main() {
   runApp(const ProviderScope(child: MyApp()));

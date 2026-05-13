@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:tune_catcher/feat/tune_list/tune_filters.dart';
-import 'package:tune_catcher/model/tables/tunes.dart';
+import 'package:tune_trove/feat/tune_list/tune_filters.dart';
+import 'package:tune_trove/model/tables/tunes.dart';
 
 class TuneFilterBar extends ConsumerStatefulWidget {
   const TuneFilterBar({super.key});

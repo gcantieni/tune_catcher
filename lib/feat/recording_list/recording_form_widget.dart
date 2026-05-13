@@ -7,9 +7,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
-import 'package:tune_catcher/feat/recording_list/apple_music_search_delegate.dart';
-import 'package:tune_catcher/model/database.dart';
-import 'package:tune_catcher/model/database_provider.dart';
+import 'package:tune_trove/feat/recording_list/apple_music_search_delegate.dart';
+import 'package:tune_trove/model/database.dart';
+import 'package:tune_trove/model/database_provider.dart';
 
 class RecordingFormWidget extends ConsumerStatefulWidget {
   final VoidCallback? onSubmitted;

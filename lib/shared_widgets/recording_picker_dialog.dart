@@ -6,8 +6,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:html/parser.dart' as html_parser;
 import 'package:http/http.dart' as http;
 
-import 'package:tune_catcher/model/database.dart';
-import 'package:tune_catcher/model/providers/recordings_provider.dart';
+import 'package:tune_trove/model/database.dart';
+import 'package:tune_trove/model/providers/recordings_provider.dart';
 
 const _debounceDelay = Duration(milliseconds: 100);
 const _titleFetchTimeout = Duration(seconds: 5);

@@ -1,11 +1,11 @@
 import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:tune_catcher/feat/audio_player/audio_player_backend.dart';
-import 'package:tune_catcher/feat/audio_player/audio_player_state.dart';
-import 'package:tune_catcher/feat/music_kit/music_kit_constants.dart';
-import 'package:tune_catcher/feat/music_kit/music_kit_models.dart';
-import 'package:tune_catcher/feat/music_kit/music_kit_service.dart';
+import 'package:tune_trove/feat/audio_player/audio_player_backend.dart';
+import 'package:tune_trove/feat/audio_player/audio_player_state.dart';
+import 'package:tune_trove/feat/music_kit/music_kit_constants.dart';
+import 'package:tune_trove/feat/music_kit/music_kit_models.dart';
+import 'package:tune_trove/feat/music_kit/music_kit_service.dart';
 
 class MusicKitBackend implements AudioPlayerBackend {
   final MusicKitService _service;

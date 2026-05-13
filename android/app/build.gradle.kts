@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.tune_catcher"
+    namespace = "com.example.tune_trove"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -21,7 +21,7 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.example.tune_catcher"
+        applicationId = "com.example.tune_trove"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion

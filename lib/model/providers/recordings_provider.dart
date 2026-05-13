@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:tune_catcher/model/database.dart';
-import 'package:tune_catcher/model/database_provider.dart';
+import 'package:tune_trove/model/database.dart';
+import 'package:tune_trove/model/database_provider.dart';
 
 final allRecordingsProvider = StreamProvider.autoDispose<List<Recording>>((
   ref,

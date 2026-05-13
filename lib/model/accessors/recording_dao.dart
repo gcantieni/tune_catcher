@@ -1,7 +1,7 @@
 import 'package:drift/drift.dart';
 
-import 'package:tune_catcher/model/database.dart';
-import 'package:tune_catcher/model/tables/recordings.dart';
+import 'package:tune_trove/model/database.dart';
+import 'package:tune_trove/model/tables/recordings.dart';
 
 part 'recording_dao.g.dart';
 

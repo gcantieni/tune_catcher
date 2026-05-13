@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:tune_catcher/feat/abc_render/webview_abc_renderer.dart';
+import 'package:tune_trove/feat/abc_render/webview_abc_renderer.dart';
 
 /// Renders ABC notation to an SVG string. The implementation is
 /// deliberately hidden behind this interface so the abc_render module

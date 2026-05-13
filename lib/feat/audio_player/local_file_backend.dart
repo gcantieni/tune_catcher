@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:just_audio/just_audio.dart';
-import 'package:tune_catcher/feat/audio_player/audio_player_backend.dart';
-import 'package:tune_catcher/feat/audio_player/audio_player_state.dart';
+import 'package:tune_trove/feat/audio_player/audio_player_backend.dart';
+import 'package:tune_trove/feat/audio_player/audio_player_state.dart';
 
 class LocalFileBackend implements AudioPlayerBackend {
   final _player = AudioPlayer();

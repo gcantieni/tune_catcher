@@ -3,17 +3,17 @@ import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
 import 'package:path_provider/path_provider.dart';
 // local references
-import 'package:tune_catcher/model/accessors/recording_dao.dart';
-import 'package:tune_catcher/model/accessors/set_dao.dart';
-import 'package:tune_catcher/model/accessors/set_tune_dao.dart';
-import 'package:tune_catcher/model/accessors/tune_dao.dart';
-import 'package:tune_catcher/model/accessors/tune_recording_dao.dart';
-import 'package:tune_catcher/model/database.steps.dart';
-import 'package:tune_catcher/model/tables/recordings.dart';
-import 'package:tune_catcher/model/tables/set_tune.dart';
-import 'package:tune_catcher/model/tables/sets.dart';
-import 'package:tune_catcher/model/tables/tune_recording.dart';
-import 'package:tune_catcher/model/tables/tunes.dart';
+import 'package:tune_trove/model/accessors/recording_dao.dart';
+import 'package:tune_trove/model/accessors/set_dao.dart';
+import 'package:tune_trove/model/accessors/set_tune_dao.dart';
+import 'package:tune_trove/model/accessors/tune_dao.dart';
+import 'package:tune_trove/model/accessors/tune_recording_dao.dart';
+import 'package:tune_trove/model/database.steps.dart';
+import 'package:tune_trove/model/tables/recordings.dart';
+import 'package:tune_trove/model/tables/set_tune.dart';
+import 'package:tune_trove/model/tables/sets.dart';
+import 'package:tune_trove/model/tables/tune_recording.dart';
+import 'package:tune_trove/model/tables/tunes.dart';
 
 // generated code
 part 'database.g.dart';

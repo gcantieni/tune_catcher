@@ -1,8 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:tune_catcher/model/accessors/set_tune_dao.dart';
-import 'package:tune_catcher/model/database.dart';
-import 'package:tune_catcher/model/database_provider.dart';
+import 'package:tune_trove/model/accessors/set_tune_dao.dart';
+import 'package:tune_trove/model/database.dart';
+import 'package:tune_trove/model/database_provider.dart';
 
 final allSetsProvider = StreamProvider.autoDispose<List<TuneSet>>((ref) {
   return ref.watch(databaseProvider).setDao.watchAllSets();

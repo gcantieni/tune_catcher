@@ -1,8 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:tune_catcher/model/database.dart';
-import 'package:tune_catcher/model/providers/tunes_provider.dart';
-import 'package:tune_catcher/model/tables/tunes.dart';
+import 'package:tune_trove/model/database.dart';
+import 'package:tune_trove/model/providers/tunes_provider.dart';
+import 'package:tune_trove/model/tables/tunes.dart';
 
 enum TuneSort { newestFirst, oldestFirst, nameAZ, nameZA }
 

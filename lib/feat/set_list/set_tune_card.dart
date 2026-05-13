@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:tune_catcher/model/accessors/set_tune_dao.dart';
+import 'package:tune_trove/model/accessors/set_tune_dao.dart';
 
 class SetTuneCard extends StatefulWidget {
   const SetTuneCard({

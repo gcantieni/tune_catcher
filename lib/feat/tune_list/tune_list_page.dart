@@ -3,12 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:tune_catcher/feat/tune_list/tune_filter_bar.dart';
-import 'package:tune_catcher/feat/tune_list/tune_filters.dart';
-import 'package:tune_catcher/feat/tune_list/tune_list_item.dart';
-import 'package:tune_catcher/model/database.dart';
-import 'package:tune_catcher/model/database_provider.dart';
-import 'package:tune_catcher/shared_widgets/tune_picker_dialog.dart';
+import 'package:tune_trove/feat/tune_list/tune_filter_bar.dart';
+import 'package:tune_trove/feat/tune_list/tune_filters.dart';
+import 'package:tune_trove/feat/tune_list/tune_list_item.dart';
+import 'package:tune_trove/model/database.dart';
+import 'package:tune_trove/model/database_provider.dart';
+import 'package:tune_trove/shared_widgets/tune_picker_dialog.dart';
 
 class TuneListPage extends ConsumerWidget {
   @override

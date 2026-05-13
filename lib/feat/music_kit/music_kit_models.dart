@@ -1,4 +1,4 @@
-import 'package:tune_catcher/feat/music_kit/music_kit_constants.dart';
+import 'package:tune_trove/feat/music_kit/music_kit_constants.dart';
 
 class MusicKitSearchResult {
   final String kind; // "song" | "album" | "artist"

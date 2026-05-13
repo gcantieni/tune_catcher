@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:tune_catcher/feat/recording_list/recording_form_widget.dart';
-import 'package:tune_catcher/feat/recording_list/recording_list_item.dart';
-import 'package:tune_catcher/model/database.dart';
-import 'package:tune_catcher/model/providers/recordings_provider.dart';
+import 'package:tune_trove/feat/recording_list/recording_form_widget.dart';
+import 'package:tune_trove/feat/recording_list/recording_list_item.dart';
+import 'package:tune_trove/model/database.dart';
+import 'package:tune_trove/model/providers/recordings_provider.dart';
 
 class RecordingListPage extends StatelessWidget {
   @override

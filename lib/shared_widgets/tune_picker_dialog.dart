@@ -3,9 +3,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:tune_catcher/model/database.dart';
-import 'package:tune_catcher/model/providers/tunes_provider.dart';
-import 'package:tune_catcher/remote_tune_sources/thesession_tune_source.dart';
+import 'package:tune_trove/model/database.dart';
+import 'package:tune_trove/model/providers/tunes_provider.dart';
+import 'package:tune_trove/remote_tune_sources/thesession_tune_source.dart';
 
 const _debounceDelay = Duration(milliseconds: 100);
 

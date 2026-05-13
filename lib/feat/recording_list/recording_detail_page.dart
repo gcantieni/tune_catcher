@@ -4,16 +4,16 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:tune_catcher/feat/audio_player/playback_card.dart';
-import 'package:tune_catcher/feat/music_kit/music_kit_notifier.dart';
-import 'package:tune_catcher/feat/recording_list/recording_link_kind.dart';
-import 'package:tune_catcher/model/accessors/tune_recording_dao.dart';
-import 'package:tune_catcher/model/database.dart';
-import 'package:tune_catcher/model/database_provider.dart';
-import 'package:tune_catcher/model/providers/recordings_provider.dart';
-import 'package:tune_catcher/model/providers/tune_recording_provider.dart';
-import 'package:tune_catcher/shared_widgets/timestamp_editor_dialog.dart';
-import 'package:tune_catcher/shared_widgets/tune_picker_dialog.dart';
+import 'package:tune_trove/feat/audio_player/playback_card.dart';
+import 'package:tune_trove/feat/music_kit/music_kit_notifier.dart';
+import 'package:tune_trove/feat/recording_list/recording_link_kind.dart';
+import 'package:tune_trove/model/accessors/tune_recording_dao.dart';
+import 'package:tune_trove/model/database.dart';
+import 'package:tune_trove/model/database_provider.dart';
+import 'package:tune_trove/model/providers/recordings_provider.dart';
+import 'package:tune_trove/model/providers/tune_recording_provider.dart';
+import 'package:tune_trove/shared_widgets/timestamp_editor_dialog.dart';
+import 'package:tune_trove/shared_widgets/tune_picker_dialog.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 Future<void> _launchUrl(BuildContext context, String url) async {

@@ -4,11 +4,11 @@ import 'package:drift/drift.dart' show Value;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:tune_catcher/feat/set_list/set_tune_card.dart';
-import 'package:tune_catcher/model/database.dart';
-import 'package:tune_catcher/model/database_provider.dart';
-import 'package:tune_catcher/model/providers/sets_provider.dart';
-import 'package:tune_catcher/shared_widgets/tune_picker_dialog.dart';
+import 'package:tune_trove/feat/set_list/set_tune_card.dart';
+import 'package:tune_trove/model/database.dart';
+import 'package:tune_trove/model/database_provider.dart';
+import 'package:tune_trove/model/providers/sets_provider.dart';
+import 'package:tune_trove/shared_widgets/tune_picker_dialog.dart';
 
 class SetDetailPage extends ConsumerStatefulWidget {
   const SetDetailPage({required this.setId, super.key});

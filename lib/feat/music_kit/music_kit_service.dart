@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:tune_catcher/feat/music_kit/mock_music_kit_service.dart';
-import 'package:tune_catcher/feat/music_kit/music_kit_models.dart';
-import 'package:tune_catcher/feat/music_kit/platform_music_kit_service.dart';
+import 'package:tune_trove/feat/music_kit/mock_music_kit_service.dart';
+import 'package:tune_trove/feat/music_kit/music_kit_models.dart';
+import 'package:tune_trove/feat/music_kit/platform_music_kit_service.dart';
 
 // Activate with: flutter run --dart-define=MOCK_MUSICKIT=true
 const _useMock = bool.fromEnvironment('MOCK_MUSICKIT');

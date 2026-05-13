@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:tune_catcher/feat/recording_list/recording_link_kind.dart';
-import 'package:tune_catcher/model/database.dart';
+import 'package:tune_trove/feat/recording_list/recording_link_kind.dart';
+import 'package:tune_trove/model/database.dart';
 
 class RecordingListItem extends StatelessWidget {
   const RecordingListItem({required this.recording, super.key});
