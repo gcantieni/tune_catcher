@@ -1,7 +1,5 @@
+# Tune Trove
 
-# Tune Catcher
-
->
 > record, learn, and master traditional folk tunes ❤️ 🪕
 
 ## Development
@@ -32,7 +30,7 @@ dart run drift_dev make-migrations
 Finding the database to clear it is a bit of a pain. In the future, a 'clear' database button could be added, or a flag or some other switch to toggle the use of an in-memory database.
 For you copy-and-paste convenience, on MacOS this should work to clear the database:
 
-``` sh
+```sh
 rm "$HOME/Library/Containers/com.gcantieni.tuneCatcher/Data/Library/Application Support/com.gcantieni.tuneCatcher/my_database.sqlite"
 ```
 
@@ -59,7 +57,7 @@ rm "$HOME/Library/Containers/com.gcantieni.tuneCatcher/Data/Library/Application 
 ### Conceptual layout
 
 ```text
-Presentation layer    
+Presentation layer
 ┌─────────────────────┐
 │                     │
 │   Widgets           │
@@ -69,19 +67,19 @@ Presentation layer
 │   Controllers       │
 │                     │
 └─────────┬───────────┘
-          │            
-          │            
-          ▼            
- Application Layer     
+          │
+          │
+          ▼
+ Application Layer
 ┌─────────────────────┐
 │                     │
 │ Services            │
 │                     │
 └─────────────────────┘
-          ▲            
-          │            
-          │            
-  Data layer           
+          ▲
+          │
+          │
+  Data layer
 ┌─────────────────────┐
 │                     │
 │  Model              │
