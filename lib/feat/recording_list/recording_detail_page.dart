@@ -16,6 +16,25 @@ import 'package:tune_catcher/shared_widgets/timestamp_editor_dialog.dart';
 import 'package:tune_catcher/shared_widgets/tune_picker_dialog.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+Future<void> _launchUrl(BuildContext context, String url) async {
+  final uri = Uri.tryParse(url);
+  if (uri == null) return;
+  final ok = await launchUrl(uri, mode: LaunchMode.externalApplication);
+  if (!ok && context.mounted) {
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text('Could not open $url')));
+  }
+}
+
+String _withTimestamp(String url, int seconds) {
+  final uri = Uri.tryParse(url);
+  if (uri == null) return url;
+  final params = Map<String, String>.from(uri.queryParameters);
+  params['t'] = seconds.toString();
+  return uri.replace(queryParameters: params).toString();
+}
+
 class RecordingDetailPage extends ConsumerStatefulWidget {
   final int recordingId;
 
@@ -52,16 +71,7 @@ class _RecordingDetailPageState extends ConsumerState<RecordingDetailPage> {
     setState(() => _editing = false);
   }
 
-  Future<void> _openUrl(String url) async {
-    final uri = Uri.tryParse(url);
-    if (uri == null) return;
-    final ok = await launchUrl(uri, mode: LaunchMode.externalApplication);
-    if (!ok && mounted) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Could not open $url')));
-    }
-  }
+  Future<void> _openUrl(String url) => _launchUrl(context, url);
 
   Future<void> _save(Recording r) async {
     if (!_formKey.currentState!.validate()) return;
@@ -195,7 +205,7 @@ class _RecordingDetailPageState extends ConsumerState<RecordingDetailPage> {
           ],
         ),
         const SizedBox(height: 4),
-        _LinkedTunes(recordingId: r.id),
+        _LinkedTunes(recordingId: r.id, recordingUrl: r.url),
       ],
     );
   }
@@ -276,7 +286,8 @@ class _RecordingDetailPageState extends ConsumerState<RecordingDetailPage> {
 
 class _LinkedTunes extends ConsumerWidget {
   final int recordingId;
-  const _LinkedTunes({required this.recordingId});
+  final String recordingUrl;
+  const _LinkedTunes({required this.recordingId, required this.recordingUrl});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -298,7 +309,10 @@ class _LinkedTunes extends ConsumerWidget {
           );
         }
         return Column(
-          children: [for (final e in links) _LinkedTuneRow(entry: e)],
+          children: [
+            for (final e in links)
+              _LinkedTuneRow(entry: e, recordingUrl: recordingUrl),
+          ],
         );
       },
     );
@@ -307,7 +321,8 @@ class _LinkedTunes extends ConsumerWidget {
 
 class _LinkedTuneRow extends ConsumerWidget {
   final RecordedTune entry;
-  const _LinkedTuneRow({required this.entry});
+  final String recordingUrl;
+  const _LinkedTuneRow({required this.entry, required this.recordingUrl});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -334,6 +349,16 @@ class _LinkedTuneRow extends ConsumerWidget {
                 style: const TextStyle(fontFamily: 'monospace'),
               ),
             ),
+            if (recordingLinkKindOf(recordingUrl) == RecordingLinkKind.youtube &&
+                link.startTime != null)
+              IconButton(
+                icon: const Icon(Icons.play_circle_outline, size: 18),
+                tooltip: 'Open at ${formatSeconds(link.startTime)}',
+                onPressed: () => _launchUrl(
+                  context,
+                  _withTimestamp(recordingUrl, link.startTime!),
+                ),
+              ),
             IconButton(
               icon: const Icon(Icons.close, size: 18),
               tooltip: 'Remove from recording',
