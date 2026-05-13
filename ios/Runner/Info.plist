@@ -8,6 +8,8 @@
 	<key>NSAppleMusicUsageDescription</key>
 	<string
         >Tune Trove uses Apple Music to search for and play recordings of traditional folk tunes.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Tune Trove does not access your photo library.</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
