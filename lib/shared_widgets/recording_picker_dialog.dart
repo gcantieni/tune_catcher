@@ -307,7 +307,7 @@ Future<String?> _fetchPageTitle(Uri uri) async {
           headers: const {
             // Some sites (YouTube etc.) gate metadata behind a UA check.
             'User-Agent':
-                'Mozilla/5.0 (compatible; TuneCatcher/1.0; +https://tunecatcher.app)',
+                'Mozilla/5.0 (compatible; tuneTrove/1.0; +https://tuneTrove.app)',
           },
         )
         .timeout(_titleFetchTimeout);
