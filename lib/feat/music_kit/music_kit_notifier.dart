@@ -34,23 +34,23 @@ class MusicKitNotifier extends AsyncNotifier<MusicKitState> {
 
   Future<void> authorize() async {
     final status = await ref.read(musicKitServiceProvider).authorize();
-    final current = state.valueOrNull;
+    final current = state.value;
     if (current != null) {
       state = AsyncData(current.copyWith(authStatus: status));
     }
   }
 
   Future<void> search(String query) async {
-    final current = state.valueOrNull;
+    final current = state.value;
     if (current == null) return;
     state = AsyncData(current.copyWith(isSearching: true, searchResults: []));
     try {
       final results = await ref.read(musicKitServiceProvider).search(query);
       state = AsyncData(
-        state.valueOrNull!.copyWith(isSearching: false, searchResults: results),
+        state.value!.copyWith(isSearching: false, searchResults: results),
       );
     } catch (_) {
-      state = AsyncData(state.valueOrNull!.copyWith(isSearching: false));
+      state = AsyncData(state.value!.copyWith(isSearching: false));
       rethrow;
     }
   }

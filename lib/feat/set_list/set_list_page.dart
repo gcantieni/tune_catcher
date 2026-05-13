@@ -56,7 +56,7 @@ class _SetCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final tunesAsync = ref.watch(setTunesProvider(tuneSet.id));
-    final count = tunesAsync.valueOrNull?.length;
+    final count = tunesAsync.value?.length;
     final subtitle = count == null
         ? null
         : count == 1
