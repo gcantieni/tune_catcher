@@ -73,6 +73,31 @@ class _RecordingDetailPageState extends ConsumerState<RecordingDetailPage> {
 
   Future<void> _openUrl(String url) => _launchUrl(context, url);
 
+  Future<void> _confirmDelete(Recording r) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Delete recording'),
+        content: Text('Delete "${r.name}"? This cannot be undone.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(true),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true) return;
+    await ref.read(databaseProvider).recordingDao.deleteRecording(r.id);
+    if (!mounted) return;
+    context.pop();
+  }
+
   Future<void> _save(Recording r) async {
     if (!_formKey.currentState!.validate()) return;
 
@@ -119,6 +144,11 @@ class _RecordingDetailPageState extends ConsumerState<RecordingDetailPage> {
               ];
             }
             return [
+              IconButton(
+                icon: const Icon(Icons.delete_outline),
+                tooltip: 'Delete recording',
+                onPressed: () => _confirmDelete(r),
+              ),
               IconButton(
                 icon: const Icon(Icons.edit),
                 tooltip: 'Edit',
