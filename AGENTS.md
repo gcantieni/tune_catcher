@@ -64,6 +64,12 @@ make analyze
 make test
 ```
 
+When adding or changing packages in `pubspec.yaml`, run:
+
+```
+make deps
+```
+
 ## Context Files
 
 - [.context/playbooks/](/.context/playbooks/) — Step-by-step guides for common development actions
