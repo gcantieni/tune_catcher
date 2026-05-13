@@ -21,7 +21,7 @@ class MyApp extends StatelessWidget {
     );
 
     return MaterialApp.router(
-      title: 'Tune Catcher',
+      title: 'Tune Trove',
       theme: ThemeData(
         colorScheme: colorScheme,
         bottomNavigationBarTheme: BottomNavigationBarThemeData(

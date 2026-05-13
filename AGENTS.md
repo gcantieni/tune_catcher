@@ -1,4 +1,4 @@
-# Tune Catcher
+# Tune Trove
 
 A Flutter app for recording, learning, and mastering traditional folk tunes. Built for musicians who want to catalog tunes they encounter at sessions, link them to recordings, and track their learning progress.
 
@@ -29,15 +29,15 @@ lib/
 
 ## Key Dependencies
 
-| Package | Purpose |
-|---------|---------|
-| `flutter_riverpod` | State management and dependency injection |
+| Package                   | Purpose                                         |
+| ------------------------- | ----------------------------------------------- |
+| `flutter_riverpod`        | State management and dependency injection       |
 | `drift` + `drift_flutter` | Type-safe SQLite database with reactive streams |
-| `go_router` | Declarative routing with shell-based navigation |
-| `flutter_inappwebview` | WebView for ABC notation rendering (abcjs) |
-| `http` + `html` | HTTP fetching and HTML parsing for tune sources |
-| `flutter_svg` | SVG rendering |
-| `url_launcher` | Opening external URLs |
+| `go_router`               | Declarative routing with shell-based navigation |
+| `flutter_inappwebview`    | WebView for ABC notation rendering (abcjs)      |
+| `http` + `html`           | HTTP fetching and HTML parsing for tune sources |
+| `flutter_svg`             | SVG rendering                                   |
+| `url_launcher`            | Opening external URLs                           |
 
 ## Data Model
 
@@ -52,6 +52,7 @@ Four primary routes via bottom nav: Set List → Tune List → Recording List �
 ## Development Standards
 
 Follow TDD for all code changes:
+
 1. **Red** — write a failing unit test that captures the desired behavior (`make test`)
 2. **Green** — write the minimal code to make it pass (`make test`)
 
