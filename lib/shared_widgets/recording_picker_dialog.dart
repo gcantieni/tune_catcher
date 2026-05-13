@@ -41,8 +41,8 @@ class _RecordingPickerDialogState extends ConsumerState<RecordingPickerDialog> {
   String _debouncedQuery = '';
   Timer? _debounceTimer;
 
-  // Set when the user commits to creating: switches the dialog into
-  // create-form mode for that URL.
+  bool _inCreateMode = false;
+  // Set when the user commits to creating from a URL; null for name-only.
   String? _createUrl;
   final _nameController = TextEditingController();
   final _performersController = TextEditingController();
@@ -85,6 +85,7 @@ class _RecordingPickerDialogState extends ConsumerState<RecordingPickerDialog> {
 
   void _enterCreateMode(String url) {
     setState(() {
+      _inCreateMode = true;
       _createUrl = url;
       _nameController.clear();
       _performersController.clear();
@@ -93,9 +94,20 @@ class _RecordingPickerDialogState extends ConsumerState<RecordingPickerDialog> {
     _maybeFetchTitle(url);
   }
 
+  void _enterCreateModeByName(String name) {
+    setState(() {
+      _inCreateMode = true;
+      _createUrl = null;
+      _nameController.text = name;
+      _performersController.clear();
+      _fetchingTitle = false;
+    });
+  }
+
   void _cancelCreate() {
     _fetchSeq++; // ignore any in-flight fetch result
     setState(() {
+      _inCreateMode = false;
       _createUrl = null;
       _fetchingTitle = false;
     });
@@ -121,7 +133,7 @@ class _RecordingPickerDialogState extends ConsumerState<RecordingPickerDialog> {
 
   void _submitCreate() {
     if (!_formKey.currentState!.validate()) return;
-    final url = _createUrl!;
+    final url = _createUrl ?? '';
     final performers = _performersController.text.trim();
     final companion = RecordingsCompanion.insert(
       name: _nameController.text.trim(),
@@ -140,7 +152,7 @@ class _RecordingPickerDialogState extends ConsumerState<RecordingPickerDialog> {
         width: 600,
         child: Padding(
           padding: const EdgeInsets.all(20),
-          child: _createUrl == null ? _buildSearchView() : _buildCreateForm(),
+          child: _inCreateMode ? _buildCreateForm() : _buildSearchView(),
         ),
       ),
     );
@@ -164,7 +176,7 @@ class _RecordingPickerDialogState extends ConsumerState<RecordingPickerDialog> {
           autofocus: true,
           decoration: const InputDecoration(
             labelText: 'Recording name or URL',
-            hintText: 'Type to search, or paste a URL…',
+            hintText: 'Search, type a name, or paste a URL…',
           ),
         ),
         const SizedBox(height: 12),
@@ -185,14 +197,15 @@ class _RecordingPickerDialogState extends ConsumerState<RecordingPickerDialog> {
         ? all
         : all.where((r) => r.name.toLowerCase().contains(query)).toList();
     final urlToCreate = looksLikeUrl(raw) ? raw : null;
+    final nameToCreate = (raw.isNotEmpty && !looksLikeUrl(raw)) ? raw : null;
 
-    if (matches.isEmpty && urlToCreate == null) {
+    if (matches.isEmpty && urlToCreate == null && nameToCreate == null) {
       return Padding(
         padding: const EdgeInsets.symmetric(vertical: 16),
         child: Text(
           query.isEmpty
-              ? 'No recordings yet — paste a URL to add one.'
-              : 'No matching recordings. Paste a URL to add a new one.',
+              ? 'No recordings yet — type a name or paste a URL to add one.'
+              : 'No matching recordings — create one with this name or paste a URL.',
           style: const TextStyle(color: Colors.grey),
         ),
       );
@@ -210,6 +223,13 @@ class _RecordingPickerDialogState extends ConsumerState<RecordingPickerDialog> {
             onTap: () => _enterCreateMode(urlToCreate),
           ),
         ],
+        if (nameToCreate != null) ...[
+          if (matches.isNotEmpty) const SizedBox(height: 8),
+          _CreateRecordingByNameTile(
+            name: nameToCreate,
+            onTap: () => _enterCreateModeByName(nameToCreate),
+          ),
+        ],
       ],
     );
   }
@@ -225,21 +245,23 @@ class _RecordingPickerDialogState extends ConsumerState<RecordingPickerDialog> {
             'New recording',
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
           ),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              const Icon(Icons.link, size: 18),
-              const SizedBox(width: 6),
-              Expanded(
-                child: Text(
-                  _createUrl!,
-                  style: const TextStyle(fontFamily: 'monospace'),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
+          if (_createUrl != null) ...[
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                const Icon(Icons.link, size: 18),
+                const SizedBox(width: 6),
+                Expanded(
+                  child: Text(
+                    _createUrl!,
+                    style: const TextStyle(fontFamily: 'monospace'),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
-              ),
-            ],
-          ),
+              ],
+            ),
+          ],
           const SizedBox(height: 16),
           TextFormField(
             controller: _nameController,
@@ -366,6 +388,24 @@ class _CreateRecordingFromUrlTile extends StatelessWidget {
           maxLines: 2,
           overflow: TextOverflow.ellipsis,
         ),
+        onTap: onTap,
+      ),
+    );
+  }
+}
+
+class _CreateRecordingByNameTile extends StatelessWidget {
+  final String name;
+  final VoidCallback onTap;
+  const _CreateRecordingByNameTile({required this.name, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      margin: const EdgeInsets.symmetric(vertical: 2),
+      child: ListTile(
+        leading: const Icon(Icons.add),
+        title: Text('Create recording named "$name"'),
         onTap: onTap,
       ),
     );
