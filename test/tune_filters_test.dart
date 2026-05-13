@@ -18,14 +18,8 @@ Tune _tune({
   return Tune(
     id: id,
     name: name,
-    abc: null,
-    abcSvg: null,
-    tsId: null,
-    from: null,
-    status: null,
     key: key,
     type: type,
-    genre: null,
     createdAt: createdAt,
     modifiedAt: modifiedAt,
   );
@@ -68,7 +62,7 @@ Future<List<String>> _awaitAvailableKeys(ProviderContainer container) async {
   );
   await completer.future;
   final keys = container.read(availableKeysProvider);
-  sub?.close();
+  sub.close();
   return keys;
 }
 
@@ -84,7 +78,7 @@ void main() {
 
   test('filteredTunesProvider filters by type', () async {
     final tunes = [
-      _tune(id: 1, name: "Cooley's", type: TuneType.reel, createdAt: DateTime(2024, 1, 1)),
+      _tune(id: 1, name: "Cooley's", type: TuneType.reel, createdAt: DateTime(2024)),
       _tune(id: 2, name: 'Lark in the Morning', type: TuneType.jig, createdAt: DateTime(2024, 1, 2)),
     ];
     final container = _container(tunes);
@@ -98,7 +92,7 @@ void main() {
 
   test('filteredTunesProvider filters by key', () async {
     final tunes = [
-      _tune(id: 1, name: "Cooley's", key: 'Em', type: TuneType.reel, createdAt: DateTime(2024, 1, 1)),
+      _tune(id: 1, name: "Cooley's", key: 'Em', type: TuneType.reel, createdAt: DateTime(2024)),
       _tune(id: 2, name: 'Lark in the Morning', key: 'D', type: TuneType.jig, createdAt: DateTime(2024, 1, 2)),
     ];
     final container = _container(tunes);
@@ -112,7 +106,7 @@ void main() {
 
   test('filteredTunesProvider filters by name case-insensitively', () async {
     final tunes = [
-      _tune(id: 1, name: "Cooley's", type: TuneType.reel, createdAt: DateTime(2024, 1, 1)),
+      _tune(id: 1, name: "Cooley's", type: TuneType.reel, createdAt: DateTime(2024)),
       _tune(id: 2, name: 'Lark in the Morning', type: TuneType.jig, createdAt: DateTime(2024, 1, 2)),
     ];
     final container = _container(tunes);
@@ -126,7 +120,7 @@ void main() {
 
   test('filteredTunesProvider sorts nameAZ', () async {
     final tunes = [
-      _tune(id: 1, name: 'Zebra Jig', createdAt: DateTime(2024, 1, 1)),
+      _tune(id: 1, name: 'Zebra Jig', createdAt: DateTime(2024)),
       _tune(id: 2, name: 'Apple Reel', createdAt: DateTime(2024, 1, 2)),
       _tune(id: 3, name: 'Mango Hornpipe', createdAt: DateTime(2024, 1, 3)),
     ];
@@ -140,7 +134,7 @@ void main() {
 
   test('filteredTunesProvider sorts nameZA', () async {
     final tunes = [
-      _tune(id: 1, name: 'Zebra Jig', createdAt: DateTime(2024, 1, 1)),
+      _tune(id: 1, name: 'Zebra Jig', createdAt: DateTime(2024)),
       _tune(id: 2, name: 'Apple Reel', createdAt: DateTime(2024, 1, 2)),
       _tune(id: 3, name: 'Mango Hornpipe', createdAt: DateTime(2024, 1, 3)),
     ];
@@ -154,9 +148,9 @@ void main() {
 
   test('filteredTunesProvider sorts oldestFirst', () async {
     final tunes = [
-      _tune(id: 1, name: 'Newest', createdAt: DateTime(2024, 6, 1)),
-      _tune(id: 2, name: 'Oldest', createdAt: DateTime(2024, 1, 1)),
-      _tune(id: 3, name: 'Middle', createdAt: DateTime(2024, 3, 1)),
+      _tune(id: 1, name: 'Newest', createdAt: DateTime(2024, 6)),
+      _tune(id: 2, name: 'Oldest', createdAt: DateTime(2024)),
+      _tune(id: 3, name: 'Middle', createdAt: DateTime(2024, 3)),
     ];
     final container = _container(tunes);
     addTearDown(container.dispose);
@@ -168,7 +162,7 @@ void main() {
 
   test('availableKeysProvider returns sorted distinct keys', () async {
     final tunes = [
-      _tune(id: 1, name: "Cooley's", key: 'Em', createdAt: DateTime(2024, 1, 1)),
+      _tune(id: 1, name: "Cooley's", key: 'Em', createdAt: DateTime(2024)),
       _tune(id: 2, name: 'Lark in the Morning', key: 'D', createdAt: DateTime(2024, 1, 2)),
       _tune(id: 3, name: 'The Morning Dew', key: 'Em', createdAt: DateTime(2024, 1, 3)),
     ];

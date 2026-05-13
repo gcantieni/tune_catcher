@@ -82,7 +82,7 @@ void main() {
 
   test('createRecordingAndLink creates recording and link and bumps tune modifiedAt',
       () async {
-    final tuneId = await db.into(db.tunes).insert(_tune('Cooley\'s Reel'));
+    final tuneId = await db.into(db.tunes).insert(_tune("Cooley's Reel"));
 
     final recordingId = await db.tuneRecordingDao
         .createRecordingAndLink(_recording('session_03'), tuneId);

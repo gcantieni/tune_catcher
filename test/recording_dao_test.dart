@@ -4,7 +4,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:tune_trove/model/accessors/recording_dao.dart';
 import 'package:tune_trove/model/accessors/set_dao.dart';
 import 'package:tune_trove/model/database.dart';
-import 'package:tune_trove/model/tables/sets.dart';
 
 void main() {
   late AppDatabase db;

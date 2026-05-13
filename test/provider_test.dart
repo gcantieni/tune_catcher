@@ -49,8 +49,11 @@ void main() {
       (_, next) {
         if (!next.hasValue) return;
         emitted.add(next.value);
-        if (!firstValue.isCompleted) firstValue.complete();
-        else if (!secondValue.isCompleted) secondValue.complete();
+        if (!firstValue.isCompleted) {
+          firstValue.complete();
+        } else if (!secondValue.isCompleted) {
+          secondValue.complete();
+        }
       },
       fireImmediately: true,
     );
